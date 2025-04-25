@@ -1,5 +1,5 @@
 # Amplify Marketing Suite
-
+![Amplify Marketing Suite]([https://www.amplifyaol.com/images/amplify-logo-v4.png])
 
 ## Overview
 
