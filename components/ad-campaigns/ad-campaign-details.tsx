@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Download, FileText, MessageSquare, Type, MousePointer, Lightbulb } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { motion } from "framer-motion"
 
 interface AdCampaignDetails {
@@ -73,7 +73,7 @@ export function AdCampaignDetails({ id }: { id: string }) {
 
   if (error || !campaign) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
         {error || "Failed to load campaign details."}
       </div>
     )
@@ -82,7 +82,7 @@ export function AdCampaignDetails({ id }: { id: string }) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex items-center">
-        <Button variant="ghost" size="sm" className="mr-4" onClick={handleBack}>
+        <Button variant="ghost" size="sm" className="mr-4 rounded-full" onClick={handleBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Campaigns
         </Button>
@@ -103,7 +103,7 @@ export function AdCampaignDetails({ id }: { id: string }) {
           </div>
 
           <div
-            className="relative w-full flex justify-center"
+            className="relative w-full flex justify-center image-frame shadow-card"
             onMouseEnter={() => setIsHoveringCreative(true)}
             onMouseLeave={() => setIsHoveringCreative(false)}
           >
@@ -117,19 +117,19 @@ export function AdCampaignDetails({ id }: { id: string }) {
               <img
                 src={campaign.creativeUrl || "/placeholder.svg"}
                 alt="Final Creative"
-                className="max-w-full h-auto rounded-lg shadow-lg"
+                className="max-w-full h-auto"
                 style={{ maxHeight: "80vh" }}
                 onLoad={() => setImageLoaded(true)}
               />
             ) : (
-              <div className="w-full h-[60vh] bg-gray-100 flex items-center justify-center rounded-lg">
+              <div className="w-full h-[60vh] bg-gray-100 flex items-center justify-center">
                 <p className="text-gray-500">No creative image available</p>
               </div>
             )}
 
             {isHoveringCreative && imageLoaded && (
               <motion.div
-                className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center rounded-lg"
+                className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.2 }}
@@ -137,7 +137,7 @@ export function AdCampaignDetails({ id }: { id: string }) {
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="rounded-full"
+                  className="rounded-full shadow-md"
                   onClick={() => handleDownload(campaign.creativeUrl)}
                 >
                   <Download className="mr-2 h-5 w-5" />
@@ -156,66 +156,58 @@ export function AdCampaignDetails({ id }: { id: string }) {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           {/* Headline */}
-          <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white">
-              <CardTitle className="flex items-center text-lg">
-                <FileText className="mr-2 h-5 w-5" />
-                Headline
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
+          <Card className="modern-card gradient-border">
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <FileText className="mr-2 h-5 w-5 text-blue-500" />
+                <h3 className="text-lg font-medium">Headline</h3>
+              </div>
               <p className="text-lg font-semibold">{campaign.headline}</p>
             </CardContent>
           </Card>
 
           {/* Subheadline */}
-          <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white">
-              <CardTitle className="flex items-center text-lg">
-                <Type className="mr-2 h-5 w-5" />
-                Subheadline
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
+          <Card className="modern-card gradient-border gradient-border-purple">
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <Type className="mr-2 h-5 w-5 text-purple-500" />
+                <h3 className="text-lg font-medium">Subheadline</h3>
+              </div>
               <p>{campaign.subheadline}</p>
             </CardContent>
           </Card>
 
           {/* Body Copy */}
-          <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 p-4 text-white">
-              <CardTitle className="flex items-center text-lg">
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Body Copy
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
+          <Card className="modern-card gradient-border gradient-border-green">
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <MessageSquare className="mr-2 h-5 w-5 text-green-500" />
+                <h3 className="text-lg font-medium">Body Copy</h3>
+              </div>
               <p className="whitespace-pre-line">{campaign.bodyCopy}</p>
             </CardContent>
           </Card>
 
           {/* Button Text */}
-          <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-amber-500 to-amber-600 p-4 text-white">
-              <CardTitle className="flex items-center text-lg">
-                <MousePointer className="mr-2 h-5 w-5" />
-                Button Text
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="bg-gray-100 rounded-md px-4 py-2 inline-block">{campaign.buttonText}</div>
+          <Card className="modern-card gradient-border gradient-border-amber">
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <MousePointer className="mr-2 h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-medium">Button Text</h3>
+              </div>
+              <div className="bg-gray-50 rounded-xl px-4 py-2 inline-block border border-gray-100">
+                {campaign.buttonText}
+              </div>
             </CardContent>
           </Card>
 
           {/* Prompt */}
-          <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-pink-500 to-pink-600 p-4 text-white">
-              <CardTitle className="flex items-center text-lg">
-                <Lightbulb className="mr-2 h-5 w-5" />
-                AI Prompt
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
+          <Card className="modern-card gradient-border gradient-border-pink">
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <Lightbulb className="mr-2 h-5 w-5 text-pink-500" />
+                <h3 className="text-lg font-medium">AI Prompt</h3>
+              </div>
               <p className="italic text-gray-700">{campaign.prompt}</p>
             </CardContent>
           </Card>
@@ -229,13 +221,13 @@ export function AdCampaignDetails({ id }: { id: string }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <Card>
-          <CardHeader>
-            <CardTitle>Raw AI Image</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="modern-card">
+          <CardContent className="p-6">
+            <div className="flex items-center mb-4">
+              <h3 className="text-lg font-medium">Raw AI Image</h3>
+            </div>
             <div
-              className="relative w-full max-w-2xl mx-auto"
+              className="relative w-full max-w-2xl mx-auto image-frame"
               style={{ height: "400px" }}
               onMouseEnter={() => setIsHoveringRaw(true)}
               onMouseLeave={() => setIsHoveringRaw(false)}
@@ -253,7 +245,11 @@ export function AdCampaignDetails({ id }: { id: string }) {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Button variant="secondary" onClick={() => handleDownload(campaign.rawImageUrl)}>
+                  <Button
+                    variant="secondary"
+                    className="rounded-full shadow-md"
+                    onClick={() => handleDownload(campaign.rawImageUrl)}
+                  >
                     <Download className="mr-2 h-5 w-5" />
                     Download Raw Image
                   </Button>

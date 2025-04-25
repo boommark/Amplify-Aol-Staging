@@ -58,6 +58,9 @@ const config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "1rem",
+        "2xl": "1.5rem",
+        "3xl": "2rem",
       },
       keyframes: {
         "accordion-down": {
@@ -88,6 +91,10 @@ const config = {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        pulse: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -97,15 +104,24 @@ const config = {
         slideLeft: "slideLeft 0.6s ease forwards",
         slideRight: "slideRight 0.6s ease forwards",
         float: "float 3s ease-in-out infinite",
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
       boxShadow: {
         card: "0 4px 12px rgba(0, 0, 0, 0.05)",
         elevated: "0 10px 30px rgba(0, 0, 0, 0.08)",
         glow: "0 0 20px rgba(56, 114, 255, 0.5)",
+        "glow-purple": "0 0 20px rgba(168, 85, 247, 0.4)",
+        "glow-pink": "0 0 20px rgba(236, 72, 153, 0.4)",
+        "glow-blue": "0 0 20px rgba(59, 130, 246, 0.4)",
       },
       backgroundImage: {
         "gradient-light": "radial-gradient(circle at top left, rgba(224, 242, 254, 0.5), rgba(255, 255, 255, 0))",
         "gradient-blue": "linear-gradient(135deg, #0061ff 0%, #60a5fa 100%)",
+        "gradient-purple": "linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)",
+        "gradient-pink-blue": "linear-gradient(135deg, #ec4899 0%, #3b82f6 100%)",
+        "gradient-purple-blue": "linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)",
+        "gradient-rainbow": "linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #10b981 100%)",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, #8b5cf6 0deg, #3b82f6 180deg, #10b981 360deg)",
       },
     },
   },

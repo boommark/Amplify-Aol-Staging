@@ -73,7 +73,7 @@ function PhoneFrame({ children, title, icon }: PhoneFrameProps) {
         {icon}
         <span className="ml-2 font-medium">{title}</span>
       </div>
-      <div className="border-[12px] border-white rounded-[36px] overflow-hidden shadow-xl bg-white max-w-[340px] w-full">
+      <div className="border-[8px] border-gray-50 rounded-[36px] overflow-hidden shadow-sm bg-white max-w-[340px] w-full">
         <div className="relative w-full h-[520px] overflow-y-auto">{children}</div>
       </div>
     </div>
@@ -93,7 +93,7 @@ function DesktopFrame({ children, title, icon }: DesktopFrameProps) {
         {icon}
         <span className="ml-2 font-medium">{title}</span>
       </div>
-      <div className="rounded-lg overflow-hidden shadow-xl bg-gray-800 max-w-[640px] w-full">
+      <div className="rounded-lg overflow-hidden shadow-sm bg-gray-800 max-w-[640px] w-full">
         {/* Mac-like top bar */}
         <div className="bg-gray-800 h-6 flex items-center px-2">
           <div className="flex space-x-1.5">

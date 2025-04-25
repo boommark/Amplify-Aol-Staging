@@ -50,25 +50,27 @@ export function AdCreativeCarousel() {
         <div className="w-3 h-3 rounded-full bg-green-500"></div>
       </div>
 
-      <div className="relative w-full h-full overflow-hidden rounded-lg">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full h-full"
-          >
-            <Image
-              src={images[currentIndex] || "/placeholder.svg"}
-              alt={`Ad Creative ${currentIndex + 1}`}
-              width={600}
-              height={400}
-              className="w-full h-full object-contain rounded-lg"
-            />
-          </motion.div>
-        </AnimatePresence>
+      <div className="relative rounded-lg shadow-sm border border-gray-50">
+        <div className="w-full h-full bg-white rounded-lg overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full h-full"
+            >
+              <Image
+                src={images[currentIndex] || "/placeholder.svg"}
+                alt={`Ad Creative ${currentIndex + 1}`}
+                width={600}
+                height={400}
+                className="w-full h-full object-contain rounded-lg"
+              />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Navigation buttons */}

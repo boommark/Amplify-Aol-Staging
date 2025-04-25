@@ -8,11 +8,11 @@ interface LogoProps {
   variant?: "default" | "white"
 }
 
-export function Logo({ className = "", showText = false, size = "md", variant = "default" }: LogoProps) {
+export function Logo({ className = "", showText = true, size = "md", variant = "default" }: LogoProps) {
   const sizeClasses = {
-    sm: "h-6 w-6",
-    md: "h-8 w-8",
-    lg: "h-10 w-10",
+    sm: "h-8 w-8",
+    md: "h-10 w-10",
+    lg: "h-12 w-12",
   }
 
   const textColorClasses = {
@@ -24,10 +24,10 @@ export function Logo({ className = "", showText = false, size = "md", variant = 
     <div className={cn("flex items-center", className)}>
       <div className={cn("relative", sizeClasses[size])}>
         <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-C9yhlg7fWdvaXe2WwGJmWRYqJsUMPx.png"
+          src="/images/amplify-logo-v4.png"
           alt="Amplify Logo"
-          width={32}
-          height={32}
+          width={40}
+          height={40}
           className="object-contain"
           priority
         />
