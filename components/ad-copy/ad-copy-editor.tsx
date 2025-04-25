@@ -505,19 +505,14 @@ export function AdCopyEditor() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-center mt-8">
-        <Button size="lg" className="px-8" onClick={handleReviewImage} disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <ImageIcon className="h-5 w-5 mr-2" />
-              Review AI Image
-            </>
-          )}
+      <div className="flex justify-center gap-4 mt-8">
+        <Button size="lg" variant="outline" className="px-6" onClick={() => router.push("/dashboard/review-image")}>
+          <ImageIcon className="h-5 w-5 mr-2" />
+          Generate AI Image
+        </Button>
+        <Button size="lg" variant="outline" className="px-6" onClick={() => router.push("/dashboard/stock-imagery")}>
+          <ImageIcon className="h-5 w-5 mr-2" />
+          Select Stock Imagery
         </Button>
       </div>
     </div>
