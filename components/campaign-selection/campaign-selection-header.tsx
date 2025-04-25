@@ -56,5 +56,3 @@ export function CampaignSelectionHeader() {
     </header>
   )
 }
-// If this component adds a duplicate header, we should modify it
-// Either remove it entirely if it's not needed, or modify it to not include logo/navigation elements

@@ -16,24 +16,6 @@ export function CampaignOptions() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFFFF]">
-      <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-white px-4 md:px-6">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <div className="h-6 w-6 rounded-full bg-primary"></div>
-            <span className="text-xl font-bold text-secondary-800">Amplify</span>
-          </div>
-        </div>
-        <nav className="flex items-center gap-4 md:gap-6">
-          <a className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" href="#">
-            Help
-          </a>
-          <a className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" href="#">
-            Settings
-          </a>
-          <div className="h-8 w-8 rounded-full bg-muted"></div>
-        </nav>
-      </header>
-
       <main className="flex-1 p-4 md:p-6 lg:p-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8">
