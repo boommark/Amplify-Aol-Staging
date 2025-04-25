@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Loader2, Wand2, HelpCircle } from "lucide-react"
@@ -65,12 +65,6 @@ export function AdBriefForm() {
 
   return (
     <Card className="w-full shadow-lg">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-3xl font-bold">Ad Brief</CardTitle>
-        <CardDescription className="text-base">
-          Enter a few details and watch AI work at wrap speed to turn your awesome idea into kickass campaign creative!
-        </CardDescription>
-      </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="product">Product</Label>

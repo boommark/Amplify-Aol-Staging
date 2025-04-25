@@ -10,10 +10,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/" className="flex items-center">
             <Logo size="md" />
           </Link>
-          <nav>
+          <nav className="flex items-center gap-6">
             <Link href="/dashboard/campaign-options" className="text-sm font-medium text-gray-600 hover:text-gray-900">
               Dashboard
             </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/help" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+                Help
+              </Link>
+              <Link href="/settings" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+                Settings
+              </Link>
+            </div>
           </nav>
         </div>
       </header>

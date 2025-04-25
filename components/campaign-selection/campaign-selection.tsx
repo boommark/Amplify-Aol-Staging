@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, Calendar, Globe, Megaphone, Presentation, Sparkles, Users, Zap } from "lucide-react"
 import { CampaignTypeCard } from "./campaign-type-card"
-import { CampaignSelectionHeader } from "./campaign-selection-header"
 
 export function CampaignSelection() {
   const router = useRouter()
@@ -84,8 +83,6 @@ export function CampaignSelection() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFFFF]">
-      <CampaignSelectionHeader />
-
       <main className="flex-1 p-4 md:p-6 lg:p-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8">

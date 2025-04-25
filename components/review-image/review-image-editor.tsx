@@ -319,12 +319,6 @@ export function ReviewImageEditor() {
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold">Review AI Image</h1>
-        <p className="text-muted-foreground mt-2">Review and refine your AI-generated image</p>
-      </div>
-
-      {/* Image Display */}
       <div className="flex justify-center mb-6">
         <div
           className="relative w-[600px] h-[600px] rounded-lg shadow-xl overflow-hidden border border-gray-200 group"

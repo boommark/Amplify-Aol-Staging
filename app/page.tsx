@@ -11,7 +11,6 @@ import {
   MessageSquare,
   BarChart,
   Users,
-  UserCircle,
   Target,
   Workflow,
   Send,
@@ -201,7 +200,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100 transition-all duration-300 hover:shadow-lg hover:border-pink-100">
+              <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100 transition-all duration-300 hover:shadow-lg">
                 <div className="rounded-xl bg-pink-50 w-14 h-14 flex items-center justify-center mb-6">
                   <Shield className="h-7 w-7 text-pink-600" />
                 </div>
@@ -530,29 +529,14 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Getting Started is Easy</h2>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-8 md:grid-cols-3">
               <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100 transition-all duration-300 hover:shadow-lg hover:border-blue-100">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="rounded-full bg-blue-50 w-14 h-14 flex items-center justify-center flex-shrink-0">
-                    <UserCircle className="h-7 w-7 text-blue-600" />
-                  </div>
-                  <div className="rounded-full bg-blue-600 w-8 h-8 flex items-center justify-center text-white font-bold">
-                    1
-                  </div>
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Choose Your Role</h3>
-                <p className="text-gray-600">
-                  Select whether you're a teacher, state coordinator, or national team member for a tailored experience.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100 transition-all duration-300 hover:shadow-lg hover:border-purple-100">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="rounded-full bg-purple-50 w-14 h-14 flex items-center justify-center flex-shrink-0">
                     <Target className="h-7 w-7 text-purple-600" />
                   </div>
-                  <div className="rounded-full bg-purple-600 w-8 h-8 flex items-center justify-center text-white font-bold">
-                    2
+                  <div className="rounded-full bg-blue-600 w-8 h-8 flex items-center justify-center text-white font-bold">
+                    1
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Select Your Campaign Type</h3>
@@ -567,7 +551,7 @@ export default function Home() {
                     <Workflow className="h-7 w-7 text-teal-600" />
                   </div>
                   <div className="rounded-full bg-teal-600 w-8 h-8 flex items-center justify-center text-white font-bold">
-                    3
+                    2
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Follow the Guided Process</h3>
@@ -582,7 +566,7 @@ export default function Home() {
                     <Send className="h-7 w-7 text-pink-600" />
                   </div>
                   <div className="rounded-full bg-pink-600 w-8 h-8 flex items-center justify-center text-white font-bold">
-                    4
+                    3
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Launch in Minutes</h3>

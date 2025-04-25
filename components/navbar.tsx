@@ -24,16 +24,16 @@ export function Navbar() {
             <Logo />
           </Link>
           <nav className="hidden gap-6 md:flex">
-            <Link href="/features" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="#features" className="text-sm font-medium transition-colors hover:text-primary">
               Features
             </Link>
-            <Link href="/how-it-works" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="#how-it-works" className="text-sm font-medium transition-colors hover:text-primary">
               How It Works
             </Link>
-            <Link href="/getting-started" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="#getting-started" className="text-sm font-medium transition-colors hover:text-primary">
               Getting Started
             </Link>
-            <Link href="/testimonials" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="#testimonials" className="text-sm font-medium transition-colors hover:text-primary">
               Testimonials
             </Link>
           </nav>
@@ -58,28 +58,28 @@ export function Navbar() {
         <div className="container pb-4 md:hidden">
           <nav className="flex flex-col gap-4">
             <Link
-              href="/features"
+              href="#features"
               className="text-sm font-medium transition-colors hover:text-primary"
               onClick={() => setIsMenuOpen(false)}
             >
               Features
             </Link>
             <Link
-              href="/how-it-works"
+              href="#how-it-works"
               className="text-sm font-medium transition-colors hover:text-primary"
               onClick={() => setIsMenuOpen(false)}
             >
               How It Works
             </Link>
             <Link
-              href="/getting-started"
+              href="#getting-started"
               className="text-sm font-medium transition-colors hover:text-primary"
               onClick={() => setIsMenuOpen(false)}
             >
               Getting Started
             </Link>
             <Link
-              href="/testimonials"
+              href="#testimonials"
               className="text-sm font-medium transition-colors hover:text-primary"
               onClick={() => setIsMenuOpen(false)}
             >
