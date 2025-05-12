@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 210 50% 98%; /* Updated to a crisper, slightly blue-tinted white */
+    --background: 0 0% 100%; /* Changed from 210 50% 98% to pure white */
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -57,8 +57,7 @@
     @apply bg-background text-foreground font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-image: radial-gradient(at 100% 0%, hsla(210, 100%, 97%, 0.4) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(220, 100%, 97%, 0.3) 0px, transparent 50%);
+    background-image: none; /* Removed the radial gradients */
     background-attachment: fixed;
   }
   h1,
@@ -174,8 +173,7 @@
   /* New crisp background options */
   .bg-crisp {
     @apply bg-white;
-    background-image: radial-gradient(at 100% 0%, hsla(210, 100%, 97%, 0.4) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(220, 100%, 97%, 0.3) 0px, transparent 50%);
+    background-image: none; /* Removed the radial gradients */
   }
 
   .bg-crisp-blue {
@@ -185,9 +183,8 @@
   }
 
   .bg-crisp-neutral {
-    background-color: #fafafa;
-    background-image: radial-gradient(at 100% 0%, hsla(0, 0%, 100%, 0.5) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(0, 0%, 98%, 0.4) 0px, transparent 50%);
+    background-color: #ffffff; /* Changed from #fafafa to pure white */
+    background-image: none; /* Removed the radial gradients */
   }
 }
 

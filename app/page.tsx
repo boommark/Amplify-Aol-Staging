@@ -23,12 +23,12 @@ import {
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-white">
       <Navbar />
       <main className="flex-1">
         {/* Hero Section with Multi-Channel Content Preview */}
         <section className="relative overflow-hidden py-20 md:py-28">
-          <div className="absolute inset-0 bg-gradient-light opacity-70"></div>
+          <div className="absolute inset-0 bg-white opacity-100"></div>
           <div className="container relative z-10">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="max-w-2xl">
@@ -101,7 +101,7 @@ export default function Home() {
         </section>
 
         {/* Your Complete Marketing Solution */}
-        <section id="features" className="py-20 bg-gray-50">
+        <section id="features" className="py-20 bg-white">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Your Complete Marketing Solution</h2>
@@ -322,7 +322,7 @@ export default function Home() {
         </section>
 
         {/* How It Works */}
-        <section id="how-it-works" className="py-20 bg-gray-50">
+        <section id="how-it-works" className="py-20 bg-white">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">How It Works</h2>
@@ -523,7 +523,7 @@ export default function Home() {
         </section>
 
         {/* Getting Started is Easy */}
-        <section id="getting-started" className="py-20 bg-gray-50">
+        <section id="getting-started" className="py-20 bg-white">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Getting Started is Easy</h2>
