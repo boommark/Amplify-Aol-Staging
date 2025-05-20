@@ -18,6 +18,8 @@ export function CampaignSelection() {
         router.push(`/dashboard/insight-studio?type=${campaignId}`)
       } else if (campaignId === "national-campaign") {
         router.push(`/dashboard/ad-brief`)
+      } else if (campaignId === "india-marketing") {
+        router.push(`/dashboard/ad-brief?type=${campaignId}`)
       }
     }
   }
@@ -49,6 +51,13 @@ export function CampaignSelection() {
       title: "National Ad Campaign",
       description: "Create high impact ad creatives for all channels with proven ad templates.",
       icon: Megaphone,
+      comingSoon: false,
+    },
+    {
+      id: "india-marketing",
+      title: "India Marketing",
+      description: "National marketing programs in India.",
+      icon: Globe,
       comingSoon: false,
     },
     {
