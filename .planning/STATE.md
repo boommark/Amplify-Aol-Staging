@@ -2,16 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 planned — 6 plans in 4 waves, verification passed
-last_updated: "2026-03-29T21:58:11.411Z"
-last_activity: 2026-03-29 — Roadmap created, all 52 v1 requirements mapped to 5 phases
+status: unknown
+stopped_at: Completed 01-foundation-00-PLAN.md
+last_updated: "2026-03-29T22:03:51.934Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
 ---
 
 # Project State
@@ -21,16 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** A teacher with zero marketing experience can describe their workshop and receive a complete marketing kit through a simple conversation.
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 01 — foundation
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-29 — Roadmap created, all 52 v1 requirements mapped to 5 phases
-
-Progress: [░░░░░░░░░░] 0%
+Phase: 01 (foundation) — EXECUTING
+Plan: 1 of 6
 
 ## Performance Metrics
 
@@ -52,6 +46,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-foundation P00 | 2 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -64,6 +59,8 @@ Recent decisions affecting current work:
 - [Pre-build]: Use `@supabase/ssr` not `@supabase/auth-helpers-nextjs` (deprecated at v0.15.0)
 - [Pre-build]: Roles must go in `app_metadata` not `user_metadata` — user_metadata is user-writable and enables privilege escalation
 - [Pre-build]: Vercel Fluid Compute + maxDuration 300s required on all AI routes — validate in Phase 1 before any content pipeline
+- [Phase 01-foundation]: Use vitest (not jest) as test runner — aligns with Vite-based Next.js toolchain and offers faster execution
+- [Phase 01-foundation]: Stub-first with it.todo() — satisfies Nyquist Wave 0 requirement without over-specifying unbuilt behavior
 
 ### Pending Todos
 
@@ -77,6 +74,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T21:58:11.408Z
-Stopped at: Phase 1 planned — 6 plans in 4 waves, verification passed
-Resume file: .planning/phases/01-foundation/01-00-PLAN.md
+Last session: 2026-03-29T22:03:51.930Z
+Stopped at: Completed 01-foundation-00-PLAN.md
+Resume file: None
