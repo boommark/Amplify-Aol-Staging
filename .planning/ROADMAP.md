@@ -30,7 +30,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Unauthenticated users attempting to access any page are redirected to the login screen
   4. All AI prompts are stored and retrievable from Supabase; a new prompt version can be created without a code deploy
   5. Staging deployment at staging.amplifyaol.com is live with environment-specific config and separate credentials
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Supabase clients, full database schema with RLS, Vercel Fluid Compute config
+- [ ] 01-02-PLAN.md — Google OAuth login, callback with allowlist gating, middleware, onboarding flow
+- [ ] 01-03-PLAN.md — S3 presigned URL utility and authenticated API route
+- [ ] 01-04-PLAN.md — Extract and seed AI prompts from n8n workflows
+- [ ] 01-05-PLAN.md — Integration verification: deploy to staging, end-to-end validation
 
 ### Phase 2: Chat Core
 **Goal**: Users can have a full conversational session with Amplify through a polished, streaming chat interface backed by a live AI provider
@@ -87,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/5 | Planning complete | - |
 | 2. Chat Core | 0/TBD | Not started | - |
 | 3. Content Pipeline | 0/TBD | Not started | - |
 | 4. Creative Studio and Campaign | 0/TBD | Not started | - |
