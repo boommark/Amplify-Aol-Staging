@@ -29,6 +29,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Set x-pathname header so Server Component layouts can read current path
+  supabaseResponse.headers.set('x-pathname', pathname)
+
   return supabaseResponse
 }
 
