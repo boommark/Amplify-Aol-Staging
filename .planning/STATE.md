@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-03-29T22:11:45.709Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-03-29T22:26:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 1 of 6
+Plan: 2 of 6 — COMPLETE
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Plan: 1 of 6
 | Phase 01-foundation P01 | 5 | 2 tasks | 9 files |
 | Phase 01-foundation P03 | 2 | 1 tasks | 2 files |
 | Phase 01-foundation P04 | 18 | 1 tasks | 2 files |
+| Phase 01-foundation P02 | 14 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Default bucket name 'amplifyaol' hardcoded as fallback; AWS_S3_BUCKET env var takes precedence via ?? operator
 - [Phase 01-foundation]: 14 unique prompts deduped from 37 raw nodes across 10 n8n workflows — keeping longest template per domain.task key
 - [Phase 01-foundation]: copy.email is canonical key for multi-channel content block (email+whatsapp+instagram+facebook in one prompt)
+- [Phase 01-foundation P02]: x-pathname header set by middleware enables Server Component layouts to detect current path without client JS — prevents infinite redirect loop on onboarding page
+- [Phase 01-foundation P02]: Onboarding page placed inside (app) route group — exempted from profile-completeness redirect via x-pathname header check
+- [Phase 01-foundation P02]: Admin route guard reads app_metadata.role from JWT via updateSession return value — not user_metadata, preventing privilege escalation
 
 ### Pending Todos
 
@@ -84,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T22:11:45.707Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-03-29T22:26:00.000Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None

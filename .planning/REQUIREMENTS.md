@@ -7,12 +7,12 @@
 
 ### Authentication & Access (AUTH)
 
-- [ ] **AUTH-01**: User can sign in with Google via Supabase Auth
-- [ ] **AUTH-02**: User session persists across browser refresh and tabs
-- [ ] **AUTH-03**: Users are assigned roles (Teacher, State Coordinator, National Team, Admin) via app_metadata
+- [x] **AUTH-01**: User can sign in with Google via Supabase Auth
+- [x] **AUTH-02**: User session persists across browser refresh and tabs
+- [x] **AUTH-03**: Users are assigned roles (Teacher, State Coordinator, National Team, Admin) via app_metadata
 - [ ] **AUTH-04**: Row-level security enforces that each role sees only permitted data
-- [ ] **AUTH-05**: Admin role has access to prompt testing screen and system configuration
-- [ ] **AUTH-06**: Unauthenticated users are redirected to login page
+- [x] **AUTH-05**: Admin role has access to prompt testing screen and system configuration
+- [x] **AUTH-06**: Unauthenticated users are redirected to login page
 
 ### Chat Interface (CHAT)
 
@@ -137,12 +137,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Pending |
-| AUTH-05 | Phase 1 | Pending |
-| AUTH-06 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Complete |
+| AUTH-06 | Phase 1 | Complete |
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 1 | Complete |
