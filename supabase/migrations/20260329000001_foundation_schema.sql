@@ -4,11 +4,12 @@
 -- =============================================================================
 
 -- ---------------------------------------------------------------------------
--- HELPER: auth.user_role()
+-- HELPER: public.user_role()
 -- Reads role from app_metadata (user-writable user_metadata is intentionally
 -- NOT used here — see PITFALLS.md Pitfall 4)
+-- NOTE: Lives in public schema because Supabase restricts CREATE FUNCTION in auth schema
 -- ---------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION auth.user_role()
+CREATE OR REPLACE FUNCTION public.user_role()
 RETURNS TEXT AS $$
   SELECT (auth.jwt() -> 'app_metadata' ->> 'role')
 $$ LANGUAGE sql STABLE SECURITY DEFINER;
@@ -33,8 +34,8 @@ CREATE POLICY admin_all_allowed_emails
   ON allowed_emails
   FOR ALL
   TO authenticated
-  USING (auth.user_role() = 'admin')
-  WITH CHECK (auth.user_role() = 'admin');
+  USING (public.user_role() = 'admin')
+  WITH CHECK (public.user_role() = 'admin');
 
 -- Any authenticated user can check whether their email is on the list
 -- (needed during the OAuth callback to decide allow vs request-access)
@@ -75,14 +76,14 @@ CREATE POLICY admin_select_access_requests
   ON access_requests
   FOR SELECT
   TO authenticated
-  USING (auth.user_role() = 'admin');
+  USING (public.user_role() = 'admin');
 
 CREATE POLICY admin_update_access_requests
   ON access_requests
   FOR UPDATE
   TO authenticated
-  USING (auth.user_role() = 'admin')
-  WITH CHECK (auth.user_role() = 'admin');
+  USING (public.user_role() = 'admin')
+  WITH CHECK (public.user_role() = 'admin');
 
 
 -- ---------------------------------------------------------------------------
@@ -123,7 +124,7 @@ CREATE POLICY coordinator_select_region_profiles
   FOR SELECT
   TO authenticated
   USING (
-    auth.user_role() = 'coordinator'
+    public.user_role() = 'coordinator'
     AND region = (SELECT region FROM profiles WHERE id = auth.uid())
   );
 
@@ -132,15 +133,15 @@ CREATE POLICY national_admin_select_all_profiles
   ON profiles
   FOR SELECT
   TO authenticated
-  USING (auth.user_role() IN ('national', 'admin'));
+  USING (public.user_role() IN ('national', 'admin'));
 
 -- Admin can update any profile (for role promotions)
 CREATE POLICY admin_update_all_profiles
   ON profiles
   FOR UPDATE
   TO authenticated
-  USING (auth.user_role() = 'admin')
-  WITH CHECK (auth.user_role() = 'admin');
+  USING (public.user_role() = 'admin')
+  WITH CHECK (public.user_role() = 'admin');
 
 -- Allow profile creation on first login (insert own row)
 CREATE POLICY authenticated_insert_own_profile
@@ -169,7 +170,7 @@ CREATE TRIGGER profiles_set_updated_at
 -- ---------------------------------------------------------------------------
 -- sync_profile_role trigger
 -- When profiles.role changes, write the new role into auth.users.app_metadata
--- so that auth.user_role() (which reads the JWT's app_metadata) stays in sync.
+-- so that public.user_role() (which reads the JWT's app_metadata) stays in sync.
 -- Uses a SECURITY DEFINER function to call auth admin APIs.
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION sync_profile_role_to_app_metadata()
@@ -178,15 +179,11 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  -- Update app_metadata.role via the Supabase admin helper
-  -- auth.admin_update_user_by_id is available in Supabase's pg extension
-  PERFORM auth.admin_update_user_by_id(
-    NEW.id,
-    jsonb_build_object(
-      'app_metadata',
-      jsonb_build_object('role', NEW.role)
-    )
-  );
+  -- Update raw_app_meta_data directly on auth.users
+  -- This is the standard Supabase pattern for server-side role sync
+  UPDATE auth.users
+  SET raw_app_meta_data = COALESCE(raw_app_meta_data, '{}'::jsonb) || jsonb_build_object('role', NEW.role)
+  WHERE id = NEW.id;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -254,7 +251,7 @@ CREATE POLICY coordinator_select_region_campaigns
   FOR SELECT
   TO authenticated
   USING (
-    auth.user_role() = 'coordinator'
+    public.user_role() = 'coordinator'
     AND region = (SELECT region FROM profiles WHERE id = auth.uid())
   );
 
@@ -263,7 +260,7 @@ CREATE POLICY national_admin_select_all_campaigns
   ON campaigns
   FOR SELECT
   TO authenticated
-  USING (auth.user_role() IN ('national', 'admin'));
+  USING (public.user_role() IN ('national', 'admin'));
 
 -- Shared campaigns: anyone with share_token can read (anon OK)
 -- Implemented via a separate function / RLS policy on share_token
@@ -318,7 +315,7 @@ CREATE POLICY coordinator_select_region_messages
   FOR SELECT
   TO authenticated
   USING (
-    auth.user_role() = 'coordinator'
+    public.user_role() = 'coordinator'
     AND EXISTS (
       SELECT 1 FROM campaigns
       JOIN profiles ON profiles.id = auth.uid()
@@ -332,7 +329,7 @@ CREATE POLICY national_admin_select_all_messages
   ON campaign_messages
   FOR SELECT
   TO authenticated
-  USING (auth.user_role() IN ('national', 'admin'));
+  USING (public.user_role() IN ('national', 'admin'));
 
 CREATE INDEX IF NOT EXISTS idx_campaign_messages_campaign_id ON campaign_messages (campaign_id);
 
@@ -380,7 +377,7 @@ CREATE POLICY national_admin_select_all_assets
   ON campaign_assets
   FOR SELECT
   TO authenticated
-  USING (auth.user_role() IN ('national', 'admin'));
+  USING (public.user_role() IN ('national', 'admin'));
 
 CREATE INDEX IF NOT EXISTS idx_campaign_assets_campaign_id ON campaign_assets (campaign_id);
 
@@ -430,7 +427,7 @@ CREATE POLICY national_admin_select_all_research
   ON campaign_research
   FOR SELECT
   TO authenticated
-  USING (auth.user_role() IN ('national', 'admin'));
+  USING (public.user_role() IN ('national', 'admin'));
 
 CREATE INDEX IF NOT EXISTS idx_campaign_research_campaign_id ON campaign_research (campaign_id);
 
@@ -466,8 +463,8 @@ CREATE POLICY admin_all_prompts
   ON prompts
   FOR ALL
   TO authenticated
-  USING (auth.user_role() = 'admin')
-  WITH CHECK (auth.user_role() = 'admin');
+  USING (public.user_role() = 'admin')
+  WITH CHECK (public.user_role() = 'admin');
 
 -- Any authenticated user can read active prompts (needed by AI route handlers)
 CREATE POLICY authenticated_select_active_prompts
@@ -506,7 +503,7 @@ CREATE POLICY admin_select_all_ai_executions
   ON ai_executions
   FOR SELECT
   TO authenticated
-  USING (auth.user_role() = 'admin');
+  USING (public.user_role() = 'admin');
 
 -- Users can read their own executions (via campaign ownership)
 CREATE POLICY campaign_owner_select_ai_executions
@@ -527,7 +524,7 @@ CREATE POLICY service_role_insert_ai_executions
   ON ai_executions
   FOR INSERT
   TO authenticated
-  WITH CHECK (auth.user_role() = 'admin');
+  WITH CHECK (public.user_role() = 'admin');
 
 CREATE INDEX IF NOT EXISTS idx_ai_executions_campaign_id ON ai_executions (campaign_id);
 CREATE INDEX IF NOT EXISTS idx_ai_executions_prompt_key ON ai_executions (prompt_key);
