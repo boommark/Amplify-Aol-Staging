@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Removed basePath and assetPrefix for clean deployment
-  trailingSlash: true,
+  // trailingSlash removed — incompatible with App Router route groups on Vercel
   eslint: {
     ignoreDuringBuilds: true,
   },

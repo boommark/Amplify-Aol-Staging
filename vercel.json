@@ -1,3 +1,8 @@
 {
-  "fluid": true
+  "framework": "nextjs",
+  "functions": {
+    "app/**/*.ts": {
+      "maxDuration": 300
+    }
+  }
 }
