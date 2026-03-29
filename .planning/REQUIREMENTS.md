@@ -87,7 +87,7 @@
 - [ ] **INFRA-01**: All AI prompts stored and versioned in Supabase prompts table
 - [ ] **INFRA-02**: Multi-model routing: task-based model selection (Gemini for volume, Claude for premium, OpenAI for images)
 - [x] **INFRA-03**: Supabase schema with RLS policies for all four roles
-- [ ] **INFRA-04**: AWS S3 presigned URL upload pattern for all generated assets
+- [x] **INFRA-04**: AWS S3 presigned URL upload pattern for all generated assets
 - [x] **INFRA-05**: Vercel Fluid Compute with maxDuration 300s for long-running AI pipelines
 - [ ] **INFRA-06**: Staging deployment at staging.amplifyaol.com with separate environment config
 - [ ] **INFRA-07**: Error handling and loading states throughout all AI operations
@@ -145,7 +145,7 @@
 | AUTH-06 | Phase 1 | Pending |
 | INFRA-01 | Phase 1 | Pending |
 | INFRA-03 | Phase 1 | Complete |
-| INFRA-04 | Phase 1 | Pending |
+| INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
 | INFRA-06 | Phase 1 | Pending |
 | CHAT-01 | Phase 2 | Pending |

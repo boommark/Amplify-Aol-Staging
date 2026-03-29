@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-foundation-01-PLAN.md
-last_updated: "2026-03-29T22:06:21.494Z"
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-03-29T22:09:49.640Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
@@ -48,6 +48,7 @@ Plan: 1 of 6
 *Updated after each plan completion*
 | Phase 01-foundation P00 | 2 | 2 tasks | 8 files |
 | Phase 01-foundation P01 | 5 | 2 tasks | 9 files |
+| Phase 01-foundation P03 | 2 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Use @supabase/ssr 0.9.x (not deprecated @supabase/auth-helpers-nextjs) for all three client contexts
 - [Phase 01-foundation]: All RLS policies use auth.user_role() reading app_metadata — user_metadata is intentionally excluded to prevent privilege escalation
 - [Phase 01-foundation]: sync_profile_role trigger syncs profiles.role to auth.users.app_metadata via auth.admin_update_user_by_id() to keep JWT claims current
+- [Phase 01-foundation]: S3 key prefixed with user.id (not user.email) — IDs are stable; emails can change
+- [Phase 01-foundation]: Default bucket name 'amplifyaol' hardcoded as fallback; AWS_S3_BUCKET env var takes precedence via ?? operator
 
 ### Pending Todos
 
@@ -78,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T22:06:21.491Z
-Stopped at: Completed 01-foundation-01-PLAN.md
+Last session: 2026-03-29T22:09:49.638Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None
