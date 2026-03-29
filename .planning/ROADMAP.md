@@ -30,9 +30,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Unauthenticated users attempting to access any page are redirected to the login screen
   4. All AI prompts are stored and retrievable from Supabase; a new prompt version can be created without a code deploy
   5. Staging deployment at staging.amplifyaol.com is live with environment-specific config and separate credentials
-**Plans:** 5 plans
+**Plans:** 6 plans
 
 Plans:
+- [ ] 01-00-PLAN.md — Wave 0: vitest setup, Supabase mock helpers, test stubs for all requirements
 - [ ] 01-01-PLAN.md — Supabase clients, full database schema with RLS, Vercel Fluid Compute config
 - [ ] 01-02-PLAN.md — Google OAuth login, callback with allowlist gating, middleware, onboarding flow
 - [ ] 01-03-PLAN.md — S3 presigned URL utility and authenticated API route
@@ -94,7 +95,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/5 | Planning complete | - |
+| 1. Foundation | 0/6 | Planning complete | - |
 | 2. Chat Core | 0/TBD | Not started | - |
 | 3. Content Pipeline | 0/TBD | Not started | - |
 | 4. Creative Studio and Campaign | 0/TBD | Not started | - |

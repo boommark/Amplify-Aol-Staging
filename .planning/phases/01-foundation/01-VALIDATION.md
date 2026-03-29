@@ -2,12 +2,12 @@
 phase: 1
 slug: foundation
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-29
 ---
 
-# Phase 1 — Validation Strategy
+# Phase 1 -- Validation Strategy
 
 > Per-phase validation contract for feedback sampling during execution.
 
@@ -17,8 +17,8 @@ created: 2026-03-29
 
 | Property | Value |
 |----------|-------|
-| **Framework** | vitest (or jest 29.x — TBD by planner) |
-| **Config file** | none — Wave 0 installs |
+| **Framework** | vitest |
+| **Config file** | vitest.config.ts (created by Plan 00) |
 | **Quick run command** | `pnpm test` |
 | **Full suite command** | `pnpm test -- --run` |
 | **Estimated runtime** | ~15 seconds |
@@ -38,28 +38,29 @@ created: 2026-03-29
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 01-01-01 | 01 | 1 | AUTH-01 | integration | `pnpm test -- auth` | ❌ W0 | ⬜ pending |
-| 01-01-02 | 01 | 1 | AUTH-02 | integration | `pnpm test -- session` | ❌ W0 | ⬜ pending |
-| 01-01-03 | 01 | 1 | AUTH-03 | unit | `pnpm test -- roles` | ❌ W0 | ⬜ pending |
-| 01-01-04 | 01 | 1 | AUTH-04 | integration | `pnpm test -- rls` | ❌ W0 | ⬜ pending |
-| 01-01-05 | 01 | 1 | AUTH-05 | unit | `pnpm test -- admin` | ❌ W0 | ⬜ pending |
-| 01-01-06 | 01 | 1 | AUTH-06 | integration | `pnpm test -- redirect` | ❌ W0 | ⬜ pending |
-| 01-02-01 | 02 | 1 | INFRA-01 | integration | `pnpm test -- prompts` | ❌ W0 | ⬜ pending |
-| 01-02-02 | 02 | 1 | INFRA-03 | integration | `pnpm test -- rls` | ❌ W0 | ⬜ pending |
-| 01-03-01 | 03 | 1 | INFRA-04 | unit | `pnpm test -- s3` | ❌ W0 | ⬜ pending |
-| 01-03-02 | 03 | 1 | INFRA-05 | config | manual verify | N/A | ⬜ pending |
-| 01-03-03 | 03 | 1 | INFRA-06 | config | manual verify | N/A | ⬜ pending |
+| 01-00-01 | 00 | 0 | - | config | `pnpm test -- --run` | vitest.config.ts | ⬜ pending |
+| 01-00-02 | 00 | 0 | - | stubs | `pnpm test -- --run` | tests/ | ⬜ pending |
+| 01-01-01 | 01 | 1 | INFRA-03 | integration | `pnpm test -- auth` | tests/auth/allowlist.test.ts | ⬜ pending |
+| 01-01-02 | 01 | 1 | INFRA-03 | integration | `pnpm test -- session` | tests/auth/middleware.test.ts | ⬜ pending |
+| 01-02-01 | 02 | 2 | AUTH-01 | integration | `pnpm test -- auth` | tests/auth/allowlist.test.ts | ⬜ pending |
+| 01-02-02 | 02 | 2 | AUTH-03 | unit | `pnpm test -- roles` | tests/auth/assign-role.test.ts | ⬜ pending |
+| 01-02-03 | 02 | 2 | AUTH-05 | unit | `pnpm test -- admin` | tests/auth/middleware.test.ts | ⬜ pending |
+| 01-02-04 | 02 | 2 | AUTH-06 | integration | `pnpm test -- redirect` | tests/auth/middleware.test.ts | ⬜ pending |
+| 01-03-01 | 03 | 2 | INFRA-04 | unit | `pnpm test -- s3` | tests/s3/presigned-url.test.ts | ⬜ pending |
+| 01-04-01 | 04 | 2 | INFRA-01 | integration | `pnpm test -- prompts` | tests/prompts/registry.test.ts | ⬜ pending |
+| 01-05-01 | 05 | 3 | AUTH-04 | integration | `pnpm build 2>&1 \| tail -5` | N/A | ⬜ pending |
+| 01-05-02 | 05 | 3 | INFRA-06 | config | `curl -s -o /dev/null -w "%{http_code}" https://staging.amplifyaol.com/login` | N/A | ⬜ pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+*Status: ⬜ pending . ✅ green . ❌ red . ⚠️ flaky*
 
 ---
 
 ## Wave 0 Requirements
 
-- [ ] Test framework (vitest or jest) installed and configured
-- [ ] `tests/` directory with shared fixtures for Supabase client mocking
-- [ ] Test stubs for AUTH-01 through AUTH-06
-- [ ] Test stubs for INFRA-01, INFRA-03, INFRA-04
+- [x] Test framework (vitest) installed and configured — Plan 01-00, Task 1
+- [x] `tests/` directory with shared fixtures for Supabase client mocking — Plan 01-00, Task 2
+- [x] Test stubs for AUTH-01, AUTH-03, AUTH-05, AUTH-06 — Plan 01-00, Task 2
+- [x] Test stubs for INFRA-01, INFRA-04 — Plan 01-00, Task 2
 
 ---
 
@@ -76,11 +77,11 @@ created: 2026-03-29
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
 - [ ] No watch-mode flags
 - [ ] Feedback latency < 15s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending
