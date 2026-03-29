@@ -1,0 +1,64 @@
+# Project State
+
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-03-29)
+
+**Core value:** A teacher with zero marketing experience can describe their workshop and receive a complete marketing kit through a simple conversation.
+**Current focus:** Phase 1 — Foundation
+
+## Current Position
+
+Phase: 1 of 5 (Foundation)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-03-29 — Roadmap created, all 52 v1 requirements mapped to 5 phases
+
+Progress: [░░░░░░░░░░] 0%
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 0
+- Average duration: —
+- Total execution time: 0 hours
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+**Recent Trend:**
+- Last 5 plans: —
+- Trend: —
+
+*Updated after each plan completion*
+
+## Accumulated Context
+
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- [Pre-build]: Canva Connect REST API only — NOT Canva MCP (MCP is for AI desktop clients, not production backends)
+- [Pre-build]: Use `@supabase/ssr` not `@supabase/auth-helpers-nextjs` (deprecated at v0.15.0)
+- [Pre-build]: Roles must go in `app_metadata` not `user_metadata` — user_metadata is user-writable and enables privilege escalation
+- [Pre-build]: Vercel Fluid Compute + maxDuration 300s required on all AI routes — validate in Phase 1 before any content pipeline
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+- **Canva Enterprise gate**: Ad Creative Studio (Phase 4) is blocked until Canva Enterprise access for the Autofill API is confirmed. Confirm this during Phase 1. If blocked, Sharp-based image composition is the fallback — design the fallback before Phase 4 planning begins.
+- **Ask Gurudev API surface**: Request/response schema, rate limits, and auth mechanism are undocumented in research. Requires a quick integration spike during Phase 3 planning.
+- **Perplexity parallel query limits**: The 7-query parallel research pipeline is unvalidated against Perplexity Sonar Pro concurrent query limits. Validate before Phase 3 planning.
+
+## Session Continuity
+
+Last session: 2026-03-29
+Stopped at: Roadmap and STATE initialized. Ready to run /gsd:plan-phase 1.
+Resume file: None

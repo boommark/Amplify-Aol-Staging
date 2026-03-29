@@ -143,6 +143,11 @@
 | AUTH-04 | Phase 1 | Pending |
 | AUTH-05 | Phase 1 | Pending |
 | AUTH-06 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Pending |
+| INFRA-04 | Phase 1 | Pending |
+| INFRA-05 | Phase 1 | Pending |
+| INFRA-06 | Phase 1 | Pending |
 | CHAT-01 | Phase 2 | Pending |
 | CHAT-02 | Phase 2 | Pending |
 | CHAT-03 | Phase 2 | Pending |
@@ -154,12 +159,7 @@
 | CHAT-09 | Phase 2 | Pending |
 | CHAT-10 | Phase 2 | Pending |
 | CHAT-11 | Phase 2 | Pending |
-| INFRA-01 | Phase 1 | Pending |
 | INFRA-02 | Phase 2 | Pending |
-| INFRA-03 | Phase 1 | Pending |
-| INFRA-04 | Phase 1 | Pending |
-| INFRA-05 | Phase 1 | Pending |
-| INFRA-06 | Phase 1 | Pending |
 | INFRA-07 | Phase 2 | Pending |
 | RSRCH-01 | Phase 3 | Pending |
 | RSRCH-02 | Phase 3 | Pending |
@@ -199,10 +199,10 @@
 | ADMIN-07 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 52 total
-- Mapped to phases: 52
+- v1 requirements: 60 total
+- Mapped to phases: 60
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-29*
-*Last updated: 2026-03-29 after initial definition*
+*Last updated: 2026-03-29 after roadmap creation (corrected count: 60 requirements, not 52)*
