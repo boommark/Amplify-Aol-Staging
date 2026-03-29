@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server"
 
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || "AIRTABLE_KEY_REDACTED"
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || "appKWaroUUwxM6m2f"
-const STOCK_IMAGES_TABLE_ID = "tbl9RUnx5r4lK6NYd"
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY!
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID!
+const STOCK_IMAGES_TABLE_ID = process.env.AIRTABLE_STOCK_IMAGES_TABLE_ID!
+const STOCK_IMAGES_VIEW_ID = process.env.AIRTABLE_STOCK_IMAGES_VIEW_ID!
 
 export async function GET() {
   try {
     console.log("Fetching stock images from Airtable")
 
     // Construct the URL to fetch records from the stock images table
-    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${STOCK_IMAGES_TABLE_ID}?view=viwfdQzdt7ZK8NpRe`
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${STOCK_IMAGES_TABLE_ID}?view=${STOCK_IMAGES_VIEW_ID}`
 
     const response = await fetch(url, {
       headers: {

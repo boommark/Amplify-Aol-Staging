@@ -2,9 +2,9 @@ import { NextResponse } from "next/server"
 import Airtable from "airtable"
 
 // Configure Airtable
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || "AIRTABLE_KEY_REDACTED"
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || "appKWaroUUwxM6m2f"
-const AIRTABLE_TABLE_ID = "tblOHUmg1WabyGsZl"
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY!
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID!
+const AIRTABLE_TABLE_ID = process.env.AIRTABLE_AD_CAMPAIGNS_TABLE_ID!
 
 Airtable.configure({
   apiKey: AIRTABLE_API_KEY,

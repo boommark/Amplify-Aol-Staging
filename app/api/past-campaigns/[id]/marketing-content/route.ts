@@ -3,12 +3,10 @@ import Airtable from "airtable"
 
 // Configure Airtable
 Airtable.configure({
-  apiKey:
-    process.env.AIRTABLE_API_KEY ||
-    "AIRTABLE_KEY_REDACTED",
+  apiKey: process.env.AIRTABLE_API_KEY!,
 })
 
-const baseId = process.env.AIRTABLE_BASE_ID || "appKWaroUUwxM6m2f"
+const baseId = process.env.AIRTABLE_BASE_ID!
 const tableName = "Introductory Workshops" // This is the table that contains the marketing content
 
 const base = Airtable.base(baseId)

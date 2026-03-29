@@ -1,12 +1,12 @@
 // Airtable API service
 import type { Campaign } from "@/types/campaign"
 
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || "AIRTABLE_KEY_REDACTED"
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || "appKWaroUUwxM6m2f"
-const AIRTABLE_TABLE_ID = "tblH4qf3BzdLOaxzM"
-const AIRTABLE_VIEW_ID = "viwOEPNQ2vCDe7e87"
-const AIRTABLE_AD_CAMPAIGNS_TABLE_ID = "tblOHUmg1WabyGsZl"
-const AIRTABLE_AD_CAMPAIGNS_VIEW_ID = "viwCjO3E5XHRz3okZ"
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY!
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID!
+const AIRTABLE_TABLE_ID = process.env.AIRTABLE_WORKSHOPS_TABLE_ID!
+const AIRTABLE_VIEW_ID = process.env.AIRTABLE_WORKSHOPS_VIEW_ID!
+const AIRTABLE_AD_CAMPAIGNS_TABLE_ID = process.env.AIRTABLE_AD_CAMPAIGNS_TABLE_ID!
+const AIRTABLE_AD_CAMPAIGNS_VIEW_ID = process.env.AIRTABLE_AD_CAMPAIGNS_VIEW_ID!
 
 export async function fetchPastCampaigns(): Promise<Campaign[]> {
   try {
