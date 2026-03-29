@@ -84,7 +84,7 @@
 
 ### Infrastructure (INFRA)
 
-- [ ] **INFRA-01**: All AI prompts stored and versioned in Supabase prompts table
+- [x] **INFRA-01**: All AI prompts stored and versioned in Supabase prompts table
 - [ ] **INFRA-02**: Multi-model routing: task-based model selection (Gemini for volume, Claude for premium, OpenAI for images)
 - [x] **INFRA-03**: Supabase schema with RLS policies for all four roles
 - [x] **INFRA-04**: AWS S3 presigned URL upload pattern for all generated assets
@@ -143,7 +143,7 @@
 | AUTH-04 | Phase 1 | Pending |
 | AUTH-05 | Phase 1 | Pending |
 | AUTH-06 | Phase 1 | Pending |
-| INFRA-01 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
