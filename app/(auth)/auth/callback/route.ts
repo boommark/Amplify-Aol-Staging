@@ -19,8 +19,10 @@ export async function GET(request: NextRequest) {
     // Exchange authorization code for session
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
     if (exchangeError) {
-      console.error('Code exchange error:', exchangeError.message)
-      return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+      console.error('Code exchange error:', exchangeError.message, exchangeError)
+      // Return error details in URL for debugging (remove in production)
+      const msg = encodeURIComponent(exchangeError.message)
+      return NextResponse.redirect(`${origin}/login?error=auth_failed&detail=${msg}`)
     }
 
     // Get the authenticated user
@@ -69,8 +71,9 @@ export async function GET(request: NextRequest) {
 
     // Returning user: go to chat
     return NextResponse.redirect(`${origin}/chat`)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Callback error:', error)
-    return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+    const msg = encodeURIComponent(error?.message || 'unknown')
+    return NextResponse.redirect(`${origin}/login?error=auth_failed&detail=${msg}`)
   }
 }
