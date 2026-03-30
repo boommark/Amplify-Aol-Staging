@@ -2,6 +2,8 @@
 
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Pencil, RotateCcw } from 'lucide-react'
+import { format } from 'date-fns'
 import type { UIMessage } from 'ai'
 import { TextPart } from './parts/TextPart'
 import { ResearchCard } from './parts/ResearchCard'
@@ -14,8 +16,13 @@ import type { AmplifyDataParts } from '@/types/message'
 
 interface MessageBubbleProps {
   message: UIMessage
+  messageIndex?: number
+  isLastUserMessage?: boolean
+  isLastAssistantMessage?: boolean
+  isStreaming?: boolean
   onChipSelect?: (prompt: string) => void
   onRegenerate?: () => void
+  onEdit?: (content: string) => void
 }
 
 function renderDataPart(
@@ -93,7 +100,16 @@ function renderPart(
   return null
 }
 
-export function MessageBubble({ message, onChipSelect, onRegenerate: _onRegenerate }: MessageBubbleProps) {
+export function MessageBubble({
+  message,
+  messageIndex: _messageIndex,
+  isLastUserMessage,
+  isLastAssistantMessage,
+  isStreaming,
+  onChipSelect,
+  onRegenerate,
+  onEdit,
+}: MessageBubbleProps) {
   const isUser = message.role === 'user'
 
   // Extract plain text from parts (for user messages or fallback)
@@ -102,15 +118,38 @@ export function MessageBubble({ message, onChipSelect, onRegenerate: _onRegenera
     .map((p) => (p as { type: 'text'; text: string }).text)
     .join('')
 
+  const createdAt = (message as UIMessage & { createdAt?: Date }).createdAt
+
   if (isUser) {
     return (
-      <div className="flex justify-end">
-        <div
-          className="bg-[#3D8BE8] text-white rounded-[12px_12px_4px_12px] px-4 py-3 max-w-[75%] text-[15px]"
-          style={{ fontFamily: 'Work Sans, sans-serif' }}
-        >
-          {plainText}
+      <div className="flex flex-col items-end">
+        <div className="flex justify-end">
+          <div
+            className="relative bg-[#3D8BE8] text-white rounded-[12px_12px_4px_12px] px-4 py-3 max-w-[75%] text-[15px] shadow-sm"
+            style={{ fontFamily: 'Work Sans, sans-serif', lineHeight: '1.5' }}
+          >
+            {/* Edit button — only on last user message */}
+            {isLastUserMessage && onEdit && (
+              <button
+                onClick={() => onEdit(plainText)}
+                className="absolute top-2 right-2 text-white/60 hover:text-white transition-colors duration-200 cursor-pointer"
+                aria-label="Edit message"
+                title="Edit and resubmit"
+              >
+                <Pencil size={14} />
+              </button>
+            )}
+            <span className={isLastUserMessage && onEdit ? 'pr-5' : ''}>{plainText}</span>
+          </div>
         </div>
+        {createdAt && (
+          <span
+            className="text-xs text-slate-400 mt-1 mr-1"
+            style={{ fontFamily: 'Work Sans, sans-serif' }}
+          >
+            {format(createdAt, 'h:mm a')}
+          </span>
+        )}
       </div>
     )
   }
@@ -119,15 +158,22 @@ export function MessageBubble({ message, onChipSelect, onRegenerate: _onRegenera
   const hasParts = message.parts && message.parts.length > 0
 
   return (
-    <div className="flex justify-start">
+    <div className="flex flex-col items-start">
       <div
-        className="bg-[#F3F4F6] text-slate-900 rounded-[12px_12px_12px_4px] px-4 py-3 max-w-[85%] text-[15px] space-y-3"
-        style={{ fontFamily: 'Work Sans, sans-serif' }}
+        className="bg-[#F3F4F6] text-slate-900 rounded-[12px_12px_12px_4px] px-4 py-3 max-w-[85%] text-[15px] space-y-3 shadow-sm"
+        style={{ fontFamily: 'Work Sans, sans-serif', lineHeight: '1.5' }}
       >
         {hasParts ? (
           message.parts.map((part, index) =>
             renderPart(part, index, onChipSelect)
           )
+        ) : isStreaming ? (
+          // Typing indicator during streaming
+          <div className="flex gap-1 items-center py-1">
+            <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:0ms]" />
+            <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:150ms]" />
+            <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:300ms]" />
+          </div>
         ) : (
           // Fallback: render plain text via react-markdown when parts is empty
           <div className="prose prose-sm prose-slate max-w-none">
@@ -151,6 +197,27 @@ export function MessageBubble({ message, onChipSelect, onRegenerate: _onRegenera
           </div>
         )}
       </div>
+      {createdAt && (
+        <span
+          className="text-xs text-slate-400 mt-1 ml-1"
+          style={{ fontFamily: 'Work Sans, sans-serif' }}
+        >
+          {format(createdAt, 'h:mm a')}
+        </span>
+      )}
+      {/* Regenerate button — only below the last AI message when not streaming */}
+      {isLastAssistantMessage && !isStreaming && onRegenerate && (
+        <button
+          onClick={onRegenerate}
+          className="flex items-center gap-1.5 mt-1 ml-1 text-xs text-slate-400 hover:text-[#3D8BE8] transition-colors duration-200 cursor-pointer"
+          aria-label="Regenerate response"
+          title="Regenerate response"
+          style={{ fontFamily: 'Work Sans, sans-serif' }}
+        >
+          <RotateCcw size={13} />
+          <span>Regenerate</span>
+        </button>
+      )}
     </div>
   )
 }
