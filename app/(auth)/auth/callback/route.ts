@@ -9,33 +9,30 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
 
-  if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=auth_failed`)
-  }
-
   try {
     const supabase = await createClient()
 
-    // Exchange authorization code for session
-    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
-    if (exchangeError) {
-      console.error('Code exchange error:', exchangeError.message, exchangeError)
-      // Return error details in URL for debugging (remove in production)
-      const msg = encodeURIComponent(exchangeError.message)
-      return NextResponse.redirect(`${origin}/login?error=auth_failed&detail=${msg}`)
+    // PKCE flow: exchange code for session
+    if (code) {
+      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+      if (exchangeError) {
+        console.error('Code exchange error:', exchangeError.message)
+        const msg = encodeURIComponent(exchangeError.message)
+        return NextResponse.redirect(`${origin}/login?error=auth_failed&detail=${msg}`)
+      }
     }
 
-    // Get the authenticated user
+    // Check if user is authenticated (works for both PKCE and implicit flows)
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user || !user.email) {
-      console.error('Get user error:', userError?.message)
-      return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+      // No code AND no session — nothing to work with
+      console.error('Get user error:', userError?.message || 'no user')
+      return NextResponse.redirect(`${origin}/login?error=auth_failed&detail=no_session`)
     }
 
     // Check email allowlist
     const isAllowed = await checkEmailAllowlist(user.email)
     if (!isAllowed) {
-      // Sign out the user and redirect to request access form
       await supabase.auth.signOut()
       const email = encodeURIComponent(user.email)
       return NextResponse.redirect(`${origin}/login?access=denied&email=${email}`)
@@ -51,7 +48,6 @@ export async function GET(request: NextRequest) {
     if (!profile) {
       // First login: assign default role and create profile
       await assignDefaultRole(user.id)
-
       const { error: insertError } = await supabase
         .from('profiles')
         .insert({
@@ -59,13 +55,14 @@ export async function GET(request: NextRequest) {
           email: user.email.toLowerCase(),
           role: 'teacher',
         })
-
       if (insertError) {
         console.error('Profile insert error:', insertError.message)
-        return NextResponse.redirect(`${origin}/login?error=auth_failed`)
       }
+      return NextResponse.redirect(`${origin}/onboarding`)
+    }
 
-      // First login: go to onboarding
+    // Check if onboarding is complete
+    if (!profile.display_name || !profile.region) {
       return NextResponse.redirect(`${origin}/onboarding`)
     }
 
