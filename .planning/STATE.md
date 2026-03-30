@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 2 planned — 6 plans in 4 waves, verification passed after 1 revision
-last_updated: "2026-03-30T23:22:29.287Z"
+stopped_at: Completed 02-chat-core-00-PLAN.md
+last_updated: "2026-03-30T23:30:01.130Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 6
+  completed_plans: 8
 ---
 
 # Project State
@@ -19,11 +19,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** A teacher with zero marketing experience can describe their workshop and receive a complete marketing kit through a simple conversation.
-**Current focus:** Phase 01 — foundation
+**Current focus:** Phase 02 — chat-core
 
 ## Current Position
 
-Phase: 01 (foundation) — EXECUTING
+Phase: 02 (chat-core) — EXECUTING
 Plan: 1 of 6
 
 ## Performance Metrics
@@ -51,6 +51,8 @@ Plan: 1 of 6
 | Phase 01-foundation P03 | 2 | 1 tasks | 2 files |
 | Phase 01-foundation P04 | 18 | 1 tasks | 2 files |
 | Phase 01-foundation P02 | 14 | 2 tasks | 13 files |
+| Phase 02-chat-core P02 | 5 | 2 tasks | 8 files |
+| Phase 02-chat-core P00 | 8 | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -75,6 +77,12 @@ Recent decisions affecting current work:
 - [Phase 01-foundation P02]: x-pathname header set by middleware enables Server Component layouts to detect current path without client JS — prevents infinite redirect loop on onboarding page
 - [Phase 01-foundation P02]: Onboarding page placed inside (app) route group — exempted from profile-completeness redirect via x-pathname header check
 - [Phase 01-foundation P02]: Admin route guard reads app_metadata.role from JWT via updateSession return value — not user_metadata, preventing privilege escalation
+- [Phase 02-chat-core]: Use UIMessage from ai SDK v6 (not Message) for deserializeCampaignMessages — Message removed in v6
+- [Phase 02-chat-core]: CampaignList exposes refresh via onRefreshRef prop — parent can trigger reload after creation without lifting state
+- [Phase 02-chat-core]: Shared sidebarContent JSX variable in layout.tsx renders identically in desktop aside and mobile Sheet
+- [Phase 02-chat-core]: AI SDK v6 UIMessage parts pattern chosen for typed discriminated union rich content streaming
+- [Phase 02-chat-core]: TASK_MODEL_MAP uses rule-based routing (task key -> provider+model) not AI-driven selection
+- [Phase 02-chat-core]: Zod upgraded 3.24.1 -> 3.25.76 to satisfy AI SDK v6 peer dependency requirement
 
 ### Pending Todos
 
@@ -88,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T23:22:29.284Z
-Stopped at: Phase 2 planned — 6 plans in 4 waves, verification passed after 1 revision
-Resume file: .planning/phases/02-chat-core/02-00-PLAN.md
+Last session: 2026-03-30T23:30:01.127Z
+Stopped at: Completed 02-chat-core-00-PLAN.md
+Resume file: None

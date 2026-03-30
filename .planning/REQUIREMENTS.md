@@ -23,8 +23,8 @@
 - [ ] **CHAT-05**: User can retry/regenerate the last AI response
 - [ ] **CHAT-06**: Contextual suggested prompts appear after AI responses (e.g., "Generate ad creatives", "Translate to Hindi")
 - [ ] **CHAT-07**: Tone selector available (formal, casual, inspiring) that influences AI output style
-- [ ] **CHAT-08**: Chat history persists per user with named campaign threads
-- [ ] **CHAT-09**: User can browse past conversation threads and resume any thread
+- [x] **CHAT-08**: Chat history persists per user with named campaign threads
+- [x] **CHAT-09**: User can browse past conversation threads and resume any thread
 - [ ] **CHAT-10**: Chat UI is responsive and usable at 375px mobile viewport
 - [ ] **CHAT-11**: User can modify any generated content by typing follow-up instructions
 
@@ -85,7 +85,7 @@
 ### Infrastructure (INFRA)
 
 - [x] **INFRA-01**: All AI prompts stored and versioned in Supabase prompts table
-- [ ] **INFRA-02**: Multi-model routing: task-based model selection (Gemini for volume, Claude for premium, OpenAI for images)
+- [x] **INFRA-02**: Multi-model routing: task-based model selection (Gemini for volume, Claude for premium, OpenAI for images)
 - [x] **INFRA-03**: Supabase schema with RLS policies for all four roles
 - [x] **INFRA-04**: AWS S3 presigned URL upload pattern for all generated assets
 - [x] **INFRA-05**: Vercel Fluid Compute with maxDuration 300s for long-running AI pipelines
@@ -155,11 +155,11 @@
 | CHAT-05 | Phase 2 | Pending |
 | CHAT-06 | Phase 2 | Pending |
 | CHAT-07 | Phase 2 | Pending |
-| CHAT-08 | Phase 2 | Pending |
-| CHAT-09 | Phase 2 | Pending |
+| CHAT-08 | Phase 2 | Complete |
+| CHAT-09 | Phase 2 | Complete |
 | CHAT-10 | Phase 2 | Pending |
 | CHAT-11 | Phase 2 | Pending |
-| INFRA-02 | Phase 2 | Pending |
+| INFRA-02 | Phase 2 | Complete |
 | INFRA-07 | Phase 2 | Pending |
 | RSRCH-01 | Phase 3 | Pending |
 | RSRCH-02 | Phase 3 | Pending |
