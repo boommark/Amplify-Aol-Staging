@@ -5,3 +5,6 @@ export const adminClient = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
+
+// Alias for routes that need a fresh-sounding name
+export const createAdminClient = () => adminClient
