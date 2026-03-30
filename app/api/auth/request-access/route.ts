@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const maxDuration = 300
 
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // Insert access request — route is public (non-allowlisted users are already signed out)
     const { error } = await supabase
