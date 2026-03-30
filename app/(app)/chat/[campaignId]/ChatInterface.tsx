@@ -20,6 +20,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
   const {
     messages,
     status,
+    error,
     sendMessage,
     stop,
     regenerate,
@@ -35,6 +36,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
   })
 
   const isStreaming = status === 'streaming' || status === 'submitted'
+  const isLoading = status === 'submitted'
 
   const handleSend = useCallback(
     (text: string) => {
@@ -66,8 +68,11 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
           <MessageList
             messages={messages}
             isStreaming={isStreaming}
+            isLoading={isLoading}
+            error={error}
             onEdit={handleEdit}
             onRegenerate={regenerate}
+            onRetry={regenerate}
             onChipSelect={handleChipSelect}
           />
         }
@@ -80,6 +85,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
             onStop={stop}
             editingContent={editingContent}
             onEditingContentClear={() => setEditingContent('')}
+            error={error}
           />
         }
       />

@@ -36,6 +36,10 @@ export function useAmplifyChat({
   const chat = useChat({
     transport,
     messages: initialMessages,
+    onError: (error) => {
+      console.error('Chat error:', error)
+      // The error state is automatically managed by useChat
+    },
     onFinish: async ({ messages: allMessages }) => {
       // Auto-generate title after first AI response (only once, only for new campaigns)
       if (!titleGenerated.current && initialMessages.length === 0) {

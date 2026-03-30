@@ -50,20 +50,28 @@ export async function POST(req: Request) {
 
   // Delegate ALL AI logic to the orchestrator — model lookup, prompt loading,
   // rendering, and sliding window are handled inside runStreamingTask.
-  const result = await runStreamingTask('chat.orchestrate', {
-    messages,
-    variables: { tone },
-    onFinish: async ({ text }) => {
-      // Persist assistant message ONLY after stream completes (not mid-stream)
-      await supabase.from('campaign_messages').insert({
-        campaign_id: campaignId,
-        role: 'assistant',
-        content: text,
-        parts: [{ type: 'text', text }],
-        model: 'claude-sonnet-4-5',
-      })
-    },
-  })
+  try {
+    const result = await runStreamingTask('chat.orchestrate', {
+      messages,
+      variables: { tone },
+      onFinish: async ({ text }) => {
+        // Persist assistant message ONLY after stream completes (not mid-stream)
+        await supabase.from('campaign_messages').insert({
+          campaign_id: campaignId,
+          role: 'assistant',
+          content: text,
+          parts: [{ type: 'text', text }],
+          model: 'claude-sonnet-4-5',
+        })
+      },
+    })
 
-  return result.toUIMessageStreamResponse()
+    return result.toUIMessageStreamResponse()
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(
+      JSON.stringify({ error: 'Failed to generate response. Please try again.' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } },
+    )
+  }
 }

@@ -20,6 +20,7 @@ interface ChatInputProps {
   onStop: () => void
   editingContent?: string
   onEditingContentClear?: () => void
+  error?: Error | undefined
 }
 
 export function ChatInput({
@@ -30,6 +31,7 @@ export function ChatInput({
   onStop,
   editingContent,
   onEditingContentClear,
+  error,
 }: ChatInputProps) {
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -62,6 +64,10 @@ export function ChatInput({
     setInput((prev) => (prev ? `${prev} ${transcript}` : transcript))
   })
 
+  // Send is disabled when streaming or when there's an error and user hasn't typed anything new
+  const hasNewInput = input.trim().length > 0
+  const isSendDisabled = !hasNewInput || isStreaming
+
   const handleSubmit = useCallback(() => {
     const trimmed = input.trim()
     if (!trimmed || isStreaming) return
@@ -83,6 +89,11 @@ export function ChatInput({
 
   return (
     <div className="bg-white border-t border-slate-200 px-4 py-3">
+      {error && (
+        <p className="text-red-500 text-xs mb-2" style={{ fontFamily: 'Work Sans, sans-serif' }}>
+          Message failed to send. Type a new message to retry.
+        </p>
+      )}
       <div className="flex items-end gap-2">
         {/* Tone selector */}
         <Select value={tone} onValueChange={(v) => onToneChange(v as Tone)}>
@@ -168,7 +179,7 @@ export function ChatInput({
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={!input.trim()}
+              disabled={isSendDisabled}
               className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-[#3D8BE8] hover:bg-[#2d7bd8] disabled:opacity-40 disabled:cursor-not-allowed rounded-full w-9 h-9 transition-colors duration-200 cursor-pointer"
               aria-label="Send message"
               title="Send message"
