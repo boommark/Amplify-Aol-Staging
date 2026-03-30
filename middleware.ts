@@ -1,3 +1,4 @@
+import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
 
 export const config = {
@@ -6,7 +7,7 @@ export const config = {
   ],
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isAuthRoute =
@@ -14,23 +15,53 @@ export function middleware(request: NextRequest) {
   const isLoginPage = pathname === '/login'
   const isApiRoute = pathname.startsWith('/api/')
 
-  // Check for Supabase auth cookies
-  const hasAuthCookie = request.cookies
-    .getAll()
-    .some(
-      (cookie) =>
-        cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token')
-    )
+  // Create Supabase client for session refresh
+  let supabaseResponse = NextResponse.next({ request })
 
-  if (hasAuthCookie && isLoginPage) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // Refresh session — keeps auth cookies alive
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // Authenticated user visiting login → redirect to chat
+  if (user && isLoginPage) {
     return NextResponse.redirect(new URL('/chat', request.url))
   }
 
-  if (!hasAuthCookie && !isLoginPage && !isAuthRoute && !isApiRoute) {
+  // Unauthenticated user on protected route → redirect to login
+  if (!user && !isLoginPage && !isAuthRoute && !isApiRoute) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  const response = NextResponse.next()
-  response.headers.set('x-pathname', pathname)
-  return response
+  // Admin route guard (AUTH-05)
+  if (user && pathname.startsWith('/admin')) {
+    const role = user.app_metadata?.role
+    if (role !== 'admin') {
+      return NextResponse.redirect(new URL('/chat', request.url))
+    }
+  }
+
+  supabaseResponse.headers.set('x-pathname', pathname)
+  return supabaseResponse
 }
