@@ -50,7 +50,7 @@ Plans:
   3. Chat renders research cards, copy blocks, image previews, and ad previews inline in the conversation (not in separate panels)
   4. User can return to a named past campaign thread and resume the conversation where it left off
   5. Chat is fully usable at 375px mobile viewport — no horizontal scroll, readable text, tappable inputs
-**Plans:** 2/6 plans executed
+**Plans:** 3/6 plans executed
 
 Plans:
 - [ ] 02-00-PLAN.md — AI SDK install, type contracts, TASK_MODEL_MAP, test stubs
@@ -104,7 +104,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/6 | In Progress|  |
-| 2. Chat Core | 2/6 | In Progress|  |
+| 2. Chat Core | 3/6 | In Progress|  |
 | 3. Content Pipeline | 0/TBD | Not started | - |
 | 4. Creative Studio and Campaign | 0/TBD | Not started | - |
 | 5. Admin Prompt Lab | 0/TBD | Not started | - |

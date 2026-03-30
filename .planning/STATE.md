@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-chat-core-00-PLAN.md
-last_updated: "2026-03-30T23:30:01.130Z"
+stopped_at: Completed 02-chat-core-02-01-PLAN.md
+last_updated: "2026-03-30T23:31:44.091Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 8
+  completed_plans: 9
 ---
 
 # Project State
@@ -53,6 +53,7 @@ Plan: 1 of 6
 | Phase 01-foundation P02 | 14 | 2 tasks | 13 files |
 | Phase 02-chat-core P02 | 5 | 2 tasks | 8 files |
 | Phase 02-chat-core P00 | 8 | 2 tasks | 11 files |
+| Phase 02-chat-core P01 | 5 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,9 @@ Recent decisions affecting current work:
 - [Phase 02-chat-core]: AI SDK v6 UIMessage parts pattern chosen for typed discriminated union rich content streaming
 - [Phase 02-chat-core]: TASK_MODEL_MAP uses rule-based routing (task key -> provider+model) not AI-driven selection
 - [Phase 02-chat-core]: Zod upgraded 3.24.1 -> 3.25.76 to satisfy AI SDK v6 peer dependency requirement
+- [Phase 02-chat-core]: Use toUIMessageStreamResponse() instead of toDataStreamResponse() in AI SDK v6 — toDataStreamResponse does not exist
+- [Phase 02-chat-core]: Prompt registry queries prompts table by single 'key' column (not separate domain+task columns) matching actual Supabase schema
+- [Phase 02-chat-core]: Use ModelMessage type from AI SDK v6 (CoreMessage was renamed in v6)
 
 ### Pending Todos
 
@@ -96,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T23:30:01.127Z
-Stopped at: Completed 02-chat-core-00-PLAN.md
+Last session: 2026-03-30T23:31:44.089Z
+Stopped at: Completed 02-chat-core-02-01-PLAN.md
 Resume file: None

@@ -16,17 +16,17 @@
 
 ### Chat Interface (CHAT)
 
-- [ ] **CHAT-01**: User interacts through a conversational chat UI (no forms for primary workflow)
-- [ ] **CHAT-02**: AI responses stream token-by-token in real time (not batch)
+- [x] **CHAT-01**: User interacts through a conversational chat UI (no forms for primary workflow)
+- [x] **CHAT-02**: AI responses stream token-by-token in real time (not batch)
 - [ ] **CHAT-03**: Chat renders rich inline content: research cards, copy blocks, image previews, ad previews
 - [ ] **CHAT-04**: User can stop a streaming response mid-generation
 - [ ] **CHAT-05**: User can retry/regenerate the last AI response
 - [ ] **CHAT-06**: Contextual suggested prompts appear after AI responses (e.g., "Generate ad creatives", "Translate to Hindi")
-- [ ] **CHAT-07**: Tone selector available (formal, casual, inspiring) that influences AI output style
+- [x] **CHAT-07**: Tone selector available (formal, casual, inspiring) that influences AI output style
 - [x] **CHAT-08**: Chat history persists per user with named campaign threads
 - [x] **CHAT-09**: User can browse past conversation threads and resume any thread
 - [ ] **CHAT-10**: Chat UI is responsive and usable at 375px mobile viewport
-- [ ] **CHAT-11**: User can modify any generated content by typing follow-up instructions
+- [x] **CHAT-11**: User can modify any generated content by typing follow-up instructions
 
 ### Research Pipeline (RSRCH)
 
@@ -148,17 +148,17 @@
 | INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
 | INFRA-06 | Phase 1 | Pending |
-| CHAT-01 | Phase 2 | Pending |
-| CHAT-02 | Phase 2 | Pending |
+| CHAT-01 | Phase 2 | Complete |
+| CHAT-02 | Phase 2 | Complete |
 | CHAT-03 | Phase 2 | Pending |
 | CHAT-04 | Phase 2 | Pending |
 | CHAT-05 | Phase 2 | Pending |
 | CHAT-06 | Phase 2 | Pending |
-| CHAT-07 | Phase 2 | Pending |
+| CHAT-07 | Phase 2 | Complete |
 | CHAT-08 | Phase 2 | Complete |
 | CHAT-09 | Phase 2 | Complete |
 | CHAT-10 | Phase 2 | Pending |
-| CHAT-11 | Phase 2 | Pending |
+| CHAT-11 | Phase 2 | Complete |
 | INFRA-02 | Phase 2 | Complete |
 | INFRA-07 | Phase 2 | Pending |
 | RSRCH-01 | Phase 3 | Pending |
