@@ -39,14 +39,12 @@ created: 2026-03-30
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
 | 02-W0-01 | W0 | 0 | - | config | `pnpm test -- --run` | vitest.config.ts | ⬜ pending |
-| 02-01-01 | 01 | 1 | INFRA-02 | unit | `pnpm test -- orchestrator` | tests/ai/orchestrator.test.ts | ⬜ pending |
-| 02-01-02 | 01 | 1 | CHAT-01 | integration | `pnpm test -- chat` | tests/chat/api.test.ts | ⬜ pending |
-| 02-02-01 | 02 | 2 | CHAT-02 | unit | `pnpm test -- streaming` | tests/chat/streaming.test.ts | ⬜ pending |
-| 02-02-02 | 02 | 2 | CHAT-03 | unit | `pnpm test -- parts` | tests/chat/parts.test.ts | ⬜ pending |
-| 02-03-01 | 03 | 2 | CHAT-08 | integration | `pnpm test -- campaigns` | tests/campaigns/persistence.test.ts | ⬜ pending |
-| 02-03-02 | 03 | 2 | CHAT-09 | integration | `pnpm test -- campaigns` | tests/campaigns/resume.test.ts | ⬜ pending |
+| 02-00-01 | 00 | 0 | INFRA-02 | unit | `pnpm test -- models` | tests/ai/models.test.ts | ⬜ pending |
+| 02-01-01 | 01 | 1 | CHAT-02, CHAT-07 | unit | `pnpm test -- orchestrator` | tests/chat/orchestrator.test.ts | ⬜ pending |
+| 02-01-02 | 01 | 1 | CHAT-01, INFRA-07 | integration | `pnpm test -- api` | tests/chat/api.test.ts | ⬜ pending |
+| 02-02-01 | 02 | 1 | CHAT-08 | integration | `pnpm test -- persistence` | tests/chat/persistence.test.ts | ⬜ pending |
+| 02-02-02 | 02 | 1 | CHAT-09 | integration | `pnpm test -- queries` | tests/campaigns/queries.test.ts | ⬜ pending |
 | 02-04-01 | 04 | 3 | CHAT-10 | config | `pnpm build` | N/A | ⬜ pending |
-| 02-04-02 | 04 | 3 | INFRA-07 | unit | `pnpm test -- error` | tests/chat/error-handling.test.ts | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -69,6 +67,7 @@ created: 2026-03-30
 | Rich content renders inline | CHAT-03 | Visual verification | Send research/copy trigger, verify cards render in chat |
 | Mobile layout at 375px | CHAT-10 | Responsive visual check | Open DevTools, set 375px viewport, verify usability |
 | Voice dictation input | CHAT-01 | Requires microphone | Click mic button, speak, verify text appears |
+| Edit last message and resubmit | CHAT-01 | Requires browser interaction | Click pencil on last user message, edit, resubmit |
 
 ---
 
