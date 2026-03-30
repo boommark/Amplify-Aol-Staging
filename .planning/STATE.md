@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-chat-core-02-04-PLAN.md
-last_updated: "2026-03-30T23:40:19.456Z"
+stopped_at: Completed 02-chat-core-02-03-PLAN.md
+last_updated: "2026-03-30T23:43:07Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # Project State
@@ -55,6 +55,7 @@ Plan: 1 of 6
 | Phase 02-chat-core P00 | 8 | 2 tasks | 11 files |
 | Phase 02-chat-core P01 | 5 | 2 tasks | 5 files |
 | Phase 02-chat-core P04 | 15 | 2 tasks | 10 files |
+| Phase 02-chat-core P03 | 10 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,10 @@ Recent decisions affecting current work:
 - [Phase 02-chat-core]: Use ModelMessage type from AI SDK v6 (CoreMessage was renamed in v6)
 - [Phase 02-chat-core]: UIMessage in AI SDK v6 has no content field — text is extracted from parts array (type=text)
 - [Phase 02-chat-core]: ReactMarkdown v9+ removed className prop — wrap in div with prose classes instead
+- [Phase 02-chat-core P03]: useChat moved to @ai-sdk/react in v6 — import from @ai-sdk/react, not ai
+- [Phase 02-chat-core P03]: DefaultChatTransport with body as function — tone is dynamic, () => ({ campaignId, tone: toneRef.current }) picks up changes per-request
+- [Phase 02-chat-core P03]: ChatInput manages own textarea state — v6 removed input/handleInputChange/handleSubmit from useChat; sendMessage({ text }) is the v6 API
+- [Phase 02-chat-core P03]: Server component page + client ChatInterface pattern — page.tsx fetches data, ChatInterface.tsx handles hooks
 
 ### Pending Todos
 
@@ -103,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T23:40:19.453Z
-Stopped at: Completed 02-chat-core-02-04-PLAN.md
+Last session: 2026-03-30T23:43:07Z
+Stopped at: Completed 02-chat-core-02-03-PLAN.md
 Resume file: None
