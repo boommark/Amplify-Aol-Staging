@@ -50,7 +50,15 @@ Plans:
   3. Chat renders research cards, copy blocks, image previews, and ad previews inline in the conversation (not in separate panels)
   4. User can return to a named past campaign thread and resume the conversation where it left off
   5. Chat is fully usable at 375px mobile viewport — no horizontal scroll, readable text, tappable inputs
-**Plans**: TBD
+**Plans:** 6 plans
+
+Plans:
+- [ ] 02-00-PLAN.md — AI SDK install, type contracts, TASK_MODEL_MAP, test stubs
+- [ ] 02-01-PLAN.md — AI orchestrator, prompt registry, streaming /api/chat route
+- [ ] 02-02-PLAN.md — Campaign CRUD API, sidebar campaign list, type selector, [campaignId] route
+- [ ] 02-03-PLAN.md — Chat UI components: layout, message bubbles, input bar, streaming controls
+- [ ] 02-04-PLAN.md — Rich content parts: research cards, channel previews, image carousel, action chips
+- [ ] 02-05-PLAN.md — Error handling, loading states, test implementation, human verification
 
 ### Phase 3: Content Pipeline
 **Goal**: A teacher can describe their workshop, receive regionally-targeted research and Gurudev wisdom, and get ready-to-use multi-channel marketing copy — all in one conversation
@@ -96,7 +104,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/6 | In Progress|  |
-| 2. Chat Core | 0/TBD | Not started | - |
+| 2. Chat Core | 0/6 | Not started | - |
 | 3. Content Pipeline | 0/TBD | Not started | - |
 | 4. Creative Studio and Campaign | 0/TBD | Not started | - |
 | 5. Admin Prompt Lab | 0/TBD | Not started | - |
