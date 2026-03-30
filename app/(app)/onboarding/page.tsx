@@ -15,43 +15,26 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-const INDIAN_STATES = [
-  'Andhra Pradesh',
-  'Arunachal Pradesh',
-  'Assam',
-  'Bihar',
-  'Chhattisgarh',
-  'Delhi',
-  'Goa',
-  'Gujarat',
-  'Haryana',
-  'Himachal Pradesh',
-  'Jharkhand',
-  'Karnataka',
-  'Kerala',
-  'Madhya Pradesh',
-  'Maharashtra',
-  'Manipur',
-  'Meghalaya',
-  'Mizoram',
-  'Nagaland',
-  'Odisha',
-  'Punjab',
-  'Rajasthan',
-  'Sikkim',
-  'Tamil Nadu',
-  'Telangana',
-  'Tripura',
-  'Uttar Pradesh',
-  'Uttarakhand',
-  'West Bengal',
-  'International',
+const COUNTRIES = [
+  'India',
+  'United States',
+  'Canada',
+  'United Kingdom',
+  'Australia',
+  'Germany',
+  'Singapore',
+  'UAE',
+  'Nepal',
+  'Sri Lanka',
+  'Malaysia',
+  'Other',
 ]
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1)
   const [display_name, setDisplayName] = useState('')
-  const [region, setRegion] = useState('')
+  const [country, setCountry] = useState('')
+  const [cityState, setCityState] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -68,8 +51,8 @@ export default function OnboardingPage() {
 
   async function handleComplete(e: React.FormEvent) {
     e.preventDefault()
-    if (!region) {
-      setError('Please select your region')
+    if (!country) {
+      setError('Please select your country')
       return
     }
     setLoading(true)
@@ -82,6 +65,11 @@ export default function OnboardingPage() {
         router.push('/login')
         return
       }
+
+      // Build region string: "City/State, Country" or just "Country"
+      const region = cityState.trim()
+        ? `${cityState.trim()}, ${country}`
+        : country
 
       // Update profiles table with display_name and region
       const { error: updateError } = await supabase
@@ -166,25 +154,36 @@ export default function OnboardingPage() {
               <CardHeader>
                 <CardTitle className="text-xl">Your Region</CardTitle>
                 <CardDescription>
-                  Which region do you primarily run workshops in?
+                  Where do you primarily run workshops?
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleComplete} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="region">Select your region</Label>
-                    <Select value={region} onValueChange={setRegion}>
-                      <SelectTrigger id="region" className="focus:ring-[#3D8BE8]">
-                        <SelectValue placeholder="Choose a state or region" />
+                    <Label htmlFor="country">Country</Label>
+                    <Select value={country} onValueChange={setCountry}>
+                      <SelectTrigger id="country" className="focus:ring-[#3D8BE8]">
+                        <SelectValue placeholder="Select your country" />
                       </SelectTrigger>
                       <SelectContent>
-                        {INDIAN_STATES.map((state) => (
-                          <SelectItem key={state} value={state}>
-                            {state}
+                        {COUNTRIES.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cityState">City / State (optional)</Label>
+                    <Input
+                      id="cityState"
+                      type="text"
+                      value={cityState}
+                      onChange={(e) => setCityState(e.target.value)}
+                      placeholder="e.g. Seattle, WA"
+                      className="focus-visible:ring-[#3D8BE8]"
+                    />
                     <p className="text-xs text-gray-400">
                       This helps Amplify tailor content for your audience
                     </p>
@@ -194,7 +193,7 @@ export default function OnboardingPage() {
                     type="submit"
                     className="w-full text-white"
                     style={{ backgroundColor: '#3D8BE8' }}
-                    disabled={!region || loading}
+                    disabled={!country || loading}
                   >
                     {loading ? 'Saving...' : 'Get Started'}
                   </Button>
