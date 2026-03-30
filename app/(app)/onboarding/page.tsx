@@ -78,7 +78,8 @@ export default function OnboardingPage() {
         .eq('id', user.id)
 
       if (updateError) {
-        setError('Failed to save your preferences. Please try again.')
+        console.error('Profile update error:', updateError.message, updateError.code, updateError.details)
+        setError(`Failed to save: ${updateError.message}`)
         return
       }
 
