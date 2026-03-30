@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-chat-core-02-01-PLAN.md
-last_updated: "2026-03-30T23:31:44.091Z"
+stopped_at: Completed 02-chat-core-02-04-PLAN.md
+last_updated: "2026-03-30T23:40:19.456Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -54,6 +54,7 @@ Plan: 1 of 6
 | Phase 02-chat-core P02 | 5 | 2 tasks | 8 files |
 | Phase 02-chat-core P00 | 8 | 2 tasks | 11 files |
 | Phase 02-chat-core P01 | 5 | 2 tasks | 5 files |
+| Phase 02-chat-core P04 | 15 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 02-chat-core]: Use toUIMessageStreamResponse() instead of toDataStreamResponse() in AI SDK v6 — toDataStreamResponse does not exist
 - [Phase 02-chat-core]: Prompt registry queries prompts table by single 'key' column (not separate domain+task columns) matching actual Supabase schema
 - [Phase 02-chat-core]: Use ModelMessage type from AI SDK v6 (CoreMessage was renamed in v6)
+- [Phase 02-chat-core]: UIMessage in AI SDK v6 has no content field — text is extracted from parts array (type=text)
+- [Phase 02-chat-core]: ReactMarkdown v9+ removed className prop — wrap in div with prose classes instead
 
 ### Pending Todos
 
@@ -100,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T23:31:44.089Z
-Stopped at: Completed 02-chat-core-02-01-PLAN.md
+Last session: 2026-03-30T23:40:19.453Z
+Stopped at: Completed 02-chat-core-02-04-PLAN.md
 Resume file: None

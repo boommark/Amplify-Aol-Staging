@@ -18,10 +18,10 @@
 
 - [x] **CHAT-01**: User interacts through a conversational chat UI (no forms for primary workflow)
 - [x] **CHAT-02**: AI responses stream token-by-token in real time (not batch)
-- [ ] **CHAT-03**: Chat renders rich inline content: research cards, copy blocks, image previews, ad previews
+- [x] **CHAT-03**: Chat renders rich inline content: research cards, copy blocks, image previews, ad previews
 - [ ] **CHAT-04**: User can stop a streaming response mid-generation
 - [ ] **CHAT-05**: User can retry/regenerate the last AI response
-- [ ] **CHAT-06**: Contextual suggested prompts appear after AI responses (e.g., "Generate ad creatives", "Translate to Hindi")
+- [x] **CHAT-06**: Contextual suggested prompts appear after AI responses (e.g., "Generate ad creatives", "Translate to Hindi")
 - [x] **CHAT-07**: Tone selector available (formal, casual, inspiring) that influences AI output style
 - [x] **CHAT-08**: Chat history persists per user with named campaign threads
 - [x] **CHAT-09**: User can browse past conversation threads and resume any thread
@@ -150,10 +150,10 @@
 | INFRA-06 | Phase 1 | Pending |
 | CHAT-01 | Phase 2 | Complete |
 | CHAT-02 | Phase 2 | Complete |
-| CHAT-03 | Phase 2 | Pending |
+| CHAT-03 | Phase 2 | Complete |
 | CHAT-04 | Phase 2 | Pending |
 | CHAT-05 | Phase 2 | Pending |
-| CHAT-06 | Phase 2 | Pending |
+| CHAT-06 | Phase 2 | Complete |
 | CHAT-07 | Phase 2 | Complete |
 | CHAT-08 | Phase 2 | Complete |
 | CHAT-09 | Phase 2 | Complete |
