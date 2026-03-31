@@ -34,11 +34,17 @@ export async function POST(req: Request) {
   // Persist user message (the latest one) after campaign validation
   const lastUserMsg = messages[messages.length - 1]
   if (lastUserMsg?.role === 'user') {
+    // Extract text content — handle both UIMessage (parts[]) and plain (content) formats
+    const textContent = lastUserMsg.content
+      || lastUserMsg.parts?.filter((p: { type: string }) => p.type === 'text')
+          .map((p: { text: string }) => p.text).join('\n')
+      || ''
+
     await supabase.from('campaign_messages').insert({
       campaign_id: campaignId,
       role: 'user',
-      content: lastUserMsg.content,
-      parts: [{ type: 'text', text: lastUserMsg.content }],
+      content: textContent,
+      parts: [{ type: 'text', text: textContent }],
     })
   }
 

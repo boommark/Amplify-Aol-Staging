@@ -1,21 +1,38 @@
-import { streamText } from 'ai'
+import { streamText, type UIMessage } from 'ai'
 import type { ModelMessage } from 'ai'
 import { TASK_MODEL_MAP, type TaskKey } from '@/lib/ai/models'
 import { loadPrompt } from '@/lib/prompts/registry'
 import { renderPrompt } from '@/lib/prompts/renderer'
 
+/**
+ * Convert UIMessage[] (from useChat client) to ModelMessage[] (for streamText).
+ * UIMessage has parts[], ModelMessage needs content string.
+ */
+function toModelMessages(messages: UIMessage[] | ModelMessage[]): ModelMessage[] {
+  return messages.map((msg) => {
+    // If it already has a string content, it's likely already a ModelMessage
+    if (typeof (msg as ModelMessage).content === 'string') {
+      return msg as ModelMessage
+    }
+
+    // UIMessage: extract text from parts
+    const uiMsg = msg as UIMessage
+    const textContent = uiMsg.parts
+      ?.filter((p) => p.type === 'text')
+      .map((p) => (p as { type: 'text'; text: string }).text)
+      .join('\n') || ''
+
+    return {
+      role: uiMsg.role as 'user' | 'assistant' | 'system',
+      content: textContent,
+    }
+  })
+}
+
 interface RunStreamingTaskOptions {
-  messages: ModelMessage[]
+  messages: UIMessage[] | ModelMessage[]
   variables?: Record<string, string>
-  /**
-   * Maximum number of user+assistant message pairs to include in the context
-   * window. Older messages are dropped first (sliding window). Defaults to 10.
-   */
   maxTurns?: number
-  /**
-   * Called after the full stream completes with the assembled text.
-   * Use this to persist the assistant message to the database.
-   */
   onFinish?: (result: { text: string }) => Promise<void>
 }
 
@@ -40,9 +57,9 @@ export async function runStreamingTask(
   const prompt = await loadPrompt(taskKey)
   const system = renderPrompt(prompt.template, variables)
 
-  // 3. Apply sliding window — keep only the last maxTurns message pairs.
-  // A pair = 1 user + 1 assistant message, so we take the last maxTurns * 2 messages.
-  const windowedMessages = messages.slice(-(maxTurns * 2))
+  // 3. Convert UIMessage[] to ModelMessage[] and apply sliding window
+  const modelMessages = toModelMessages(messages)
+  const windowedMessages = modelMessages.slice(-(maxTurns * 2))
 
   // 4. Stream the response
   const result = streamText({
