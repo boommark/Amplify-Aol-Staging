@@ -21,8 +21,8 @@ created: 2026-04-01
 | Preset | default style, neutral base color, CSS variables enabled |
 | Component library | Radix UI (via shadcn) |
 | Icon library | Lucide React (confirmed in `components.json`) |
-| Font — Heading | Raleway, weight 600–700 |
-| Font — Body/UI | Work Sans, weight 400–500 |
+| Font — Heading | Raleway, weight 600 |
+| Font — Body/UI | Work Sans, weight 400 |
 | Font — Mono | JetBrains Mono, weight 400 |
 
 Source: `design-system/amplify-aol/MASTER.md`, `components.json`, `app/globals.css`
@@ -55,15 +55,12 @@ Source: `design-system/amplify-aol/MASTER.md`
 
 | Role | Font | Size | Weight | Line Height |
 |------|------|------|--------|-------------|
-| Body | Work Sans | 16px | 400 | 1.5 |
-| Label / UI | Work Sans | 14px | 500 | 1.4 |
+| Body (includes chat messages) | Work Sans | 16px | 400 | 1.5 |
+| Label / UI | Work Sans | 14px | 600 | 1.4 |
 | Caption / meta | Work Sans | 12px | 400 | 1.4 |
-| Heading | Raleway | 20px | 600 | 1.3 |
+| Heading (includes quote card text) | Raleway | 20px | 600 | 1.3 |
 
-Notes:
-- Chat messages use Work Sans 15px weight 400, line-height 1.5, max 65–75 characters per line.
-- Quote card typography uses Raleway for the quote text itself at 18px weight 600 (elegant, italic-optional) — this is a Phase 3 addition for Gurudev wisdom cards not covered by existing chat parts.
-- No hashtags, emojis, or exclamation marks in any generated copy — enforced at prompt level (CONT-07), reflected in preview frames.
+No other sizes or weights are permitted. Chat messages render at 16px body (not 15px). Quote card text renders at 20px heading weight (not 18px). Maximum line width for chat messages is 65–75 characters.
 
 Source: `design-system/amplify-aol/MASTER.md`, REQUIREMENTS.md CONT-07
 
@@ -117,10 +114,10 @@ Source: `design-system/amplify-aol/MASTER.md`, confirmed by component code inspe
 
 | Component | Purpose | Spec |
 |-----------|---------|------|
-| QuoteCard | Displays a single Gurudev quote with short/medium/long format selector and auto-generated background image | White card, Raleway 18px italic quote text, Work Sans 13px source meta below, image background with overlay gradient, Copy and Download buttons (Lucide `Copy`, `Download` icons, 14px, `slate-600` hover `#3D8BE8`), 16px padding, `rounded-2xl`, `border border-slate-200`, `shadow-sm` |
-| ChannelSelector | Toggle row of channel chips for pre-selecting channels before copy generation | Horizontal flex wrap of pill chips; default all selected (filled `#3D8BE8` bg + white text); deselected: white bg + `slate-200` border + `slate-700` text; "+ Custom" chip uses `slate-100` bg + dashed `slate-300` border; 8px gap; Work Sans 14px 500 |
+| QuoteCard | Displays a single Gurudev quote with short/medium/long format selector and auto-generated background image | White card, Raleway 20px weight 600 italic quote text, Work Sans 12px weight 400 source meta below, image background with overlay gradient, Copy button (`aria-label="Copy to clipboard"`, Lucide `Copy` icon, 14px, `slate-600` hover `#3D8BE8`) and Download button (`aria-label="Download quote card"`, Lucide `Download` icon, 14px, `slate-600` hover `#3D8BE8`), 16px padding, `rounded-2xl`, `border border-slate-200`, `shadow-sm` |
+| ChannelSelector | Toggle row of channel chips for pre-selecting channels before copy generation | Horizontal flex wrap of pill chips; default all selected (filled `#3D8BE8` bg + white text); deselected: white bg + `slate-200` border + `slate-700` text; "+ Custom" chip uses `slate-100` bg + dashed `slate-300` border; 8px gap; Work Sans 14px weight 600 |
 | FlyerFrame | New frame for CopyBlock flyer channel | Clean white card `max-w-[350px]`, thick top bar in `#3D8BE8` with "FLYER" label, body text area in center-aligned layout, 16px padding, `rounded-xl border border-slate-200 shadow-sm` |
-| StageProgressBar | Indicates pipeline stage (Research → Wisdom → Copy) above the chat content area | Three labeled steps connected by line; active step: `#3D8BE8` filled circle + bold label; completed: `#22C55E` check circle; pending: `slate-200` circle + `slate-400` label; Work Sans 12px 500; 24px top padding below header |
+| StageProgressBar | Indicates pipeline stage (Research → Wisdom → Copy) above the chat content area | Three labeled steps connected by line; active step: `#3D8BE8` filled circle + bold label; completed: `#22C55E` check circle; pending: `slate-200` circle + `slate-400` label; Work Sans 12px weight 400; 24px top padding below header |
 | ResearchReusePrompt | Inline chat card offering to reuse prior campaign research | White card `border border-slate-200 rounded-xl p-4`, `#3D8BE8` info icon (Lucide `Info`), one-line message "Found research from [campaign name]", two action chips: "Use existing" and "Run fresh" using standard ActionChips styling |
 
 ---
@@ -154,7 +151,7 @@ Source: `design-system/amplify-aol/MASTER.md`, confirmed by component code inspe
 - Appears as a ChannelSelector component after wisdom stage action chip "Continue to copy" is clicked.
 - Default state: Email, WhatsApp, Instagram, Facebook, Flyer — all selected.
 - "+ Custom" opens a small shadcn `Input` inline (not a modal) prompting "Channel name (e.g. TikTok, LinkedIn)". Pressing Enter adds a new chip in selected state.
-- "Generate Copy" CTA button: peach `#E47D6C` background, white text, `rounded-full`, Work Sans 15px 500, 48px height, full-width on mobile, 200px fixed width on desktop. Disabled state: `opacity-50 cursor-not-allowed`.
+- "Generate Copy" CTA button: peach `#E47D6C` background, white text, `rounded-full`, Work Sans 16px weight 600, 48px height, full-width on mobile, 200px fixed width on desktop. Disabled state: `opacity-50 cursor-not-allowed`.
 
 ### Copy Generation
 
@@ -162,7 +159,7 @@ Source: `design-system/amplify-aol/MASTER.md`, confirmed by component code inspe
 - Order: Email first, then WhatsApp, Instagram, Facebook, Flyer, custom channels.
 - Each block enters with `animate-slideLeft` 0.5s ease-out.
 - Each CopyBlock gets a "Refine" action chip below it: "Make shorter", "More formal", "Translate". Clicking sends a targeted refinement — only that channel's block re-renders (skeleton → updated content).
-- Copy-to-clipboard button (Lucide `Copy` icon) on each block: `slate-400` default, `#3D8BE8` on hover, shows Lucide `Check` icon for 1500ms on success.
+- Copy-to-clipboard button (`aria-label="Copy to clipboard"`, Lucide `Copy` icon) on each block: `slate-400` default, `#3D8BE8` on hover, shows Lucide `Check` icon for 1500ms on success.
 
 ### Research Reuse
 
@@ -196,7 +193,7 @@ Source: `design-system/amplify-aol/MASTER.md`, confirmed by component code inspe
 | Copy loading message | "Writing [channel] copy..." |
 | Research error | "Research for [dimension] could not be completed. You can continue without it or try again." + "Try again" chip |
 | Wisdom API timeout | "Wisdom unavailable — continuing with your research context." + "Try again" chip |
-| Copy generation error | "Could not generate [channel] copy. Check your connection and try again." + "Retry" chip |
+| Copy generation error | "Could not generate [channel] copy. Check your connection and try again." + "Try again" chip |
 | Competitor scan action chip | "Scan competitor content for inspiration" |
 | Research reuse offer | "I found research from your [campaign name] campaign. Want to use it or run fresh?" |
 | Custom channel placeholder | "Channel name (e.g. TikTok, LinkedIn)" |
@@ -207,7 +204,7 @@ Source: `design-system/amplify-aol/MASTER.md`, confirmed by component code inspe
 | Crisis flag message | "I noticed this topic may touch on emotional crisis. Here are some support resources:" [followed by helpline info] |
 
 Destructive actions in Phase 3:
-- **Stop stream during copy generation**: Red stop button (Lucide `Square` icon, `bg-red-500`, `rounded-full`, 36px) replaces send button during active streaming. No confirmation dialog — immediate stop on click. This matches the existing Phase 2 pattern (non-destructive enough to be single-click).
+- **Stop stream during copy generation**: Red stop button (`aria-label="Stop generating"`, Lucide `Square` icon, `bg-red-500`, `rounded-full`, 36px) replaces send button during active streaming. No confirmation dialog — immediate stop on click. This matches the existing Phase 2 pattern (non-destructive enough to be single-click).
 - No irreversible data deletion in Phase 3 scope.
 
 ---
@@ -241,6 +238,7 @@ No horizontal scroll permitted at any breakpoint (per anti-patterns in design sy
 - ChannelSelector chips: `role="checkbox"` + `aria-checked` per chip.
 - QuoteCard format tabs: `role="tablist"` + `role="tab"` + `aria-selected`.
 - StageProgressBar: `role="list"` + `aria-current="step"` for active step.
+- Icon-only buttons require explicit `aria-label` values: copy-to-clipboard `aria-label="Copy to clipboard"`, download `aria-label="Download quote card"`, stop-stream `aria-label="Stop generating"`.
 - Focus ring: visible 2px ring using `ring-2 ring-[#3D8BE8]` on all interactive elements.
 - `prefers-reduced-motion`: disable `animate-slideUp`, `animate-slideLeft`, `accordion-down/up` animations. Show content immediately without transition.
 - Minimum contrast 4.5:1 for all text/background combinations.
