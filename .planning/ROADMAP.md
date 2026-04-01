@@ -70,7 +70,7 @@ Plans:
   3. Email, WhatsApp, Instagram, and Facebook copy are generated from the same research context, each rendering in a channel-appropriate preview format
   4. User types a refinement instruction ("make the email headline shorter") and the specific content piece updates without regenerating the full pipeline
   5. Generated copy uses Art of Living brand voice — calm, Grade 8 reading level, no hashtags, emojis, or exclamation marks
-**Plans:** 2/5 plans executed
+**Plans:** 4/5 plans executed
 
 Plans:
 - [ ] 03-01-PLAN.md — Type contracts, TASK_MODEL_MAP expansion, DB utilities, and new UI components (QuoteCard, ChannelSelector, FlyerFrame, StageProgressBar, ResearchReusePrompt)
@@ -112,6 +112,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/6 | In Progress|  |
 | 2. Chat Core | 5/6 | In Progress|  |
-| 3. Content Pipeline | 2/5 | In Progress|  |
+| 3. Content Pipeline | 4/5 | In Progress|  |
 | 4. Creative Studio and Campaign | 0/TBD | Not started | - |
 | 5. Admin Prompt Lab | 0/TBD | Not started | - |

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-04-01T21:09:57.221Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-04-01T21:15:58.052Z"
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 17
-  completed_plans: 14
+  completed_plans: 16
 ---
 
 # Project State
@@ -58,6 +58,7 @@ Plan: 2 of 5
 | Phase 02-chat-core P03 | 10 | 2 tasks | 10 files |
 | Phase 03-content-pipeline P01 | 4 | 2 tasks | 10 files |
 | Phase 03-content-pipeline P02 | 20 | 2 tasks | 5 files |
+| Phase 03-content-pipeline P04 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,8 @@ Recent decisions affecting current work:
 - [Phase 03-content-pipeline]: Use generateText (not runStreamingTask/streamText) for Perplexity pipeline queries — structured extraction requires complete response, not streaming chat
 - [Phase 03-content-pipeline]: Promise.allSettled for parallel research pipeline — individual dimension failures don't abort the full 7-query pipeline
 - [Phase 03-content-pipeline]: Research API returns JSON (not streaming) — downstream chat route (Plan 05) will stream results as UIMessage data parts
+- [Phase 03-content-pipeline]: English-only copy generation — translation/language support deferred per CONT-08 decision
+- [Phase 03-content-pipeline]: BRAND_VOICE_PREAMBLE prepended to all copy prompts — enforces Art of Living brand voice at system level
 
 ### Pending Todos
 
@@ -115,6 +118,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-01T21:09:57.218Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-04-01T21:15:46.658Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
