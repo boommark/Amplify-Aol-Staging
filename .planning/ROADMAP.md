@@ -70,7 +70,14 @@ Plans:
   3. Email, WhatsApp, Instagram, and Facebook copy are generated from the same research context, each rendering in a channel-appropriate preview format
   4. User types a refinement instruction ("make the email headline shorter") and the specific content piece updates without regenerating the full pipeline
   5. Generated copy uses Art of Living brand voice — calm, Grade 8 reading level, no hashtags, emojis, or exclamation marks
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Type contracts, TASK_MODEL_MAP expansion, DB utilities, and new UI components (QuoteCard, ChannelSelector, FlyerFrame, StageProgressBar, ResearchReusePrompt)
+- [ ] 03-02-PLAN.md — Research pipeline: parallel Perplexity queries, persistence, competitor scanning
+- [ ] 03-03-PLAN.md — Wisdom pipeline: Ask Gurudev API integration, quote curation, quote image generation
+- [ ] 03-04-PLAN.md — Multi-channel copy generation with brand voice, flyer prompt, and new prompt seeds
+- [ ] 03-05-PLAN.md — Pipeline orchestration: chat route integration, stage transitions, client hook, human verification
 
 ### Phase 4: Creative Studio and Campaign
 **Goal**: Teachers leave with print-ready ad creatives in hand and can find, download, and share any past campaign
@@ -105,6 +112,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/6 | In Progress|  |
 | 2. Chat Core | 5/6 | In Progress|  |
-| 3. Content Pipeline | 0/TBD | Not started | - |
+| 3. Content Pipeline | 0/5 | Planned | - |
 | 4. Creative Studio and Campaign | 0/TBD | Not started | - |
 | 5. Admin Prompt Lab | 0/TBD | Not started | - |
