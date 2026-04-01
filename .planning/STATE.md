@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-04-01T21:15:58.052Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-04-01T21:16:12.366Z"
 progress:
   total_phases: 5
   completed_phases: 2
@@ -59,6 +59,7 @@ Plan: 2 of 5
 | Phase 03-content-pipeline P01 | 4 | 2 tasks | 10 files |
 | Phase 03-content-pipeline P02 | 20 | 2 tasks | 5 files |
 | Phase 03-content-pipeline P04 | 5 | 2 tasks | 4 files |
+| Phase 03-content-pipeline P03 | 4 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,9 @@ Recent decisions affecting current work:
 - [Phase 03-content-pipeline]: Research API returns JSON (not streaming) — downstream chat route (Plan 05) will stream results as UIMessage data parts
 - [Phase 03-content-pipeline]: English-only copy generation — translation/language support deferred per CONT-08 decision
 - [Phase 03-content-pipeline]: BRAND_VOICE_PREAMBLE prepended to all copy prompts — enforces Art of Living brand voice at system level
+- [Phase 03-content-pipeline]: Use generateImage (stable) not experimental_generateImage in ai v6 for Imagen 3 quote backgrounds
+- [Phase 03-content-pipeline]: Wisdom API route uses NextResponse.json — Response.json not in project TypeScript DOM lib config
+- [Phase 03-content-pipeline]: Wisdom timedOut flag returned (not error) when all Ask Gurudev queries time out — allows chat to gracefully continue
 
 ### Pending Todos
 
@@ -118,6 +122,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-01T21:15:46.658Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-04-01T21:16:12.363Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None

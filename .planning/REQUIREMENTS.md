@@ -38,10 +38,10 @@
 
 ### Gurudev Wisdom (WSDM)
 
-- [ ] **WSDM-01**: System queries Ask Gurudev API with contextually relevant questions derived from research
+- [x] **WSDM-01**: System queries Ask Gurudev API with contextually relevant questions derived from research
 - [x] **WSDM-02**: Curated quotes displayed in short/medium/long formats as inline cards
-- [ ] **WSDM-03**: Quote images generated automatically using AI image models
-- [ ] **WSDM-04**: User can request different topics or refine quote selection via chat
+- [x] **WSDM-03**: Quote images generated automatically using AI image models
+- [x] **WSDM-04**: User can request different topics or refine quote selection via chat
 
 ### Content Generation (CONT)
 
@@ -166,10 +166,10 @@
 | RSRCH-03 | Phase 3 | Complete |
 | RSRCH-04 | Phase 3 | Complete |
 | RSRCH-05 | Phase 3 | Complete |
-| WSDM-01 | Phase 3 | Pending |
+| WSDM-01 | Phase 3 | Complete |
 | WSDM-02 | Phase 3 | Complete |
-| WSDM-03 | Phase 3 | Pending |
-| WSDM-04 | Phase 3 | Pending |
+| WSDM-03 | Phase 3 | Complete |
+| WSDM-04 | Phase 3 | Complete |
 | CONT-01 | Phase 3 | Complete |
 | CONT-02 | Phase 3 | Complete |
 | CONT-03 | Phase 3 | Complete |
