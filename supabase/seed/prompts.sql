@@ -1585,6 +1585,64 @@ Mind calmness increases resistance to illness.
 )
 ON CONFLICT (key) WHERE is_active = true DO NOTHING;
 
+-- Flyer copy prompt for physical posting
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'copy.flyer',
+  1,
+  '#Task
+Create a compelling flyer copy for Art of Living {{eventType}} in {{region}} on {{eventDate}}.
+
+#Research
+{{research}}
+
+#Wisdom
+{{wisdom}}
+
+#Instructions
+1. The flyer will be printed and posted physically — keep text short and punchy
+2. Structure: Headline (max 8 words), Sub-headline (max 15 words), 3-4 bullet benefits (max 8 words each), Call to Action (max 6 words), Contact/Registration info placeholder
+3. Use specific insights from the research to make benefits region-relevant
+4. Include one Gurudev quote (verbatim, short format) if provided in wisdom context
+5. Tone: calm, dignified, inviting — imagine this on a community board
+6. NEVER use: hashtags, emojis, exclamation marks, jargon, buzzwords
+7. Reading level: Grade 6 (even simpler than other channels — passerby must grasp in 5 seconds)',
+  'google/gemini-2.0-flash',
+  'Flyer copy for physical posting — short, punchy, designed for community boards',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
+-- Custom channel prompt (adapts based on channel name)
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'copy.custom',
+  1,
+  '#Task
+Create marketing content for the {{channel}} platform to promote Art of Living {{eventType}} in {{region}} on {{eventDate}}.
+
+#Research
+{{research}}
+
+#Wisdom
+{{wisdom}}
+
+#Instructions
+1. Adapt content to {{channel}} platform conventions (post length, tone, format)
+2. Use specific insights from the research to make content region-relevant
+3. Include one relevant Gurudev quote (verbatim) if provided in wisdom context
+4. Tone: calm, dignified, inviting — authentic Art of Living voice
+5. NEVER use: hashtags, emojis, exclamation marks, jargon, buzzwords
+6. Reading level: Grade 8
+7. Follow best practices for {{channel}}: appropriate length, engagement patterns, and content format',
+  'google/gemini-2.0-flash',
+  'Adaptive copy generator for custom channels (TikTok, SMS, LinkedIn, etc.)',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
 -- =============================================================================
 -- Verification: confirm all v1 seed prompts are present
 -- =============================================================================
