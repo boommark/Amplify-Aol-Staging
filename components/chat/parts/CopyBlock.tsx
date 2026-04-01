@@ -3,6 +3,7 @@
 import { Heart, MessageCircle, Send, ThumbsUp } from 'lucide-react'
 import type { AmplifyDataParts } from '@/types/message'
 import { SkeletonPart } from './SkeletonPart'
+import { FlyerFrame } from './FlyerFrame'
 
 interface CopyBlockProps {
   data: AmplifyDataParts['copy-block']
@@ -151,10 +152,17 @@ export function CopyBlock({ data }: CopyBlockProps) {
       return <EmailFrame content={data.content} />
     case 'facebook':
       return <FacebookFrame content={data.content} />
+    case 'flyer':
+      return <FlyerFrame content={data.content} />
     default:
       return (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 max-w-[400px]">
-          <p className="text-sm text-slate-900 whitespace-pre-wrap">{data.content}</p>
+        <div className="rounded-xl border border-slate-200 bg-white max-w-[350px] shadow-sm overflow-hidden">
+          <div className="bg-slate-100 text-slate-700 text-xs font-semibold uppercase tracking-wider px-4 py-2">
+            {data.channel}
+          </div>
+          <div className="p-4">
+            <p className="text-sm text-slate-900 whitespace-pre-wrap break-words">{data.content}</p>
+          </div>
         </div>
       )
   }
