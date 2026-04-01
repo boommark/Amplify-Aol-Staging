@@ -79,8 +79,6 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
         inputBar={
           <ChatInput
             isStreaming={isStreaming}
-            tone={tone}
-            onToneChange={(t: Tone) => setTone(t)}
             onSend={handleSend}
             onStop={stop}
             editingContent={editingContent}

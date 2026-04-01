@@ -2,20 +2,10 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { SendHorizontal, Square, Mic, Paperclip } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import type { Tone } from '@/hooks/useAmplifyChat'
 import { useVoiceDictation } from '@/hooks/useVoiceDictation'
 
 interface ChatInputProps {
   isStreaming: boolean
-  tone: Tone
-  onToneChange: (tone: Tone) => void
   onSend: (text: string) => void
   onStop: () => void
   editingContent?: string
@@ -25,8 +15,6 @@ interface ChatInputProps {
 
 export function ChatInput({
   isStreaming,
-  tone,
-  onToneChange,
   onSend,
   onStop,
   editingContent,
@@ -95,27 +83,6 @@ export function ChatInput({
         </p>
       )}
       <div className="flex items-end gap-2">
-        {/* Tone selector */}
-        <Select value={tone} onValueChange={(v) => onToneChange(v as Tone)}>
-          <SelectTrigger
-            className="w-[108px] h-9 text-xs border-slate-200 text-slate-600 cursor-pointer shrink-0 transition-colors duration-200"
-            aria-label="Select tone"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="formal" className="cursor-pointer text-xs">
-              Formal
-            </SelectItem>
-            <SelectItem value="casual" className="cursor-pointer text-xs">
-              Casual
-            </SelectItem>
-            <SelectItem value="inspiring" className="cursor-pointer text-xs">
-              Inspiring
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
         {/* Textarea */}
         <textarea
           ref={textareaRef}
