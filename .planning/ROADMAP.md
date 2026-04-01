@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Foundation** - Google auth, four-role RLS, full database schema, prompt registry, and infra configuration
 - [ ] **Phase 2: Chat Core** - Full conversational chat UI with streaming, rich inline rendering, thread persistence, and AI provider wiring
-- [ ] **Phase 3: Content Pipeline** - Regional research, Gurudev wisdom curation, and multi-channel marketing copy generation
+- [x] **Phase 3: Content Pipeline** - Regional research, Gurudev wisdom curation, and multi-channel marketing copy generation (completed 2026-04-01)
 - [ ] **Phase 4: Creative Studio and Campaign** - AI ad image generation, Canva template export, campaign browser, and asset download
 - [ ] **Phase 5: Admin Prompt Lab** - Prompt editor, version history, test runner, execution log, and model selector
 
@@ -70,7 +70,7 @@ Plans:
   3. Email, WhatsApp, Instagram, and Facebook copy are generated from the same research context, each rendering in a channel-appropriate preview format
   4. User types a refinement instruction ("make the email headline shorter") and the specific content piece updates without regenerating the full pipeline
   5. Generated copy uses Art of Living brand voice — calm, Grade 8 reading level, no hashtags, emojis, or exclamation marks
-**Plans:** 4/5 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 - [ ] 03-01-PLAN.md — Type contracts, TASK_MODEL_MAP expansion, DB utilities, and new UI components (QuoteCard, ChannelSelector, FlyerFrame, StageProgressBar, ResearchReusePrompt)
@@ -112,6 +112,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/6 | In Progress|  |
 | 2. Chat Core | 5/6 | In Progress|  |
-| 3. Content Pipeline | 4/5 | In Progress|  |
+| 3. Content Pipeline | 6/6 | Complete   | 2026-04-01 |
 | 4. Creative Studio and Campaign | 0/TBD | Not started | - |
 | 5. Admin Prompt Lab | 0/TBD | Not started | - |

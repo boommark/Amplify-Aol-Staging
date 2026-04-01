@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: "Checkpoint: 03-05-PLAN.md Task 3 — awaiting human verification of pipeline"
-last_updated: "2026-04-01T21:24:19.161Z"
+stopped_at: Completed 03-06-PLAN.md
+last_updated: "2026-04-01T22:06:12.563Z"
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 17
-  completed_plans: 17
+  total_plans: 18
+  completed_plans: 18
 ---
 
 # Project State
@@ -61,6 +61,7 @@ Plan: 2 of 5
 | Phase 03-content-pipeline P04 | 5 | 2 tasks | 4 files |
 | Phase 03-content-pipeline P03 | 4 | 2 tasks | 3 files |
 | Phase 03-content-pipeline P05 | 25 | 2 tasks | 5 files |
+| Phase 03-content-pipeline P06 | 5 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,9 @@ Recent decisions affecting current work:
 - [Phase 03-content-pipeline]: Wisdom timedOut flag returned (not error) when all Ask Gurudev queries time out — allows chat to gracefully continue
 - [Phase 03-content-pipeline]: NextResponse.json used for all pipeline JSON responses — Response.json not available in project TypeScript DOM lib config (consistent with Plan 03 decision)
 - [Phase 03-content-pipeline]: Pipeline messages (research cards, quote cards, copy blocks) rendered as computed synthetic UIMessages merged with real chat messages — avoids touching AI SDK useChat internals
+- [Phase 03-content-pipeline]: URL regex detection placed FIRST in detectPipelineIntent — before action chip matching and AI classification
+- [Phase 03-content-pipeline]: Art of Living domain gets dedicated parser; generic URLs fall back to Claude Haiku generateObject with 4000-char page text
+- [Phase 03-content-pipeline]: url_parse SSE handler chains parse + research in single stream so user sees parsing to research_dimension events with no reload
 
 ### Pending Todos
 
@@ -125,6 +129,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-01T21:23:59.414Z
-Stopped at: Checkpoint: 03-05-PLAN.md Task 3 — awaiting human verification of pipeline
+Last session: 2026-04-01T22:06:12.561Z
+Stopped at: Completed 03-06-PLAN.md
 Resume file: None
