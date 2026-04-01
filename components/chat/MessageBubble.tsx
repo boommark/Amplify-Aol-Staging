@@ -160,8 +160,8 @@ export function MessageBubble({
   return (
     <div className="flex flex-col items-start">
       <div
-        className="bg-[#F3F4F6] text-slate-900 rounded-[12px_12px_12px_4px] px-4 py-3 max-w-[85%] text-[15px] space-y-3 shadow-sm"
-        style={{ fontFamily: 'Work Sans, sans-serif', lineHeight: '1.5' }}
+        className="bg-[#F9FAFB] text-slate-900 rounded-[16px_16px_16px_4px] px-5 py-4 max-w-[85%] lg:max-w-[75%] text-[15px] space-y-3 border border-slate-100"
+        style={{ fontFamily: 'Work Sans, sans-serif', lineHeight: '1.6' }}
       >
         {hasParts ? (
           message.parts.map((part, index) =>
@@ -176,7 +176,7 @@ export function MessageBubble({
           </div>
         ) : (
           // Fallback: render plain text via react-markdown when parts is empty
-          <div className="prose prose-sm prose-slate max-w-none">
+          <div className="prose prose-slate max-w-none" style={{ fontSize: '15px', lineHeight: '1.6' }}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
