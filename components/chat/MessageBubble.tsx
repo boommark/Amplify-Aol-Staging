@@ -12,6 +12,8 @@ import { ImageCarousel } from './parts/ImageCarousel'
 import { AdPreview } from './parts/AdPreview'
 import { SkeletonPart } from './parts/SkeletonPart'
 import { ActionChips } from './ActionChips'
+import { QuoteCard } from './parts/QuoteCard'
+import { StageProgressBar } from './StageProgressBar'
 import type { AmplifyDataParts } from '@/types/message'
 
 interface MessageBubbleProps {
@@ -69,6 +71,20 @@ function renderDataPart(
         />
       )
     }
+    case 'data-quote-card':
+      return (
+        <QuoteCard
+          key={index}
+          data={part.data as AmplifyDataParts['quote-card']}
+        />
+      )
+    case 'data-stage-progress':
+      return (
+        <StageProgressBar
+          key={index}
+          stages={(part.data as AmplifyDataParts['stage-progress']).stages}
+        />
+      )
     default:
       return null
   }
