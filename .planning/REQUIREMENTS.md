@@ -30,11 +30,11 @@
 
 ### Research Pipeline (RSRCH)
 
-- [ ] **RSRCH-01**: Given a region and event type, system researches 7 dimensions: spirituality interest, mental health, sleep/health, relationships, local idioms, cultural sensitivities, seasonal significance
+- [x] **RSRCH-01**: Given a region and event type, system researches 7 dimensions: spirituality interest, mental health, sleep/health, relationships, local idioms, cultural sensitivities, seasonal significance
 - [ ] **RSRCH-02**: Research results render as structured expandable cards in chat
-- [ ] **RSRCH-03**: User can add custom research notes via chat
-- [ ] **RSRCH-04**: Research context automatically feeds into all downstream content generation
-- [ ] **RSRCH-05**: Research results are stored in Supabase (not replayed in chat context window)
+- [x] **RSRCH-03**: User can add custom research notes via chat
+- [x] **RSRCH-04**: Research context automatically feeds into all downstream content generation
+- [x] **RSRCH-05**: Research results are stored in Supabase (not replayed in chat context window)
 
 ### Gurudev Wisdom (WSDM)
 
@@ -161,11 +161,11 @@
 | CHAT-11 | Phase 2 | Complete |
 | INFRA-02 | Phase 2 | Complete |
 | INFRA-07 | Phase 2 | Pending |
-| RSRCH-01 | Phase 3 | Pending |
+| RSRCH-01 | Phase 3 | Complete |
 | RSRCH-02 | Phase 3 | Pending |
-| RSRCH-03 | Phase 3 | Pending |
-| RSRCH-04 | Phase 3 | Pending |
-| RSRCH-05 | Phase 3 | Pending |
+| RSRCH-03 | Phase 3 | Complete |
+| RSRCH-04 | Phase 3 | Complete |
+| RSRCH-05 | Phase 3 | Complete |
 | WSDM-01 | Phase 3 | Pending |
 | WSDM-02 | Phase 3 | Complete |
 | WSDM-03 | Phase 3 | Pending |
