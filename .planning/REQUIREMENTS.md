@@ -39,7 +39,7 @@
 ### Gurudev Wisdom (WSDM)
 
 - [ ] **WSDM-01**: System queries Ask Gurudev API with contextually relevant questions derived from research
-- [ ] **WSDM-02**: Curated quotes displayed in short/medium/long formats as inline cards
+- [x] **WSDM-02**: Curated quotes displayed in short/medium/long formats as inline cards
 - [ ] **WSDM-03**: Quote images generated automatically using AI image models
 - [ ] **WSDM-04**: User can request different topics or refine quote selection via chat
 
@@ -49,7 +49,7 @@
 - [ ] **CONT-02**: System generates WhatsApp messages from research + wisdom context
 - [ ] **CONT-03**: System generates Instagram post copy with image direction
 - [ ] **CONT-04**: System generates Facebook post copy with image direction
-- [ ] **CONT-05**: Each channel's content renders in a channel-appropriate preview format
+- [x] **CONT-05**: Each channel's content renders in a channel-appropriate preview format
 - [ ] **CONT-06**: User can edit any content piece via chat instructions ("make headline shorter")
 - [ ] **CONT-07**: Content generation uses brand voice: calm, uplifting, jargon-free, Grade 8 reading, no hashtags/emojis/exclamation marks
 - [ ] **CONT-08**: Translation pipeline supports generating content in non-English languages
@@ -167,14 +167,14 @@
 | RSRCH-04 | Phase 3 | Pending |
 | RSRCH-05 | Phase 3 | Pending |
 | WSDM-01 | Phase 3 | Pending |
-| WSDM-02 | Phase 3 | Pending |
+| WSDM-02 | Phase 3 | Complete |
 | WSDM-03 | Phase 3 | Pending |
 | WSDM-04 | Phase 3 | Pending |
 | CONT-01 | Phase 3 | Pending |
 | CONT-02 | Phase 3 | Pending |
 | CONT-03 | Phase 3 | Pending |
 | CONT-04 | Phase 3 | Pending |
-| CONT-05 | Phase 3 | Pending |
+| CONT-05 | Phase 3 | Complete |
 | CONT-06 | Phase 3 | Pending |
 | CONT-07 | Phase 3 | Pending |
 | CONT-08 | Phase 3 | Pending |

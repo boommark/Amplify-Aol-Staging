@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 3 context gathered
-last_updated: "2026-04-01T20:11:57.138Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-04-01T21:09:57.221Z"
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 12
-  completed_plans: 12
+  total_plans: 17
+  completed_plans: 14
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** A teacher with zero marketing experience can describe their workshop and receive a complete marketing kit through a simple conversation.
-**Current focus:** Phase 02 — chat-core
+**Current focus:** Phase 03 — content-pipeline
 
 ## Current Position
 
-Phase: 02 (chat-core) — EXECUTING
-Plan: 1 of 6
+Phase: 03 (content-pipeline) — EXECUTING
+Plan: 2 of 5
 
 ## Performance Metrics
 
@@ -56,6 +56,8 @@ Plan: 1 of 6
 | Phase 02-chat-core P01 | 5 | 2 tasks | 5 files |
 | Phase 02-chat-core P04 | 15 | 2 tasks | 10 files |
 | Phase 02-chat-core P03 | 10 | 2 tasks | 10 files |
+| Phase 03-content-pipeline P01 | 4 | 2 tasks | 10 files |
+| Phase 03-content-pipeline P02 | 20 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -95,6 +97,11 @@ Recent decisions affecting current work:
 - [Phase 02-chat-core P03]: DefaultChatTransport with body as function — tone is dynamic, () => ({ campaignId, tone: toneRef.current }) picks up changes per-request
 - [Phase 02-chat-core P03]: ChatInput manages own textarea state — v6 removed input/handleInputChange/handleSubmit from useChat; sendMessage({ text }) is the v6 API
 - [Phase 02-chat-core P03]: Server component page + client ChatInterface pattern — page.tsx fetches data, ChatInterface.tsx handles hooks
+- [Phase 03-content-pipeline]: lib/db/research.ts and lib/db/assets.ts use server-side Supabase client (RLS applies) — not admin client
+- [Phase 03-content-pipeline]: copy-block channel extended to email|whatsapp|instagram|facebook|flyer|string to allow custom channels without type changes
+- [Phase 03-content-pipeline]: Use generateText (not runStreamingTask/streamText) for Perplexity pipeline queries — structured extraction requires complete response, not streaming chat
+- [Phase 03-content-pipeline]: Promise.allSettled for parallel research pipeline — individual dimension failures don't abort the full 7-query pipeline
+- [Phase 03-content-pipeline]: Research API returns JSON (not streaming) — downstream chat route (Plan 05) will stream results as UIMessage data parts
 
 ### Pending Todos
 
@@ -108,6 +115,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-01T20:11:57.135Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-content-pipeline/03-CONTEXT.md
+Last session: 2026-04-01T21:09:57.218Z
+Stopped at: Completed 03-02-PLAN.md
+Resume file: None
