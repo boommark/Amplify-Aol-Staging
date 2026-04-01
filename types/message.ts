@@ -7,7 +7,7 @@ export type AmplifyDataParts = {
     status: 'loading' | 'ready'
   }
   'copy-block': {
-    channel: 'email' | 'whatsapp' | 'instagram' | 'facebook'
+    channel: 'email' | 'whatsapp' | 'instagram' | 'facebook' | 'flyer' | string
     content: string
     editableId: string
     status: 'loading' | 'ready'
@@ -25,6 +25,23 @@ export type AmplifyDataParts = {
   }
   'action-chips': {
     chips: Array<{ label: string; prompt: string }>
+  }
+  'quote-card': {
+    quoteId: string
+    short: string
+    medium: string
+    long: string
+    source: string
+    category: string
+    date?: string
+    location?: string
+    event?: string
+    imageUrl?: string
+    isManual: boolean
+    status: 'loading' | 'ready'
+  }
+  'stage-progress': {
+    stages: Array<{ id: 'research' | 'wisdom' | 'copy'; label: string; state: 'pending' | 'active' | 'completed' }>
   }
 }
 
