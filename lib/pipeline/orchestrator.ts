@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 export type PipelineIntent =
   | { type: 'chat' }
+  | { type: 'url_parse'; url: string }
   | { type: 'research'; region: string; eventType: string; eventDate?: string }
   | { type: 'add_note'; note: string }
   | { type: 'competitor_scan' }
@@ -27,6 +28,13 @@ export async function detectPipelineIntent(
     campaignEventType?: string
   }
 ): Promise<PipelineIntent> {
+  // URL detection — FIRST check, before all others.
+  // If the message contains a URL, extract it and return url_parse intent.
+  const urlMatch = userMessage.match(/https?:\/\/[^\s]+/)
+  if (urlMatch) {
+    return { type: 'url_parse', url: urlMatch[0] }
+  }
+
   // Fast path: check for action chip prompts (exact matches from ActionChips)
   const normalizedMsg = userMessage.trim().toLowerCase()
 

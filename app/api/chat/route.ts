@@ -8,6 +8,7 @@ import { runWisdomPipeline } from '@/lib/pipeline/wisdom'
 import { generateAllChannels, refineChannelCopy } from '@/lib/pipeline/copy-generation'
 import { generateQuoteImages } from '@/lib/pipeline/quote-image'
 import { findReusableResearch, getResearchForCampaign } from '@/lib/db/research'
+import { parseWorkshopUrl } from '@/lib/pipeline/url-parser'
 
 export const maxDuration = 300
 
@@ -98,6 +99,124 @@ export async function POST(req: Request) {
         campaignRegion: campaign.region || undefined,
         campaignEventType: campaign.event_type || undefined,
       })
+
+  // --- URL PARSE: Parse workshop URL, update campaign, then stream research ---
+  if (intent.type === 'url_parse' && 'url' in intent) {
+    const urlIntent = intent as { type: 'url_parse'; url: string }
+    const encoder = new TextEncoder()
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          // Emit parsing-started event so UI can show progress
+          const parsingEvent = JSON.stringify({
+            pipelineResponse: true,
+            action: 'url_parsing',
+            data: { url: urlIntent.url },
+          })
+          controller.enqueue(encoder.encode(`data: ${parsingEvent}\n\n`))
+
+          // Parse the URL
+          const parsed = await parseWorkshopUrl(urlIntent.url)
+
+          // Update campaign with extracted data
+          const updates: Record<string, string> = {}
+          if (parsed.region && !campaign.region) updates.region = parsed.region
+          if (parsed.eventType && !campaign.event_type) updates.event_type = parsed.eventType
+          if (parsed.title) updates.title = parsed.title
+          if (Object.keys(updates).length > 0) {
+            await supabase.from('campaigns').update(updates).eq('id', campaignId)
+          }
+
+          // Emit parsed event with extracted data
+          const parsedEvent = JSON.stringify({
+            pipelineResponse: true,
+            action: 'url_parsed',
+            data: { parsed, updates },
+          })
+          controller.enqueue(encoder.encode(`data: ${parsedEvent}\n\n`))
+
+          // Resolve final region and eventType for research (use parsed or existing)
+          const researchRegion = parsed.region || campaign.region || ''
+          const researchEventType = parsed.eventType || campaign.event_type || ''
+
+          // Only auto-trigger research if we have a region
+          if (!researchRegion) {
+            const doneEvent = JSON.stringify({
+              pipelineResponse: true,
+              action: 'url_parse_complete',
+              data: { parsed, message: 'Workshop details extracted. Please describe the region/location to start research.' },
+            })
+            controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`))
+            controller.close()
+            return
+          }
+
+          // Check for reusable research
+          const reusable = await findReusableResearch(researchRegion, campaignId)
+          if (reusable) {
+            const reuseEvent = JSON.stringify({
+              pipelineResponse: true,
+              action: 'research_reuse_prompt',
+              data: {
+                reusableCampaignId: reusable.campaignId,
+                reusableCampaignTitle: reusable.campaignTitle,
+                region: researchRegion,
+                eventType: researchEventType,
+              },
+            })
+            controller.enqueue(encoder.encode(`data: ${reuseEvent}\n\n`))
+            controller.close()
+            return
+          }
+
+          // Auto-trigger research pipeline
+          await runResearchPipeline({
+            campaignId,
+            region: researchRegion,
+            eventType: researchEventType,
+            onDimensionComplete: (result) => {
+              const event = JSON.stringify({
+                pipelineResponse: true,
+                action: 'research_dimension',
+                data: {
+                  dimension: result.dimension,
+                  findings: result.findings,
+                  sources: result.sources,
+                },
+              })
+              controller.enqueue(encoder.encode(`data: ${event}\n\n`))
+            },
+          })
+
+          const doneEvent = JSON.stringify({
+            pipelineResponse: true,
+            action: 'research_complete',
+            data: { dimensionCount: 7 },
+          })
+          controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`))
+          controller.close()
+        } catch (error) {
+          console.error('URL parse + research error:', error)
+          const errorEvent = JSON.stringify({
+            pipelineResponse: true,
+            action: 'error',
+            data: { message: 'Failed to parse URL or run research. Please try again.' },
+          })
+          controller.enqueue(encoder.encode(`data: ${errorEvent}\n\n`))
+          controller.close()
+        }
+      },
+    })
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    })
+  }
 
   // --- RESEARCH: Progressive streaming via ReadableStream ---
   // Each research dimension streams as a separate SSE event as it completes.

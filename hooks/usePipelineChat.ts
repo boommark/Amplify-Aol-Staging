@@ -4,7 +4,18 @@ import { useAmplifyChat } from '@/hooks/useAmplifyChat'
 import type { UIMessage } from 'ai'
 import type { AmplifyDataParts } from '@/types/message'
 
-export type PipelineStage = 'idle' | 'research' | 'wisdom' | 'copy'
+export type PipelineStage = 'idle' | 'url_parsing' | 'research' | 'wisdom' | 'copy'
+
+interface ParsedWorkshop {
+  title?: string
+  date?: string
+  location?: string
+  region?: string
+  eventType?: string
+  description?: string
+  price?: string
+  source: string
+}
 
 interface PipelineState {
   stage: PipelineStage
@@ -21,6 +32,8 @@ interface PipelineState {
   isGenerating: boolean
   reusableResearch: { campaignId: string; campaignTitle: string } | null
   showChannelSelector: boolean
+  parsedWorkshop: ParsedWorkshop | null
+  parsingUrl: string | null
 }
 
 export function usePipelineChat({
@@ -46,6 +59,8 @@ export function usePipelineChat({
     isGenerating: false,
     reusableResearch: null,
     showChannelSelector: false,
+    parsedWorkshop: null,
+    parsingUrl: null,
   })
 
   // Keep a stable ref to avoid stale closures in sendPipelineMessage
@@ -59,6 +74,35 @@ export function usePipelineChat({
   const handlePipelineResponse = useCallback(
     (data: { action: string; data: Record<string, unknown> }) => {
       switch (data.action) {
+        case 'url_parsing':
+          // URL parsing has started — show parsing indicator
+          setPipeline((prev) => ({
+            ...prev,
+            stage: 'url_parsing',
+            parsingUrl: (data.data as { url: string }).url,
+          }))
+          break
+
+        case 'url_parsed':
+          // URL parsed — store extracted workshop data, transition to research stage
+          setPipeline((prev) => ({
+            ...prev,
+            stage: 'research',
+            parsedWorkshop: (data.data as { parsed: ParsedWorkshop }).parsed,
+            parsingUrl: null,
+          }))
+          break
+
+        case 'url_parse_complete':
+          // Parse complete but no region — stay at idle so user can provide more info
+          setPipeline((prev) => ({
+            ...prev,
+            stage: 'idle',
+            parsedWorkshop: (data.data as { parsed: ParsedWorkshop }).parsed,
+            parsingUrl: null,
+          }))
+          break
+
         case 'research_reuse_prompt':
           setPipeline((prev) => ({
             ...prev,
@@ -212,9 +256,9 @@ export function usePipelineChat({
 
         const contentType = response.headers.get('content-type')
 
-        // Handle SSE streaming (research progressive results)
+        // Handle SSE streaming (research progressive results, url_parse flow)
+        // Stage is set by individual events — do NOT pre-set stage here.
         if (contentType?.includes('text/event-stream') && response.body) {
-          setPipeline((prev) => ({ ...prev, stage: 'research' }))
           const reader = response.body.getReader()
           const decoder = new TextDecoder()
           let buffer = ''
