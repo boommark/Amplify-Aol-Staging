@@ -1,5 +1,13 @@
+import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { runStreamingTask } from '@/lib/ai/orchestrator'
+import { detectPipelineIntent } from '@/lib/pipeline/orchestrator'
+import { runResearchPipeline, addResearchNote, packageResearchContext } from '@/lib/pipeline/research'
+import { runCompetitorScan } from '@/lib/pipeline/competitor'
+import { runWisdomPipeline } from '@/lib/pipeline/wisdom'
+import { generateAllChannels, refineChannelCopy } from '@/lib/pipeline/copy-generation'
+import { generateQuoteImages } from '@/lib/pipeline/quote-image'
+import { findReusableResearch, getResearchForCampaign } from '@/lib/db/research'
 
 export const maxDuration = 300
 
@@ -11,7 +19,7 @@ export async function POST(req: Request) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const { messages, campaignId, tone = 'inspiring' } = await req.json()
+  const { messages, campaignId, tone = 'inspiring', pipelineAction, pipelineData } = await req.json()
 
   // Validate required fields
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -21,10 +29,10 @@ export async function POST(req: Request) {
     return new Response('Campaign ID required', { status: 400 })
   }
 
-  // Validate campaign exists BEFORE any message persistence
+  // Validate campaign exists AND fetch region/event_type for pipeline routing
   const { data: campaign } = await supabase
     .from('campaigns')
-    .select('id')
+    .select('id, region, event_type')
     .eq('id', campaignId)
     .single()
   if (!campaign) {
@@ -54,6 +62,251 @@ export async function POST(req: Request) {
     .update({ updated_at: new Date().toISOString() })
     .eq('id', campaignId)
 
+  // --- PIPELINE ROUTING ---
+  const userText = lastUserMsg?.content
+    || lastUserMsg?.parts?.filter((p: { type: string }) => p.type === 'text')
+        .map((p: { text: string }) => p.text).join('\n')
+    || ''
+
+  // Determine pipeline context from DB (what has been completed for this campaign)
+  const existingResearch = await getResearchForCampaign(campaignId)
+  const hasResearch = existingResearch.length > 0
+
+  const { data: wisdomAssets } = await supabase
+    .from('campaign_assets')
+    .select('id')
+    .eq('campaign_id', campaignId)
+    .eq('asset_type', 'quote_image')
+    .limit(1)
+  const hasWisdom = (wisdomAssets?.length || 0) > 0
+
+  const { data: copyAssets } = await supabase
+    .from('campaign_assets')
+    .select('id')
+    .eq('campaign_id', campaignId)
+    .eq('asset_type', 'copy')
+    .limit(1)
+  const hasCopy = (copyAssets?.length || 0) > 0
+
+  // Use explicit pipelineAction (from client action chips) or detect intent from message
+  const intent = pipelineAction
+    ? ({ type: pipelineAction, ...pipelineData } as Awaited<ReturnType<typeof detectPipelineIntent>>)
+    : await detectPipelineIntent(userText, {
+        hasResearch,
+        hasWisdom,
+        hasCopy,
+        campaignRegion: campaign.region || undefined,
+        campaignEventType: campaign.event_type || undefined,
+      })
+
+  // --- RESEARCH: Progressive streaming via ReadableStream ---
+  // Each research dimension streams as a separate SSE event as it completes.
+  // This implements the user decision: "progressive, not batch"
+  if (intent.type === 'research' && 'region' in intent) {
+    // Check for reusable research first
+    const reusable = await findReusableResearch(intent.region, campaignId)
+
+    // Update campaign region/event_type if not set
+    if (!campaign.region || !campaign.event_type) {
+      await supabase.from('campaigns').update({
+        region: intent.region,
+        event_type: (intent as { region: string; eventType: string }).eventType,
+      }).eq('id', campaignId)
+    }
+
+    if (reusable) {
+      // Return reuse prompt (single response, not progressive)
+      return NextResponse.json({
+        pipelineResponse: true,
+        action: 'research_reuse_prompt',
+        data: {
+          reusableCampaignId: reusable.campaignId,
+          reusableCampaignTitle: reusable.campaignTitle,
+          region: intent.region,
+          eventType: (intent as { region: string; eventType: string }).eventType,
+        },
+      })
+    }
+
+    // Progressive streaming: return a ReadableStream that emits
+    // newline-delimited JSON events as each dimension completes
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          await runResearchPipeline({
+            campaignId,
+            region: intent.region,
+            eventType: (intent as { region: string; eventType: string }).eventType,
+            onDimensionComplete: (result) => {
+              // Stream each dimension as it resolves
+              const event = JSON.stringify({
+                pipelineResponse: true,
+                action: 'research_dimension',
+                data: {
+                  dimension: result.dimension,
+                  findings: result.findings,
+                  sources: result.sources,
+                },
+              })
+              controller.enqueue(encoder.encode(`data: ${event}\n\n`))
+            },
+          })
+
+          // Send completion event after all dimensions resolve
+          const doneEvent = JSON.stringify({
+            pipelineResponse: true,
+            action: 'research_complete',
+            data: { dimensionCount: 7 },
+          })
+          controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`))
+          controller.close()
+        } catch (error) {
+          console.error('Research pipeline error:', error)
+          const errorEvent = JSON.stringify({
+            pipelineResponse: true,
+            action: 'error',
+            data: { message: 'Research pipeline failed. Please try again.' },
+          })
+          controller.enqueue(encoder.encode(`data: ${errorEvent}\n\n`))
+          controller.close()
+        }
+      },
+    })
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    })
+  }
+
+  if (intent.type === 'add_note' && 'note' in intent) {
+    await addResearchNote({ campaignId, note: (intent as { type: 'add_note'; note: string }).note })
+    return NextResponse.json({
+      pipelineResponse: true,
+      action: 'note_added',
+      data: { note: (intent as { type: 'add_note'; note: string }).note },
+    })
+  }
+
+  if (intent.type === 'competitor_scan') {
+    const result = await runCompetitorScan({
+      region: campaign.region || '',
+      eventType: campaign.event_type || '',
+    })
+    return NextResponse.json({
+      pipelineResponse: true,
+      action: 'competitor_complete',
+      data: { findings: result.findings },
+    })
+  }
+
+  // --- WISDOM: Await quote images and merge URLs into response ---
+  // generateQuoteImages is AWAITED (not fire-and-forget) so imageUrls are
+  // included in the response and QuoteCard can render images on first paint.
+  if (intent.type === 'wisdom' || intent.type === 'different_topic') {
+    const result = await runWisdomPipeline({ campaignId })
+
+    if (result.crisisFlag) {
+      return NextResponse.json({
+        pipelineResponse: true,
+        action: 'crisis_flag',
+        data: {
+          message: 'I noticed this topic may touch on emotional crisis. Here are some support resources:',
+          helplines: [
+            { name: 'iCall', number: '9152987821', country: 'India' },
+            { name: 'National Suicide Prevention Lifeline', number: '988', country: 'US' },
+            { name: 'Crisis Text Line', text: 'HOME to 741741', country: 'US' },
+          ],
+        },
+      })
+    }
+
+    if (result.timedOut) {
+      return NextResponse.json({
+        pipelineResponse: true,
+        action: 'wisdom_timeout',
+        data: { message: 'Wisdom unavailable — continuing with your research context.' },
+      })
+    }
+
+    // Generate quote images and AWAIT them so URLs can be included in the response.
+    // If image generation fails for any quote, that quote renders without an image (imageUrl remains undefined).
+    const quoteTexts = result.quotes.map((q, i) => ({ quoteText: q.medium, quoteIndex: i }))
+    const imageUrls = await generateQuoteImages({
+      quotes: quoteTexts,
+      userId: user.id,
+      campaignId,
+    })
+
+    // Merge imageUrls into quotes
+    const quotesWithImages = result.quotes.map((quote, i) => ({
+      ...quote,
+      imageUrl: imageUrls[i] || undefined,
+    }))
+
+    return NextResponse.json({
+      pipelineResponse: true,
+      action: 'wisdom_complete',
+      data: { quotes: quotesWithImages },
+    })
+  }
+
+  if (intent.type === 'copy_generate') {
+    const channels = pipelineData?.channels?.length
+      ? pipelineData.channels
+      : ['email', 'whatsapp', 'instagram', 'facebook', 'flyer']
+
+    // Package research context for copy generation (unused var suppressed — passed to generateAllChannels)
+    await packageResearchContext(campaignId)
+
+    const results = await generateAllChannels({
+      campaignId,
+      channels,
+      region: campaign.region || '',
+      eventType: campaign.event_type || '',
+      // No language parameter — translation support deferred (CONT-08)
+    })
+
+    return NextResponse.json({
+      pipelineResponse: true,
+      action: 'copy_complete',
+      data: { copies: results },
+    })
+  }
+
+  if (intent.type === 'copy_refine' && 'channel' in intent && 'instruction' in intent) {
+    const refineIntent = intent as { type: 'copy_refine'; channel: string; instruction: string }
+
+    // Find the most recent copy asset for this channel
+    const { data: assets } = await supabase
+      .from('campaign_assets')
+      .select('id')
+      .eq('campaign_id', campaignId)
+      .eq('asset_type', 'copy')
+      .eq('channel', refineIntent.channel)
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (assets && assets.length > 0) {
+      const result = await refineChannelCopy({
+        assetId: assets[0].id,
+        campaignId,
+        channel: refineIntent.channel,
+        instruction: refineIntent.instruction,
+      })
+      return NextResponse.json({
+        pipelineResponse: true,
+        action: 'copy_refined',
+        data: { copy: result },
+      })
+    }
+  }
+
+  // --- STANDARD CHAT (fallback) ---
   // Delegate ALL AI logic to the orchestrator — model lookup, prompt loading,
   // rendering, and sliding window are handled inside runStreamingTask.
   try {
