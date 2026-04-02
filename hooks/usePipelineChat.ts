@@ -234,9 +234,23 @@ export function usePipelineChat({
   /**
    * Enhanced send that intercepts pipeline responses.
    * Handles both SSE streams (research) and JSON responses (wisdom, copy).
+   *
+   * The user's message is added to local state immediately so it appears in
+   * the chat UI regardless of which response path is taken.
    */
   const sendPipelineMessage = useCallback(
     async (text: string, pipelineAction?: string, pipelineData?: Record<string, unknown>) => {
+      // Optimistically add the user message so it appears in the chat immediately.
+      // This is needed because pipeline messages bypass the AI SDK useChat transport
+      // and therefore never go through useChat's own message accumulation.
+      const userMessage: UIMessage = {
+        id: `user-${Date.now()}`,
+        role: 'user',
+        parts: [{ type: 'text', text }],
+        content: text,
+      }
+      chat.setMessages([...chat.messages, userMessage])
+
       setPipeline((prev) => ({ ...prev, isGenerating: true }))
 
       try {
@@ -253,6 +267,13 @@ export function usePipelineChat({
             pipelineData,
           }),
         })
+
+        // Non-2xx responses are errors — log and bail out. Do NOT fall through
+        // to sendMessageRef which would cause a duplicate request and state corruption.
+        if (!response.ok) {
+          console.error('Pipeline fetch failed:', response.status, response.statusText)
+          return
+        }
 
         const contentType = response.headers.get('content-type')
 
@@ -287,7 +308,7 @@ export function usePipelineChat({
           return
         }
 
-        // Handle JSON responses (wisdom, copy, reuse prompt, etc.)
+        // Handle JSON pipeline responses (wisdom, copy, reuse prompt, etc.)
         if (contentType?.includes('application/json')) {
           const data = await response.json()
           if (data.pipelineResponse) {
@@ -296,16 +317,18 @@ export function usePipelineChat({
           }
         }
 
-        // If not a pipeline response, it's a streaming chat response from useChat.
-        // Use the underlying sendMessage to handle it through the AI SDK.
-        sendMessageRef.current({ text })
+        // The server returned a non-pipeline response (e.g. plain streaming text).
+        // This should not happen in the current architecture — log and do nothing.
+        // Do NOT call sendMessageRef here: the fetch already consumed the body and
+        // a second call would create a duplicate request that corrupts chat state.
+        console.warn('Pipeline fetch returned unexpected content-type:', contentType)
       } catch (error) {
         console.error('Pipeline message error:', error)
       } finally {
         setPipeline((prev) => ({ ...prev, isGenerating: false }))
       }
     },
-    [chat.messages, campaignId, handlePipelineResponse]
+    [chat.messages, chat.setMessages, campaignId, handlePipelineResponse]
   )
 
   // --- Stage transition helpers ---
