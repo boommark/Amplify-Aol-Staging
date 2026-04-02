@@ -69,7 +69,12 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
   const handleChipSelect = useCallback(
     (prompt: string) => {
       const normalized = prompt.trim().toLowerCase()
-      if (normalized === 'continue to wisdom' || normalized === 'continue to wisdom stage') {
+      if (normalized === 'start research') {
+        const pw = pipeline.parsedWorkshop
+        const desc = pw ? `Research for ${pw.eventType || 'workshop'} in ${pw.region || 'my area'}` : 'Start research'
+        sendPipelineMessage(desc)
+        return
+      } else if (normalized === 'continue to wisdom' || normalized === 'continue to wisdom stage') {
         triggerWisdom()
       } else if (normalized === 'scan competitor content for inspiration' || normalized === 'scan competitors') {
         triggerCompetitorScan()
@@ -112,14 +117,25 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
         pw.description && `\n${pw.description}`,
       ].filter(Boolean).join('\n')
 
-      const text = pipeline.stage === 'idle'
-        ? `I found these details from the workshop URL:\n\n${details}\n\nPlease describe the location/region so I can start researching your audience.`
-        : `Workshop details extracted:\n\n${details}\n\nStarting research...`
+      const text = `I found these details from the workshop URL:\n\n${details}`
+
+      const parts: UIMessage['parts'] = [{ type: 'text' as const, text }]
+
+      // Show action chips for user to confirm or edit before research
+      parts.push({
+        type: 'data-action-chips' as const,
+        data: {
+          chips: [
+            { label: 'Start Research', prompt: 'Start Research' },
+            { label: 'Edit Details', prompt: 'Edit Details' },
+          ],
+        },
+      })
 
       msgs.push({
         id: 'pipeline-url-parsed',
         role: 'assistant',
-        parts: [{ type: 'text' as const, text }],
+        parts,
       })
     }
 

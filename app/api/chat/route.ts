@@ -136,63 +136,12 @@ export async function POST(req: Request) {
           })
           controller.enqueue(encoder.encode(`data: ${parsedEvent}\n\n`))
 
-          // Resolve final region and eventType for research (use parsed or existing)
-          const researchRegion = parsed.region || campaign.region || ''
-          const researchEventType = parsed.eventType || campaign.event_type || ''
-
-          // Only auto-trigger research if we have a region
-          if (!researchRegion) {
-            const doneEvent = JSON.stringify({
-              pipelineResponse: true,
-              action: 'url_parse_complete',
-              data: { parsed, message: 'Workshop details extracted. Please describe the region/location to start research.' },
-            })
-            controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`))
-            controller.close()
-            return
-          }
-
-          // Check for reusable research
-          const reusable = await findReusableResearch(researchRegion, campaignId)
-          if (reusable) {
-            const reuseEvent = JSON.stringify({
-              pipelineResponse: true,
-              action: 'research_reuse_prompt',
-              data: {
-                reusableCampaignId: reusable.campaignId,
-                reusableCampaignTitle: reusable.campaignTitle,
-                region: researchRegion,
-                eventType: researchEventType,
-              },
-            })
-            controller.enqueue(encoder.encode(`data: ${reuseEvent}\n\n`))
-            controller.close()
-            return
-          }
-
-          // Auto-trigger research pipeline
-          await runResearchPipeline({
-            campaignId,
-            region: researchRegion,
-            eventType: researchEventType,
-            onDimensionComplete: (result) => {
-              const event = JSON.stringify({
-                pipelineResponse: true,
-                action: 'research_dimension',
-                data: {
-                  dimension: result.dimension,
-                  findings: result.findings,
-                  sources: result.sources,
-                },
-              })
-              controller.enqueue(encoder.encode(`data: ${event}\n\n`))
-            },
-          })
-
+          // Emit completion and close — do NOT auto-trigger research.
+          // Let the user review parsed details and decide when to start research.
           const doneEvent = JSON.stringify({
             pipelineResponse: true,
-            action: 'research_complete',
-            data: { dimensionCount: 7 },
+            action: 'url_parse_complete',
+            data: { parsed },
           })
           controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`))
           controller.close()

@@ -84,10 +84,10 @@ export function usePipelineChat({
           break
 
         case 'url_parsed':
-          // URL parsed — store extracted workshop data, transition to research stage
+          // URL parsed — store extracted workshop data, stay at idle so user can review and confirm
           setPipeline((prev) => ({
             ...prev,
-            stage: 'research',
+            stage: 'idle',
             parsedWorkshop: (data.data as { parsed: ParsedWorkshop }).parsed,
             parsingUrl: null,
           }))
@@ -115,23 +115,31 @@ export function usePipelineChat({
           break
 
         // Progressive: each dimension arrives as its own SSE event
-        case 'research_dimension':
-          setPipeline((prev) => ({
-            ...prev,
-            stage: 'research',
-            researchResults: [
-              ...prev.researchResults,
-              {
-                dimension: (data.data as { dimension: string }).dimension,
-                findings: (
-                  data.data as {
-                    findings: Array<{ label: string; value: string; source?: string }>
-                  }
-                ).findings,
-              },
-            ],
-          }))
+        case 'research_dimension': {
+          const newDimension = (data.data as { dimension: string }).dimension
+          setPipeline((prev) => {
+            // Deduplicate: skip if this dimension already exists
+            if (prev.researchResults.some((r) => r.dimension === newDimension)) {
+              return prev
+            }
+            return {
+              ...prev,
+              stage: 'research',
+              researchResults: [
+                ...prev.researchResults,
+                {
+                  dimension: newDimension,
+                  findings: (
+                    data.data as {
+                      findings: Array<{ label: string; value: string; source?: string }>
+                    }
+                  ).findings,
+                },
+              ],
+            }
+          })
           break
+        }
 
         case 'research_complete':
           // All dimensions have arrived; mark research as complete
@@ -247,7 +255,6 @@ export function usePipelineChat({
         id: `user-${Date.now()}`,
         role: 'user',
         parts: [{ type: 'text', text }],
-        content: text,
       }
       chat.setMessages([...chat.messages, userMessage])
 
