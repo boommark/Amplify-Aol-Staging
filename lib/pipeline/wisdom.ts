@@ -19,7 +19,7 @@ interface AskGurudevMatch {
 
 interface AskGurudevResponse {
   matches: AskGurudevMatch[]
-  meta?: { suicide?: boolean }
+  meta?: string
 }
 
 export interface WisdomQuote {
@@ -44,7 +44,7 @@ export async function queryAskGurudev(question: string): Promise<{
   matches: AskGurudevMatch[]
   hasCrisisFlag: boolean
 } | null> {
-  const apiKey = process.env.ASK_GURUDEV_API_KEY || 'test_text'
+  const apiKey = process.env.ASK_GURUDEV_API_KEY || 'test'
 
   try {
     const controller = new AbortController()
@@ -66,8 +66,8 @@ export async function queryAskGurudev(question: string): Promise<{
 
     const data: AskGurudevResponse = await response.json()
 
-    // Check for suicide/crisis meta flag
-    if (data.meta?.suicide) {
+    // Check for suicide/crisis meta flag (meta is a string like "suicide" or "low match")
+    if (data.meta === 'suicide') {
       return { matches: [], hasCrisisFlag: true }
     }
 
