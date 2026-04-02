@@ -1,27 +1,30 @@
 import { generateText } from 'ai'
 import { perplexity } from '@ai-sdk/perplexity'
-import { loadPrompt } from '@/lib/prompts/registry'
-import { renderPrompt } from '@/lib/prompts/renderer'
 import { saveResearchDimension, type ResearchDimension } from '@/lib/db/research'
 
 // Re-export for convenience
 export type { ResearchDimension } from '@/lib/db/research'
 
-const DIMENSION_QUERIES: Record<ResearchDimension, (region: string, eventType: string) => string> = {
-  spirituality: (region, _eventType) =>
-    `What is the current interest in spirituality, meditation, and mindfulness in ${region}? Include recent trends, popular practices, and any notable spiritual movements. Focus on data from the last 2 years.`,
-  mental_health: (region, _eventType) =>
-    `What are the most pressing mental health concerns in ${region}? Include statistics on anxiety, depression, stress levels, and demand for wellness programs. Focus on data from the last 2 years.`,
-  sleep_health: (region, _eventType) =>
-    `What are the sleep and general health issues prevalent in ${region}? Include data on sleep disorders, lifestyle diseases, and interest in holistic health solutions.`,
-  relationships: (region, _eventType) =>
-    `What are common relationship and social connection concerns in ${region}? Include data on loneliness, community needs, family dynamics, and social wellness trends.`,
+/**
+ * Perplexity system prompt — proven n8n workflow prompt for Art of Living research.
+ */
+const PERPLEXITY_SYSTEM_PROMPT = `You are a marketing and content researcher who works for the Art of Living foundation. Try to bring in specific examples, illustrations, facts, anecdotes and data in your responses. Limit responses to under 150 words and use bullets. Do not write opening or closing sentences. Write clearly and precisely.`
+
+const DIMENSION_QUERIES: Record<ResearchDimension, (region: string, eventType: string, courseDate?: string) => string> = {
+  spirituality: (region, eventType) =>
+    `What are the main reasons (include data if available) for pursuing spiritual practices and meditation among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
+  mental_health: (region, eventType) =>
+    `Is there a prevalence of mental health issues among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
+  sleep_health: (region, eventType) =>
+    `Is there a prevalence of sleeplessness and other physical health issues among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
+  relationships: (region, eventType) =>
+    `Is there a prevalence of relationship related issues among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
   local_idioms: (region, eventType) =>
-    `What are popular local idioms, phrases, and cultural expressions used in ${region} that relate to wellness, peace of mind, inner peace, or personal growth? Include colloquial phrases that would resonate in marketing for a ${eventType} event.`,
+    `What are some local idioms, sayings or expressions of ${region} (clean and family friendly) that Art of Living copywriters can use when promoting the ${eventType} to residents? Share as clear, simple instructions in less than 200 words.`,
   cultural_sensitivities: (region, eventType) =>
-    `What cultural sensitivities should a wellness organization be aware of when marketing a ${eventType} event in ${region}? Include religious considerations, taboo topics, communication norms, and respectful messaging guidelines.`,
-  seasonal: (region, eventType) =>
-    `What seasonal events, festivals, holidays, or significant dates are happening in ${region} in the next 3 months that could be relevant for marketing a ${eventType} event? Include both major and regional observances.`,
+    `What are some etiquette or ways of talking about spirituality, mental health, stress, relationships and meditation in ${region} that Art of Living's copywriters may incorporate in their content for ${eventType}? What should they avoid and why? Share as clear, simple instructions for copywriters in 200 words or less.`,
+  seasonal: (region, eventType, courseDate) =>
+    `Are there expressions or attitudes related to moments of cultural, environmental and/or political significance around ${courseDate || 'the coming months'} in ${region} that Art of Living copywriters should incorporate in their copy for ${eventType}? If yes, share typical copy examples. Write simply and clearly, as instructions.`,
 }
 
 interface ResearchFinding {
@@ -46,25 +49,23 @@ export async function runResearchPipeline(params: {
   campaignId: string
   region: string
   eventType: string
+  courseDate?: string
   onDimensionComplete?: (result: DimensionResult) => void
 }): Promise<DimensionResult[]> {
-  const { campaignId, region, eventType, onDimensionComplete } = params
-
-  // Load the research prompt template
-  const promptData = await loadPrompt('research.regional')
-  const systemPrompt = renderPrompt(promptData.template, { region, eventType })
+  const { campaignId, region, eventType, courseDate, onDimensionComplete } = params
 
   const dimensions = Object.keys(DIMENSION_QUERIES) as ResearchDimension[]
 
   // Fire all 7 queries in parallel
   const results = await Promise.allSettled(
     dimensions.map(async (dimension) => {
-      const query = DIMENSION_QUERIES[dimension](region, eventType)
+      const query = DIMENSION_QUERIES[dimension](region, eventType, courseDate)
 
       const { text } = await generateText({
         model: perplexity('sonar-pro'),
-        system: systemPrompt,
+        system: PERPLEXITY_SYSTEM_PROMPT,
         prompt: query,
+        maxTokens: 600,
       })
 
       // Parse the text response into structured findings
