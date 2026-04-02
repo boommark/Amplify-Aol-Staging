@@ -1,9 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import {
+  Moon,
+  Brain,
+  Sparkles,
+  Calendar,
+  MessageCircle,
+  Heart,
+  Globe,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react'
 import type { AmplifyDataParts } from '@/types/message'
 import { SkeletonPart } from './SkeletonPart'
+
+const DIMENSION_CONFIG: Record<string, { label: string; Icon: typeof Moon; color: string }> = {
+  sleep_health: { label: 'Sleep & Health', Icon: Moon, color: '#6366F1' },
+  mental_health: { label: 'Mental Health', Icon: Brain, color: '#8B5CF6' },
+  spirituality: { label: 'Spirituality', Icon: Sparkles, color: '#F59E0B' },
+  seasonal: { label: 'Seasonal', Icon: Calendar, color: '#10B981' },
+  local_idioms: { label: 'Local Idioms', Icon: MessageCircle, color: '#3B82F6' },
+  relationships: { label: 'Relationships', Icon: Heart, color: '#EF4444' },
+  cultural_sensitivities: { label: 'Cultural Sensitivities', Icon: Globe, color: '#14B8A6' },
+}
 
 interface ResearchCardProps {
   data: AmplifyDataParts['research-card']
@@ -16,67 +36,60 @@ export function ResearchCard({ data }: ResearchCardProps) {
     return <SkeletonPart type="card" />
   }
 
-  const previewFinding = data.findings[0]
+  const config = DIMENSION_CONFIG[data.topic] || {
+    label: data.topic.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+    Icon: Globe,
+    color: '#64748B',
+  }
+
+  const { Icon } = config
+  const summary = data.summary || data.findings[0]?.value?.slice(0, 150) || ''
 
   return (
-    <div
-      className="bg-white border border-slate-200 border-l-[3px] border-l-[#3D8BE8] rounded-xl p-4 cursor-pointer select-none"
-      onClick={() => setExpanded((prev) => !prev)}
-      role="button"
-      aria-expanded={expanded}
-    >
-      {/* Header row */}
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="font-semibold text-sm text-slate-900 leading-snug">
-          {data.topic}
-        </h3>
-        <span className="shrink-0 text-slate-400">
-          {expanded ? (
-            <ChevronUp className="w-4 h-4" />
-          ) : (
-            <ChevronDown className="w-4 h-4" />
-          )}
-        </span>
-      </div>
-
-      {/* Collapsed preview — first finding summary */}
-      {!expanded && previewFinding && (
-        <p className="mt-1.5 text-sm text-slate-600 line-clamp-2">
-          <span className="font-medium text-slate-700">{previewFinding.label}:</span>{' '}
-          {previewFinding.value}
-        </p>
-      )}
-
-      {/* Expanded findings */}
-      <div
-        className="overflow-hidden transition-all duration-300 ease-in-out"
-        style={{ maxHeight: expanded ? `${data.findings.length * 80 + 40}px` : '0px' }}
+    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden hover:shadow-sm transition-shadow">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-start gap-3 p-4 text-left cursor-pointer"
+        style={{ borderLeft: `4px solid ${config.color}` }}
       >
-        {expanded && (
-          <div className="mt-3 space-y-3">
-            {data.findings.map((finding, i) => (
-              <div key={i} className="border-t border-slate-100 pt-3 first:border-t-0 first:pt-0">
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  {finding.label}
-                </p>
-                <p className="mt-0.5 text-sm text-slate-800">{finding.value}</p>
-                {finding.source && (
-                  <a
-                    href={finding.source}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 mt-1 text-xs text-[#3D8BE8] underline hover:opacity-80"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    Source
-                  </a>
-                )}
-              </div>
-            ))}
+        <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: config.color }} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <h4
+              className="font-medium text-slate-900 text-sm"
+              style={{ fontFamily: 'Work Sans, sans-serif' }}
+            >
+              {config.label}
+            </h4>
+            {expanded ? (
+              <ChevronUp className="w-4 h-4 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-slate-400" />
+            )}
           </div>
-        )}
-      </div>
+          <p
+            className="text-sm text-slate-600 mt-1 line-clamp-2"
+            style={{ fontFamily: 'Work Sans, sans-serif' }}
+          >
+            {summary}
+          </p>
+        </div>
+      </button>
+      {expanded && (
+        <div className="px-4 pb-4 pt-0 ml-12 border-t border-slate-100">
+          <ul className="space-y-2 mt-3">
+            {data.findings.map((f, i) => (
+              <li
+                key={i}
+                className="text-sm text-slate-700"
+                style={{ fontFamily: 'Work Sans, sans-serif' }}
+              >
+                <span className="font-medium">{f.label}:</span> {f.value}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

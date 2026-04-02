@@ -3,6 +3,7 @@ import type { UIMessage } from 'ai'
 export type AmplifyDataParts = {
   'research-card': {
     topic: string
+    summary?: string
     findings: Array<{ label: string; value: string; source?: string }>
     status: 'loading' | 'ready'
   }

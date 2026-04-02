@@ -145,6 +145,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
         type: 'data-research-card' as const,
         data: {
           topic: result.dimension,
+          summary: result.findings[0]?.value?.slice(0, 150) || '',
           findings: result.findings,
           status: 'ready' as const,
         },
