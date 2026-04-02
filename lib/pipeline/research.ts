@@ -65,7 +65,7 @@ export async function runResearchPipeline(params: {
         model: perplexity('sonar-pro'),
         system: PERPLEXITY_SYSTEM_PROMPT,
         prompt: query,
-        maxTokens: 600,
+        maxOutputTokens: 600,
       })
 
       // Parse the text response into structured findings
