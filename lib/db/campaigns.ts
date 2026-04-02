@@ -67,3 +67,26 @@ export async function updateCampaignTitle(campaignId: string, title: string) {
   const supabase = await createClient()
   await supabase.from('campaigns').update({ title }).eq('id', campaignId)
 }
+
+export async function updateCampaign(
+  campaignId: string,
+  fields: { title?: string }
+): Promise<Campaign> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('campaigns')
+    .update(fields)
+    .eq('id', campaignId)
+    .select()
+    .single()
+  if (error) throw error
+  return data as Campaign
+}
+
+export async function deleteCampaign(campaignId: string): Promise<void> {
+  const supabase = await createClient()
+  // Delete messages first (FK constraint)
+  await supabase.from('campaign_messages').delete().eq('campaign_id', campaignId)
+  const { error } = await supabase.from('campaigns').delete().eq('id', campaignId)
+  if (error) throw error
+}
