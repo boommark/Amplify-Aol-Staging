@@ -285,7 +285,29 @@ export async function parseWorkshopUrl(url: string): Promise<ParsedWorkshopData>
 
   // Art of Living: use domain-specific parser
   if (hostname.includes(ART_OF_LIVING_DOMAIN)) {
-    return parseArtOfLivingPage(html, url)
+    const result = parseArtOfLivingPage(html, url)
+
+    // Extract region from URL path if not found in page content
+    // URLs like members.us.artofliving.org/us-en/... or artofliving.org/us-en/...
+    if (!result.region) {
+      const regionFromSubdomain = hostname.match(/members\.(\w{2})\.artofliving/i)?.[1]?.toUpperCase()
+      const regionFromPath = parsedUrl.pathname.match(/^\/(\w{2})-\w{2}\//)?.[1]?.toUpperCase()
+      const urlRegion = regionFromSubdomain || regionFromPath
+      if (urlRegion) {
+        const regionMap: Record<string, string> = {
+          US: 'United States',
+          CA: 'Canada',
+          IN: 'India',
+          UK: 'United Kingdom',
+          AU: 'Australia',
+          DE: 'Germany',
+          FR: 'France',
+        }
+        result.region = regionMap[urlRegion] || urlRegion
+      }
+    }
+
+    return result
   }
 
   // Generic page: try meta tags first, then AI extraction for the rest

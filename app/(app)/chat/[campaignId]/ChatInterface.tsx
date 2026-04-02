@@ -93,6 +93,36 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
   const pipelineMessages: UIMessage[] = useMemo(() => {
     const msgs: UIMessage[] = []
 
+    // URL parsing state — show what was extracted from the workshop URL
+    if (pipeline.parsingUrl) {
+      msgs.push({
+        id: 'pipeline-url-parsing',
+        role: 'assistant',
+        parts: [{ type: 'text' as const, text: `Parsing workshop details from URL...` }],
+      })
+    } else if (pipeline.parsedWorkshop && !pipeline.researchResults.length) {
+      const pw = pipeline.parsedWorkshop
+      const details = [
+        pw.title && `**${pw.title}**`,
+        pw.eventType && `Type: ${pw.eventType}`,
+        pw.date && `Date: ${pw.date}`,
+        pw.location && `Location: ${pw.location}`,
+        pw.region && `Region: ${pw.region}`,
+        pw.price && `Price: ${pw.price}`,
+        pw.description && `\n${pw.description}`,
+      ].filter(Boolean).join('\n')
+
+      const text = pipeline.stage === 'idle'
+        ? `I found these details from the workshop URL:\n\n${details}\n\nPlease describe the location/region so I can start researching your audience.`
+        : `Workshop details extracted:\n\n${details}\n\nStarting research...`
+
+      msgs.push({
+        id: 'pipeline-url-parsed',
+        role: 'assistant',
+        parts: [{ type: 'text' as const, text }],
+      })
+    }
+
     // Research results (progressive — rendered one card at a time as each arrives)
     if (pipeline.researchResults.length > 0) {
       const parts: UIMessage['parts'] = pipeline.researchResults.map((result) => ({
@@ -170,7 +200,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     }
 
     return msgs
-  }, [pipeline.researchResults, pipeline.hasResearch, pipeline.wisdomQuotes, pipeline.copyResults])
+  }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.wisdomQuotes, pipeline.copyResults])
 
   // Combine real chat messages + pipeline synthetic messages
   const allMessages = useMemo(
@@ -178,7 +208,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     [messages, pipelineMessages],
   )
 
-  const showProgressBar = pipeline.stage !== 'idle'
+  const showProgressBar = pipeline.stage !== 'idle' || pipeline.parsingUrl !== null
 
   return (
     <div className="flex flex-col h-full">
