@@ -256,16 +256,17 @@ export function usePipelineChat({
    * the chat UI regardless of which response path is taken.
    */
   const sendPipelineMessage = useCallback(
-    async (text: string, pipelineAction?: string, pipelineData?: Record<string, unknown>) => {
+    async (text: string, pipelineAction?: string, pipelineData?: Record<string, unknown>, options?: { silent?: boolean }) => {
       // Optimistically add the user message so it appears in the chat immediately.
-      // This is needed because pipeline messages bypass the AI SDK useChat transport
-      // and therefore never go through useChat's own message accumulation.
-      const userMessage: UIMessage = {
-        id: `user-${Date.now()}`,
-        role: 'user',
-        parts: [{ type: 'text', text }],
+      // Silent mode skips this (used by "Run Fresh" which reuses the prior user message).
+      if (!options?.silent) {
+        const userMessage: UIMessage = {
+          id: `user-${Date.now()}`,
+          role: 'user',
+          parts: [{ type: 'text', text }],
+        }
+        chat.setMessages([...chat.messages, userMessage])
       }
-      chat.setMessages([...chat.messages, userMessage])
 
       setPipeline((prev) => ({ ...prev, isGenerating: true }))
 
@@ -383,7 +384,7 @@ export function usePipelineChat({
 
   const runFreshResearch = useCallback(() => {
     setPipeline((prev) => ({ ...prev, reusableResearch: null }))
-    // Auto-trigger research with parsed workshop data, skipping reuse check
+    // Auto-trigger research silently (no duplicate user bubble)
     const pw = parsedWorkshopRef.current
     sendPipelineMessage(
       `Start research for ${pw?.eventType || 'workshop'} in ${pw?.region || 'my area'}`,
@@ -393,7 +394,8 @@ export function usePipelineChat({
         eventType: pw?.eventType || '',
         eventDate: pw?.date || '',
         skipReuse: true,
-      }
+      },
+      { silent: true }
     )
   }, [sendPipelineMessage])
 

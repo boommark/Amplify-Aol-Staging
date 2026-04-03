@@ -156,8 +156,8 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
 
       const parts: UIMessage['parts'] = [{ type: 'text' as const, text }]
 
-      // Show action chips only before research has started
-      if (!pipeline.researchResults.length && !pipeline.isGenerating) {
+      // Show action chips only before research has started (or reuse prompt shown)
+      if (!pipeline.researchResults.length && !pipeline.isGenerating && !pipeline.reusableResearch && pipeline.stage === 'idle') {
         parts.push({
           type: 'data-action-chips' as const,
           data: {
