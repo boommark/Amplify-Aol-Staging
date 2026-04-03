@@ -73,9 +73,10 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
   const handleChipSelect = useCallback(
     (prompt: string) => {
       const normalized = prompt.trim().toLowerCase()
+
+      // --- URL parse stage ---
       if (normalized === 'start research') {
         const pw = parsedWorkshopRef.current
-        // Send research intent directly with parsed data — bypass AI classification
         sendPipelineMessage(
           `Start research for ${pw?.eventType || 'workshop'} in ${pw?.region || 'my area'}`,
           'research',
@@ -86,20 +87,37 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
           }
         )
         return
-      } else if (normalized === 'continue to wisdom' || normalized === 'continue to wisdom stage') {
-        triggerWisdom()
-      } else if (normalized === 'scan competitor content for inspiration' || normalized === 'scan competitors') {
-        triggerCompetitorScan()
-      } else if (normalized === 'continue to copy') {
-        showChannelSelectorPanel()
-      } else if (normalized === 'different topic' || normalized === 'try different topic') {
-        triggerWisdom()
-      } else {
-        // Generic: send as a pipeline message (covers "Add notes", refinements, etc.)
-        sendPipelineMessage(prompt)
       }
+
+      // --- Post-research stage ---
+      if (normalized === 'continue to wisdom' || normalized === 'continue to wisdom stage') {
+        sendPipelineMessage('Continue to wisdom', 'wisdom')
+        return
+      }
+      if (normalized.includes('scan competitor')) {
+        sendPipelineMessage('Scan competitor content for inspiration', 'competitor_scan')
+        return
+      }
+      if (normalized === 'add notes' || normalized === 'add a note') {
+        // Focus the input with a prompt — don't send a message
+        setEditingContent('Also, ')
+        return
+      }
+
+      // --- Post-wisdom stage ---
+      if (normalized === 'continue to copy') {
+        showChannelSelectorPanel()
+        return
+      }
+      if (normalized === 'different topic' || normalized === 'try different topic') {
+        sendPipelineMessage('Different topic', 'wisdom')
+        return
+      }
+
+      // Generic: send as pipeline message with AI classification
+      sendPipelineMessage(prompt)
     },
-    [triggerWisdom, triggerCompetitorScan, showChannelSelectorPanel, sendPipelineMessage],
+    [showChannelSelectorPanel, sendPipelineMessage, setEditingContent],
   )
 
   /**
@@ -171,14 +189,19 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       }))
 
       // Add action chips when all research has completed
-      if (pipeline.hasResearch) {
+      if (pipeline.hasResearch && !pipeline.hasWisdom) {
+        // Add a contextual assistant text before the chips
+        parts.push({
+          type: 'text' as const,
+          text: 'Research complete. You can add any local context I should know, or continue to the next step.',
+        })
         parts.push({
           type: 'data-action-chips' as const,
           data: {
             chips: [
-              { label: 'Add notes', prompt: 'Add notes' },
-              { label: 'Scan competitors', prompt: 'Scan competitor content for inspiration' },
               { label: 'Continue to Wisdom', prompt: 'Continue to wisdom' },
+              { label: 'Add a note', prompt: 'Add a note' },
+              { label: 'Scan competitors', prompt: 'Scan competitors' },
             ],
           },
         })
