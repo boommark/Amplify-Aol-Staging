@@ -10,21 +10,27 @@ export type { ResearchDimension } from '@/lib/db/research'
  */
 const PERPLEXITY_SYSTEM_PROMPT = `You are a marketing and content researcher who works for the Art of Living foundation. Try to bring in specific examples, illustrations, facts, anecdotes and data in your responses. Limit responses to under 150 words and use bullets. Do not write opening or closing sentences. Write clearly and precisely.`
 
+/**
+ * Research dimensions ordered by what a teacher needs most:
+ * 1. Why would people attend? (mental health, spirituality)
+ * 2. How should I talk about it? (cultural sensitivities)
+ * 3. What's happening around my dates? (seasonal)
+ * 4. Community dynamics (relationships)
+ * 5. Physical wellness angle (sleep & health)
+ */
 const DIMENSION_QUERIES: Record<ResearchDimension, (region: string, eventType: string, courseDate?: string) => string> = {
-  spirituality: (region, eventType) =>
-    `What are the main reasons (include data if available) for pursuing spiritual practices and meditation among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
   mental_health: (region, eventType) =>
     `Is there a prevalence of mental health issues among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
-  sleep_health: (region, eventType) =>
-    `Is there a prevalence of sleeplessness and other physical health issues among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
-  relationships: (region, eventType) =>
-    `Is there a prevalence of relationship related issues among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
-  local_idioms: (region, eventType) =>
-    `What are some local idioms, sayings or expressions of ${region} (clean and family friendly) that Art of Living copywriters can use when promoting the ${eventType} to residents? Share as clear, simple instructions in less than 200 words.`,
+  spirituality: (region, eventType) =>
+    `What are the main reasons (include data if available) for pursuing spiritual practices and meditation among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
   cultural_sensitivities: (region, eventType) =>
     `What are some etiquette or ways of talking about spirituality, mental health, stress, relationships and meditation in ${region} that Art of Living's copywriters may incorporate in their content for ${eventType}? What should they avoid and why? Share as clear, simple instructions for copywriters in 200 words or less.`,
   seasonal: (region, eventType, courseDate) =>
     `Are there expressions or attitudes related to moments of cultural, environmental and/or political significance around ${courseDate || 'the coming months'} in ${region} that Art of Living copywriters should incorporate in their copy for ${eventType}? If yes, share typical copy examples. Write simply and clearly, as instructions.`,
+  relationships: (region, eventType) =>
+    `Is there a prevalence of relationship related issues among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
+  sleep_health: (region, eventType) =>
+    `Is there a prevalence of sleeplessness and other physical health issues among residents in ${region} and why? Which of these should Art of Living copywriters prioritize in their messaging for ${eventType} and how? Share as clear, simple instructions for copywriters in 200 words or less.`,
 }
 
 interface ResearchFinding {
@@ -99,26 +105,46 @@ export async function runResearchPipeline(params: {
 }
 
 /**
+ * Strip markdown formatting artifacts from text.
+ * Removes **, *, ##, citation refs [1][2], and cleans up spacing.
+ */
+function cleanMarkdown(text: string): string {
+  return text
+    .replace(/\[[\d,\s]+\]/g, '')   // Citation refs [1], [2][3]
+    .replace(/\*\*/g, '')            // Bold **
+    .replace(/(?<!\w)\*(?!\*)/g, '') // Italic * (not **)
+    .replace(/^#+\s*/gm, '')         // Headers ##
+    .replace(/\s{2,}/g, ' ')         // Collapse whitespace
+    .trim()
+}
+
+/**
  * Parse Perplexity text response into structured findings array.
- * Perplexity returns bullet-pointed text; split on bullets/newlines.
+ * Handles bullet points, colon-separated labels, and markdown headers.
  */
 function parseResearchFindings(text: string): ResearchFinding[] {
   const lines = text
     .split('\n')
     .map((l) => l.replace(/^[-*•]\s*/, '').trim())
     .filter((l) => l.length > 0)
+    // Skip pure markdown headers (they become empty after stripping)
+    .filter((l) => !/^#+\s*$/.test(l))
 
   return lines.map((line, i) => {
+    const cleaned = cleanMarkdown(line)
+    if (!cleaned) return null
+
     // Try to split on colon for label:value format
-    const colonIdx = line.indexOf(':')
+    const colonIdx = cleaned.indexOf(':')
     if (colonIdx > 0 && colonIdx < 60) {
-      return {
-        label: line.slice(0, colonIdx).trim(),
-        value: line.slice(colonIdx + 1).trim(),
+      const label = cleaned.slice(0, colonIdx).trim()
+      const value = cleaned.slice(colonIdx + 1).trim()
+      if (label && value) {
+        return { label, value }
       }
     }
-    return { label: `Finding ${i + 1}`, value: line }
-  })
+    return { label: `Finding ${i + 1}`, value: cleaned }
+  }).filter((f): f is ResearchFinding => f !== null)
 }
 
 /**

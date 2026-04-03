@@ -8,7 +8,6 @@ import {
   Brain,
   Sparkles,
   Calendar,
-  MessageCircle,
   Heart,
   Globe,
   ChevronDown,
@@ -17,19 +16,48 @@ import {
 import type { AmplifyDataParts } from '@/types/message'
 import { SkeletonPart } from './SkeletonPart'
 
-const DIMENSION_CONFIG: Record<string, { label: string; Icon: typeof Moon; color: string }> = {
-  sleep_health: { label: 'Sleep & Health', Icon: Moon, color: '#6366F1' },
-  mental_health: { label: 'Mental Health', Icon: Brain, color: '#8B5CF6' },
-  spirituality: { label: 'Spirituality', Icon: Sparkles, color: '#F59E0B' },
-  seasonal: { label: 'Seasonal', Icon: Calendar, color: '#10B981' },
-  local_idioms: { label: 'Local Idioms', Icon: MessageCircle, color: '#3B82F6' },
-  relationships: { label: 'Relationships', Icon: Heart, color: '#EF4444' },
-  cultural_sensitivities: { label: 'Cultural Sensitivities', Icon: Globe, color: '#14B8A6' },
+const DIMENSION_CONFIG: Record<string, { label: string; subtitle: string; Icon: typeof Moon; color: string }> = {
+  mental_health: {
+    label: 'Mental Health & Wellness',
+    subtitle: 'Why people in your area are seeking wellness solutions',
+    Icon: Brain, color: '#8B5CF6',
+  },
+  spirituality: {
+    label: 'Spiritual Interest',
+    subtitle: 'What draws residents to meditation and spiritual growth',
+    Icon: Sparkles, color: '#F59E0B',
+  },
+  cultural_sensitivities: {
+    label: 'How to Talk About It',
+    subtitle: 'Local tone, language, and sensitivities for your messaging',
+    Icon: Globe, color: '#14B8A6',
+  },
+  seasonal: {
+    label: "What's Happening Locally",
+    subtitle: 'Events, holidays, and seasonal angles near your course dates',
+    Icon: Calendar, color: '#10B981',
+  },
+  relationships: {
+    label: 'Community & Relationships',
+    subtitle: 'How people connect and what relationship challenges exist',
+    Icon: Heart, color: '#EF4444',
+  },
+  sleep_health: {
+    label: 'Sleep & Physical Health',
+    subtitle: 'Physical wellness concerns you can address in your marketing',
+    Icon: Moon, color: '#6366F1',
+  },
 }
 
-/** Strip Perplexity citation refs like [1], [2][3], [1,2] from text */
-function stripCitations(text: string): string {
-  return text.replace(/\[[\d,\s]+\]/g, '').trim()
+/** Strip markdown artifacts and citation refs from display text */
+function cleanDisplayText(text: string): string {
+  return text
+    .replace(/\[[\d,\s]+\]/g, '')   // Citation refs [1], [2][3]
+    .replace(/\*\*/g, '')            // Bold **
+    .replace(/(?<!\w)\*(?!\*)/g, '') // Italic *
+    .replace(/^#+\s*/gm, '')         // Headers ##
+    .replace(/\s{2,}/g, ' ')         // Collapse whitespace
+    .trim()
 }
 
 interface ResearchCardProps {
@@ -45,12 +73,13 @@ export function ResearchCard({ data }: ResearchCardProps) {
 
   const config = DIMENSION_CONFIG[data.topic] || {
     label: data.topic.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+    subtitle: '',
     Icon: Globe,
     color: '#64748B',
   }
 
   const { Icon } = config
-  const summary = stripCitations(data.summary || data.findings[0]?.value?.slice(0, 150) || '')
+  const summary = cleanDisplayText(data.summary || data.findings[0]?.value?.slice(0, 150) || '')
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white overflow-hidden hover:shadow-sm transition-shadow">
@@ -74,6 +103,14 @@ export function ResearchCard({ data }: ResearchCardProps) {
               <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
             )}
           </div>
+          {!expanded && config.subtitle && (
+            <p
+              className="text-xs text-slate-400 mt-0.5"
+              style={{ fontFamily: 'Work Sans, sans-serif' }}
+            >
+              {config.subtitle}
+            </p>
+          )}
           <p
             className="text-sm text-slate-600 mt-1 line-clamp-2"
             style={{ fontFamily: 'Work Sans, sans-serif' }}
@@ -95,14 +132,14 @@ export function ResearchCard({ data }: ResearchCardProps) {
           style={{ fontFamily: 'Work Sans, sans-serif', fontSize: '14px' }}
         >
           {data.findings.map((f, i) => {
-            const cleanValue = stripCitations(f.value)
+            const cleanValue = cleanDisplayText(f.value)
             // If label is "Finding N", just render the value as markdown
             const isGenericLabel = /^Finding \d+$/.test(f.label)
 
             return (
               <div key={i} className="mb-2 last:mb-0">
                 {!isGenericLabel && (
-                  <span className="font-semibold text-slate-800">{stripCitations(f.label)}: </span>
+                  <span className="font-semibold text-slate-800">{cleanDisplayText(f.label)}: </span>
                 )}
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}

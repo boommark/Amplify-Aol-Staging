@@ -226,7 +226,7 @@ export async function POST(req: Request) {
           const doneEvent = JSON.stringify({
             pipelineResponse: true,
             action: 'research_complete',
-            data: { dimensionCount: 7 },
+            data: { dimensionCount: 6 },
           })
           controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`))
           controller.close()

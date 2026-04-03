@@ -1,13 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 
 export type ResearchDimension =
-  | 'spirituality'
   | 'mental_health'
-  | 'sleep_health'
-  | 'relationships'
-  | 'local_idioms'
+  | 'spirituality'
   | 'cultural_sensitivities'
   | 'seasonal'
+  | 'relationships'
+  | 'sleep_health'
 
 export interface ResearchResult {
   id: string
