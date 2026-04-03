@@ -110,14 +110,19 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       const details = [
         pw.title && `**${pw.title}**`,
         pw.eventType && `Type: ${pw.eventType}`,
+        pw.teacher && `Teacher: ${pw.teacher}`,
         pw.date && `Date: ${pw.date}`,
+        pw.timing && `Timing: ${pw.timing}`,
         pw.location && `Location: ${pw.location}`,
+        pw.isOnline && `Mode: Online`,
         pw.region && `Region: ${pw.region}`,
+        pw.centerName && `Center: ${pw.centerName}`,
         pw.price && `Price: ${pw.price}`,
+        pw.contactName && `Contact: ${pw.contactName}${pw.contactEmail ? ` (${pw.contactEmail})` : ''}`,
         pw.description && `\n${pw.description}`,
       ].filter(Boolean).join('\n')
 
-      const text = `I found these details from the workshop URL:\n\n${details}`
+      const text = `Here are the workshop details:\n\n${details}`
 
       const parts: UIMessage['parts'] = [{ type: 'text' as const, text }]
 

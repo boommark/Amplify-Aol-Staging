@@ -11,9 +11,117 @@ export interface ParsedWorkshopData {
   description?: string
   price?: string
   source: string
+  // Extended fields from AOLF API
+  teacher?: string
+  teacherEmail?: string
+  teacherPhone?: string
+  contactName?: string
+  contactEmail?: string
+  contactPhone?: string
+  timing?: string
+  isOnline?: boolean
+  centerName?: string
 }
 
 const ART_OF_LIVING_DOMAIN = 'artofliving.org'
+
+// AOLF Workshop API — public endpoint used by the members portal
+const AOLF_API_BASE = 'https://aolf-api-v2-4263c91f0e08.herokuapp.com/api/v1'
+const AOLF_CLIENT_ID = 'prod_web_c3a9e7f12d4b4f6a9c1e5b7d2a8f3c11'
+
+/**
+ * Fetch workshop details from the AOLF API using the course/workshop ID.
+ * The members portal is a Next.js SPA — HTML scraping gets nothing useful.
+ * This API returns all structured course data: title, teacher, schedule, location, price.
+ */
+async function fetchAolfWorkshopApi(workshopId: string, org = 'AOL'): Promise<ParsedWorkshopData | null> {
+  try {
+    const response = await fetch(`${AOLF_API_BASE}/${org}/workshops/${workshopId}`, {
+      headers: {
+        'x-client-id': AOLF_CLIENT_ID,
+        'Accept': 'application/json',
+      },
+      signal: AbortSignal.timeout(10000),
+    })
+    if (!response.ok) return null
+
+    const json = await response.json()
+    if (json.status !== 'success' || !json.data) return null
+
+    const d = json.data
+    const schedule = d.schedule || {}
+    const location = d.location || {}
+    const teacher = d.teachers?.primary || d.contact || {}
+    const pricing = d.payment?.pricing?.price || {}
+
+    // Determine if online
+    const isOnline = location.mode === 'Online' && !location.street && !location.street2
+
+    // Build location string
+    let locationStr: string | undefined
+    if (isOnline) {
+      locationStr = 'Online'
+    } else {
+      const parts = [location.street2 || location.street, location.city, location.state, location.postalCode].filter(Boolean)
+      locationStr = parts.join(', ') || undefined
+    }
+
+    // Region: for online courses → "United States"; for in-person → "City, State"
+    let region: string | undefined
+    if (isOnline) {
+      region = 'United States'
+    } else if (location.city && location.state) {
+      region = `${location.city}, ${location.state}`
+    } else if (location.country) {
+      const countryMap: Record<string, string> = { us: 'United States', ca: 'Canada', in: 'India', uk: 'United Kingdom', au: 'Australia' }
+      region = countryMap[location.country.toLowerCase()] || location.country
+    }
+
+    // Format schedule
+    let date: string | undefined
+    if (schedule.startDateLabel && schedule.endDateLabel) {
+      date = schedule.startDateLabel === schedule.endDateLabel
+        ? schedule.startDateLabel
+        : `${schedule.startDateLabel} – ${schedule.endDateLabel}`
+    }
+
+    // Map masterCourseType to readable name
+    const courseTypeMap: Record<string, string> = {
+      AOL_PART_1: 'Happiness Program (Art of Living Part 1)',
+      AOL_PART_2: 'Advanced Meditation (Art of Living Part 2)',
+      SAHAJ_SAMADHI: 'Sahaj Samadhi Meditation',
+      SRI_SRI_YOGA: 'Sri Sri Yoga',
+      ART_EXCEL: 'Art Excel (Youth)',
+      YES_PLUS: 'YES!+',
+      SILENCE_RETREAT: 'Silence Retreat',
+    }
+
+    return {
+      title: d.title || undefined,
+      date,
+      location: locationStr,
+      region,
+      eventType: courseTypeMap[d.masterCourseType] || d.masterCourseType?.replace(/_/g, ' ') || undefined,
+      description: d.description || undefined,
+      price: pricing.listPrice ? `$${pricing.listPrice}` : undefined,
+      source: `https://members.us.artofliving.org/us-en/course/checkout/${workshopId}`,
+      // Extended fields from API
+      teacher: teacher.name || undefined,
+      teacherEmail: teacher.email || undefined,
+      teacherPhone: teacher.phone || undefined,
+      contactName: d.contact?.name || undefined,
+      contactEmail: d.contact?.email || undefined,
+      contactPhone: d.contact?.phone || undefined,
+      timing: schedule.startTime && schedule.endTime
+        ? `${schedule.startTime.slice(0, 5)} – ${schedule.endTime.slice(0, 5)} ${schedule.timeZone || ''}`
+        : undefined,
+      isOnline: isOnline || false,
+      centerName: location.centerName || undefined,
+    }
+  } catch {
+    return null
+  }
+}
 
 /**
  * Fetch page HTML with a browser-like User-Agent.
@@ -276,39 +384,43 @@ export async function parseWorkshopUrl(url: string): Promise<ParsedWorkshopData>
   }
 
   const hostname = parsedUrl.hostname.replace(/^www\./, '')
-  const html = await fetchPageHtml(url)
 
-  if (!html) {
-    // Network failure — return source only
+  // Art of Living: try the AOLF API first (works for members portal URLs)
+  if (hostname.includes(ART_OF_LIVING_DOMAIN)) {
+    // Extract workshop ID from URL path: /course/checkout/{id} or /course/scheduling/{id}
+    const workshopIdMatch = parsedUrl.pathname.match(/\/course\/(?:checkout|scheduling)\/([a-zA-Z0-9]+)/)
+    if (workshopIdMatch) {
+      const apiResult = await fetchAolfWorkshopApi(workshopIdMatch[1])
+      if (apiResult) return apiResult
+    }
+
+    // Fallback: HTML scraping for non-checkout AoL pages
+    const html = await fetchPageHtml(url)
+    if (html) {
+      const result = parseArtOfLivingPage(html, url)
+
+      // Extract region from URL if not found in page content
+      if (!result.region) {
+        const regionFromSubdomain = hostname.match(/members\.(\w{2})\.artofliving/i)?.[1]?.toUpperCase()
+        const regionFromPath = parsedUrl.pathname.match(/^\/(\w{2})-\w{2}\//)?.[1]?.toUpperCase()
+        const urlRegion = regionFromSubdomain || regionFromPath
+        if (urlRegion) {
+          const regionMap: Record<string, string> = {
+            US: 'United States', CA: 'Canada', IN: 'India',
+            UK: 'United Kingdom', AU: 'Australia', DE: 'Germany', FR: 'France',
+          }
+          result.region = regionMap[urlRegion] || urlRegion
+        }
+      }
+      return result
+    }
+
     return { source: url }
   }
 
-  // Art of Living: use domain-specific parser
-  if (hostname.includes(ART_OF_LIVING_DOMAIN)) {
-    const result = parseArtOfLivingPage(html, url)
-
-    // Extract region from URL path if not found in page content
-    // URLs like members.us.artofliving.org/us-en/... or artofliving.org/us-en/...
-    if (!result.region) {
-      const regionFromSubdomain = hostname.match(/members\.(\w{2})\.artofliving/i)?.[1]?.toUpperCase()
-      const regionFromPath = parsedUrl.pathname.match(/^\/(\w{2})-\w{2}\//)?.[1]?.toUpperCase()
-      const urlRegion = regionFromSubdomain || regionFromPath
-      if (urlRegion) {
-        const regionMap: Record<string, string> = {
-          US: 'United States',
-          CA: 'Canada',
-          IN: 'India',
-          UK: 'United Kingdom',
-          AU: 'Australia',
-          DE: 'Germany',
-          FR: 'France',
-        }
-        result.region = regionMap[urlRegion] || urlRegion
-      }
-    }
-
-    return result
-  }
+  // Generic pages: fetch HTML and parse
+  const html = await fetchPageHtml(url)
+  if (!html) return { source: url }
 
   // Generic page: try meta tags first, then AI extraction for the rest
   const title = extractMeta(html, 'og:title') || extractTitle(html)

@@ -15,6 +15,15 @@ interface ParsedWorkshop {
   description?: string
   price?: string
   source: string
+  teacher?: string
+  teacherEmail?: string
+  teacherPhone?: string
+  contactName?: string
+  contactEmail?: string
+  contactPhone?: string
+  timing?: string
+  isOnline?: boolean
+  centerName?: string
 }
 
 interface PipelineState {
