@@ -377,10 +377,24 @@ export function usePipelineChat({
     setPipeline((prev) => ({ ...prev, reusableResearch: null }))
   }, [sendPipelineMessage, pipeline.reusableResearch])
 
+  // Ref so runFreshResearch always sees current parsedWorkshop
+  const parsedWorkshopRef = useRef(pipeline.parsedWorkshop)
+  parsedWorkshopRef.current = pipeline.parsedWorkshop
+
   const runFreshResearch = useCallback(() => {
-    // Clear the reuse prompt — user will describe the workshop fresh
     setPipeline((prev) => ({ ...prev, reusableResearch: null }))
-  }, [])
+    // Auto-trigger research with parsed workshop data (or campaign defaults)
+    const pw = parsedWorkshopRef.current
+    sendPipelineMessage(
+      `Start research for ${pw?.eventType || 'workshop'} in ${pw?.region || 'my area'}`,
+      'research',
+      {
+        region: pw?.region || '',
+        eventType: pw?.eventType || '',
+        eventDate: pw?.date || '',
+      }
+    )
+  }, [sendPipelineMessage])
 
   const showChannelSelectorPanel = useCallback(() => {
     setPipeline((prev) => ({ ...prev, showChannelSelector: true }))
