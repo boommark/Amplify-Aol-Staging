@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import {
   Moon,
   Brain,
@@ -25,6 +27,11 @@ const DIMENSION_CONFIG: Record<string, { label: string; Icon: typeof Moon; color
   cultural_sensitivities: { label: 'Cultural Sensitivities', Icon: Globe, color: '#14B8A6' },
 }
 
+/** Strip Perplexity citation refs like [1], [2][3], [1,2] from text */
+function stripCitations(text: string): string {
+  return text.replace(/\[[\d,\s]+\]/g, '').trim()
+}
+
 interface ResearchCardProps {
   data: AmplifyDataParts['research-card']
 }
@@ -43,7 +50,7 @@ export function ResearchCard({ data }: ResearchCardProps) {
   }
 
   const { Icon } = config
-  const summary = data.summary || data.findings[0]?.value?.slice(0, 150) || ''
+  const summary = stripCitations(data.summary || data.findings[0]?.value?.slice(0, 150) || '')
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white overflow-hidden hover:shadow-sm transition-shadow">
@@ -62,9 +69,9 @@ export function ResearchCard({ data }: ResearchCardProps) {
               {config.label}
             </h4>
             {expanded ? (
-              <ChevronUp className="w-4 h-4 text-slate-400" />
+              <ChevronUp className="w-4 h-4 text-slate-400 flex-shrink-0" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-slate-400" />
+              <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
             )}
           </div>
           <p
@@ -76,18 +83,50 @@ export function ResearchCard({ data }: ResearchCardProps) {
         </div>
       </button>
       {expanded && (
-        <div className="px-4 pb-4 pt-0 ml-12 border-t border-slate-100">
-          <ul className="space-y-2 mt-3">
-            {data.findings.map((f, i) => (
-              <li
-                key={i}
-                className="text-sm text-slate-700"
-                style={{ fontFamily: 'Work Sans, sans-serif' }}
-              >
-                <span className="font-medium">{f.label}:</span> {f.value}
-              </li>
-            ))}
-          </ul>
+        <div
+          className="px-4 pb-4 pt-2 ml-12 border-t border-slate-100
+            prose prose-sm prose-slate max-w-none
+            prose-p:my-1.5 prose-p:leading-relaxed
+            prose-ul:my-1.5 prose-ul:pl-4 prose-ol:my-1.5 prose-ol:pl-4
+            prose-li:my-0.5 prose-li:leading-relaxed
+            prose-strong:font-semibold prose-strong:text-slate-800
+            prose-headings:font-semibold prose-headings:text-slate-800 prose-headings:mt-3 prose-headings:mb-1
+            prose-h3:text-sm prose-h4:text-sm"
+          style={{ fontFamily: 'Work Sans, sans-serif', fontSize: '14px' }}
+        >
+          {data.findings.map((f, i) => {
+            const cleanValue = stripCitations(f.value)
+            // If label is "Finding N", just render the value as markdown
+            const isGenericLabel = /^Finding \d+$/.test(f.label)
+
+            return (
+              <div key={i} className="mb-2 last:mb-0">
+                {!isGenericLabel && (
+                  <span className="font-semibold text-slate-800">{stripCitations(f.label)}: </span>
+                )}
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ children }) => <span className="inline">{children}</span>,
+                    a: ({ href, children }) => (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#3D8BE8] underline decoration-[#3D8BE8]/30 hover:decoration-[#3D8BE8]"
+                      >
+                        {children}
+                      </a>
+                    ),
+                    ul: ({ children }) => <ul className="mt-1 space-y-0.5 list-disc pl-4">{children}</ul>,
+                    li: ({ children }) => <li className="text-sm text-slate-700 leading-relaxed">{children}</li>,
+                  }}
+                >
+                  {cleanValue}
+                </ReactMarkdown>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
