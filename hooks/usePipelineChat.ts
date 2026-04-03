@@ -383,7 +383,7 @@ export function usePipelineChat({
 
   const runFreshResearch = useCallback(() => {
     setPipeline((prev) => ({ ...prev, reusableResearch: null }))
-    // Auto-trigger research with parsed workshop data (or campaign defaults)
+    // Auto-trigger research with parsed workshop data, skipping reuse check
     const pw = parsedWorkshopRef.current
     sendPipelineMessage(
       `Start research for ${pw?.eventType || 'workshop'} in ${pw?.region || 'my area'}`,
@@ -392,6 +392,7 @@ export function usePipelineChat({
         region: pw?.region || '',
         eventType: pw?.eventType || '',
         eventDate: pw?.date || '',
+        skipReuse: true,
       }
     )
   }, [sendPipelineMessage])

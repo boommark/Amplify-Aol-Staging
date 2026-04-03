@@ -171,8 +171,10 @@ export async function POST(req: Request) {
   // Each research dimension streams as a separate SSE event as it completes.
   // This implements the user decision: "progressive, not batch"
   if (intent.type === 'research' && 'region' in intent) {
-    // Check for reusable research first
-    const reusable = await findReusableResearch(intent.region, campaignId)
+    const skipReuse = pipelineData?.skipReuse === true
+
+    // Check for reusable research first (skip if user chose "Run fresh")
+    const reusable = skipReuse ? null : await findReusableResearch(intent.region, campaignId)
 
     // Update campaign region/event_type if not set
     if (!campaign.region || !campaign.event_type) {
