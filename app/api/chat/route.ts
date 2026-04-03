@@ -264,21 +264,31 @@ export async function POST(req: Request) {
   }
 
   if (intent.type === 'competitor_scan') {
-    const result = await runCompetitorScan({
-      region: campaign.region || '',
-      eventType: campaign.event_type || '',
-    })
-    return NextResponse.json({
-      pipelineResponse: true,
-      action: 'competitor_complete',
-      data: { findings: result.findings },
-    })
+    try {
+      const result = await runCompetitorScan({
+        region: campaign.region || '',
+        eventType: campaign.event_type || '',
+      })
+      return NextResponse.json({
+        pipelineResponse: true,
+        action: 'competitor_complete',
+        data: { findings: result.findings },
+      })
+    } catch (error) {
+      console.error('Competitor scan error:', error)
+      return NextResponse.json({
+        pipelineResponse: true,
+        action: 'error',
+        data: { message: 'Competitor scan failed. Please try again.' },
+      })
+    }
   }
 
   // --- WISDOM: Await quote images and merge URLs into response ---
   // generateQuoteImages is AWAITED (not fire-and-forget) so imageUrls are
   // included in the response and QuoteCard can render images on first paint.
   if (intent.type === 'wisdom' || intent.type === 'different_topic') {
+    try {
     const result = await runWisdomPipeline({ campaignId })
 
     if (result.crisisFlag) {
@@ -324,6 +334,14 @@ export async function POST(req: Request) {
       action: 'wisdom_complete',
       data: { quotes: quotesWithImages },
     })
+    } catch (error) {
+      console.error('Wisdom pipeline error:', error)
+      return NextResponse.json({
+        pipelineResponse: true,
+        action: 'wisdom_timeout',
+        data: { message: 'Wisdom unavailable right now. You can continue to copy generation with just the research context.' },
+      })
+    }
   }
 
   if (intent.type === 'copy_generate') {

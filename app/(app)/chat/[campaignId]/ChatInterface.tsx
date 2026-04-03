@@ -214,6 +214,25 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       })
     }
 
+    // Wisdom timeout/error — show message with option to continue to copy
+    if (pipeline.stage === 'wisdom' && !pipeline.hasWisdom && pipeline.wisdomQuotes.length === 0 && !pipeline.isGenerating) {
+      msgs.push({
+        id: 'pipeline-wisdom-timeout',
+        role: 'assistant',
+        parts: [
+          { type: 'text' as const, text: 'Wisdom quotes are unavailable right now. You can continue to copy generation using the research context.' },
+          {
+            type: 'data-action-chips' as const,
+            data: {
+              chips: [
+                { label: 'Continue to Copy', prompt: 'Continue to copy' },
+              ],
+            },
+          },
+        ],
+      })
+    }
+
     // Wisdom quotes (with image URLs already populated from server)
     if (pipeline.wisdomQuotes.length > 0) {
       const parts: UIMessage['parts'] = pipeline.wisdomQuotes.map((quote) => ({

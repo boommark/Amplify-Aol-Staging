@@ -241,6 +241,11 @@ export function usePipelineChat({
           break
         }
 
+        case 'error':
+          console.error('Pipeline error:', (data.data as { message: string }).message)
+          setPipeline((prev) => ({ ...prev, isGenerating: false }))
+          break
+
         default:
           break
       }
