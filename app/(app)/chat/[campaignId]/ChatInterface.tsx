@@ -276,30 +276,36 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       const wisdom = pipelineMessages.find(m => m.id === 'pipeline-wisdom')
       const copy = pipelineMessages.find(m => m.id === 'pipeline-copy')
 
+      // Track which pipeline messages have been inserted (each only once)
+      const inserted = new Set<string>()
+
       for (let i = 0; i < messages.length; i++) {
         const msg = messages[i]
         result.push(msg)
 
-        // After a user message, insert the pipeline response it triggered
+        // After a user message, insert the pipeline response it triggered (once only)
         if (msg.role === 'user') {
           const text = msg.parts
             ?.filter((p): p is { type: 'text'; text: string } => p.type === 'text')
             .map(p => p.text).join('') || ''
 
-          if (text.match(/https?:\/\//) && urlParsed) {
+          if (text.match(/https?:\/\//) && urlParsed && !inserted.has('urlParsed')) {
             result.push(urlParsed)
-          } else if (text.toLowerCase().includes('research for') && research) {
+            inserted.add('urlParsed')
+          } else if (text.toLowerCase().includes('research for') && research && !inserted.has('research')) {
             result.push(research)
-          } else if (text.toLowerCase().includes('continue to wisdom') && wisdom) {
+            inserted.add('research')
+          } else if (text.toLowerCase().includes('continue to wisdom') && wisdom && !inserted.has('wisdom')) {
             result.push(wisdom)
-          } else if (text.toLowerCase().includes('generate copy') && copy) {
+            inserted.add('wisdom')
+          } else if (text.toLowerCase().includes('generate copy') && copy && !inserted.has('copy')) {
             result.push(copy)
+            inserted.add('copy')
           }
         }
       }
 
-      // Append any pipeline messages that weren't matched to a user message
-      // (e.g., if research was auto-triggered without a matching user message)
+      // Append any pipeline messages that weren't matched
       for (const pm of pipelineMessages) {
         if (!result.includes(pm)) {
           result.push(pm)
