@@ -54,10 +54,10 @@ async function fetchAolfWorkshopApi(workshopId: string, org = 'AOL'): Promise<Pa
     const teacher = d.teachers?.primary || d.contact || {}
     const pricing = d.payment?.pricing?.price || {}
 
-    // Determine if online
-    const isOnline = location.mode === 'Online' && !location.street && !location.street2
+    // Determine if online — trust the mode field (address may still exist for the center)
+    const isOnline = location.mode === 'Online'
 
-    // Build location string
+    // Build display location: "Online" or the physical address
     let locationStr: string | undefined
     if (isOnline) {
       locationStr = 'Online'
@@ -66,11 +66,10 @@ async function fetchAolfWorkshopApi(workshopId: string, org = 'AOL'): Promise<Pa
       locationStr = parts.join(', ') || undefined
     }
 
-    // Region: for online courses → "United States"; for in-person → "City, State"
+    // Region for research: ALWAYS use the center's city/state (even for online courses)
+    // because the teacher's audience is local to that center
     let region: string | undefined
-    if (isOnline) {
-      region = 'United States'
-    } else if (location.city && location.state) {
+    if (location.city && location.state) {
       region = `${location.city}, ${location.state}`
     } else if (location.country) {
       const countryMap: Record<string, string> = { us: 'United States', ca: 'Canada', in: 'India', uk: 'United Kingdom', au: 'Australia' }
