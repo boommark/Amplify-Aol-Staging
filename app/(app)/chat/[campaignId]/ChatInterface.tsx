@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import type { UIMessage } from 'ai'
 import { ChatLayout } from '@/components/chat/ChatLayout'
 import { MessageList } from '@/components/chat/MessageList'
@@ -48,6 +48,10 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
   const isStreaming = status === 'streaming' || status === 'submitted' || pipeline.isGenerating
   const isLoading = status === 'submitted' || pipeline.isGenerating
 
+  // Ref to avoid stale closure in handleChipSelect
+  const parsedWorkshopRef = useRef(pipeline.parsedWorkshop)
+  parsedWorkshopRef.current = pipeline.parsedWorkshop
+
   const handleSend = useCallback(
     (text: string) => {
       sendPipelineMessage(text)
@@ -70,7 +74,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     (prompt: string) => {
       const normalized = prompt.trim().toLowerCase()
       if (normalized === 'start research') {
-        const pw = pipeline.parsedWorkshop
+        const pw = parsedWorkshopRef.current
         // Send research intent directly with parsed data — bypass AI classification
         sendPipelineMessage(
           `Start research for ${pw?.eventType || 'workshop'} in ${pw?.region || 'my area'}`,
@@ -234,40 +238,49 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     return msgs
   }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.wisdomQuotes, pipeline.copyResults])
 
-  // Interleave pipeline messages into the conversation at the right positions.
-  // Pipeline messages are responses to user actions, so they should appear
-  // after the user message that triggered them — not all lumped at the end.
+  // Insert pipeline messages in correct conversational order.
+  // Pipeline messages have stable IDs: 'pipeline-url-parsed', 'pipeline-research', etc.
+  // We match each to the user message that triggered it, then interleave.
   const allMessages = useMemo(
     () => {
       if (pipelineMessages.length === 0) return messages
+      if (messages.length === 0) return pipelineMessages
 
       const result: UIMessage[] = []
-      let pipelineInserted = false
+      // Index pipeline messages by their trigger type
+      const urlParsed = pipelineMessages.find(m => m.id === 'pipeline-url-parsing' || m.id === 'pipeline-url-parsed')
+      const research = pipelineMessages.find(m => m.id === 'pipeline-research')
+      const wisdom = pipelineMessages.find(m => m.id === 'pipeline-wisdom')
+      const copy = pipelineMessages.find(m => m.id === 'pipeline-copy')
 
       for (let i = 0; i < messages.length; i++) {
-        result.push(messages[i])
+        const msg = messages[i]
+        result.push(msg)
 
-        // Insert pipeline messages after the LAST user message
-        // (which is the one that triggered the pipeline)
-        if (!pipelineInserted && messages[i].role === 'user' && i === messages.length - 1) {
-          result.push(...pipelineMessages)
-          pipelineInserted = true
-        } else if (!pipelineInserted && messages[i].role === 'user' && i < messages.length - 1 && messages[i + 1]?.role === 'user') {
-          // Two user messages in a row — the first one triggered a pipeline response
-          // Insert pipeline messages between them if this is the URL/research trigger
-          const msgText = messages[i].parts
+        // After a user message, insert the pipeline response it triggered
+        if (msg.role === 'user') {
+          const text = msg.parts
             ?.filter((p): p is { type: 'text'; text: string } => p.type === 'text')
             .map(p => p.text).join('') || ''
-          if (msgText.match(/https?:\/\//) || msgText.toLowerCase().includes('start research') || msgText.toLowerCase().includes('research for')) {
-            result.push(...pipelineMessages)
-            pipelineInserted = true
+
+          if (text.match(/https?:\/\//) && urlParsed) {
+            result.push(urlParsed)
+          } else if (text.toLowerCase().includes('research for') && research) {
+            result.push(research)
+          } else if (text.toLowerCase().includes('continue to wisdom') && wisdom) {
+            result.push(wisdom)
+          } else if (text.toLowerCase().includes('generate copy') && copy) {
+            result.push(copy)
           }
         }
       }
 
-      // If not inserted yet (e.g., no messages), append at end
-      if (!pipelineInserted) {
-        result.push(...pipelineMessages)
+      // Append any pipeline messages that weren't matched to a user message
+      // (e.g., if research was auto-triggered without a matching user message)
+      for (const pm of pipelineMessages) {
+        if (!result.includes(pm)) {
+          result.push(pm)
+        }
       }
 
       return result
