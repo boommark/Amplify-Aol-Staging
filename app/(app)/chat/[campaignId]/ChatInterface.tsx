@@ -71,8 +71,16 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       const normalized = prompt.trim().toLowerCase()
       if (normalized === 'start research') {
         const pw = pipeline.parsedWorkshop
-        const desc = pw ? `Research for ${pw.eventType || 'workshop'} in ${pw.region || 'my area'}` : 'Start research'
-        sendPipelineMessage(desc)
+        // Send research intent directly with parsed data — bypass AI classification
+        sendPipelineMessage(
+          `Start research for ${pw?.eventType || 'workshop'} in ${pw?.region || 'my area'}`,
+          'research',
+          {
+            region: pw?.region || '',
+            eventType: pw?.eventType || '',
+            eventDate: pw?.date || '',
+          }
+        )
         return
       } else if (normalized === 'continue to wisdom' || normalized === 'continue to wisdom stage') {
         triggerWisdom()
@@ -105,7 +113,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
         role: 'assistant',
         parts: [{ type: 'text' as const, text: `Parsing workshop details from URL...` }],
       })
-    } else if (pipeline.parsedWorkshop && !pipeline.researchResults.length) {
+    } else if (pipeline.parsedWorkshop) {
       const pw = pipeline.parsedWorkshop
       const details = [
         pw.title && `**${pw.title}**`,
@@ -126,16 +134,18 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
 
       const parts: UIMessage['parts'] = [{ type: 'text' as const, text }]
 
-      // Show action chips for user to confirm or edit before research
-      parts.push({
-        type: 'data-action-chips' as const,
-        data: {
-          chips: [
-            { label: 'Start Research', prompt: 'Start Research' },
-            { label: 'Edit Details', prompt: 'Edit Details' },
-          ],
-        },
-      })
+      // Show action chips only before research has started
+      if (!pipeline.researchResults.length && !pipeline.isGenerating) {
+        parts.push({
+          type: 'data-action-chips' as const,
+          data: {
+            chips: [
+              { label: 'Start Research', prompt: 'Start Research' },
+              { label: 'Edit Details', prompt: 'Edit Details' },
+            ],
+          },
+        })
+      }
 
       msgs.push({
         id: 'pipeline-url-parsed',
@@ -224,9 +234,44 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     return msgs
   }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.wisdomQuotes, pipeline.copyResults])
 
-  // Combine real chat messages + pipeline synthetic messages
+  // Interleave pipeline messages into the conversation at the right positions.
+  // Pipeline messages are responses to user actions, so they should appear
+  // after the user message that triggered them — not all lumped at the end.
   const allMessages = useMemo(
-    () => [...messages, ...pipelineMessages],
+    () => {
+      if (pipelineMessages.length === 0) return messages
+
+      const result: UIMessage[] = []
+      let pipelineInserted = false
+
+      for (let i = 0; i < messages.length; i++) {
+        result.push(messages[i])
+
+        // Insert pipeline messages after the LAST user message
+        // (which is the one that triggered the pipeline)
+        if (!pipelineInserted && messages[i].role === 'user' && i === messages.length - 1) {
+          result.push(...pipelineMessages)
+          pipelineInserted = true
+        } else if (!pipelineInserted && messages[i].role === 'user' && i < messages.length - 1 && messages[i + 1]?.role === 'user') {
+          // Two user messages in a row — the first one triggered a pipeline response
+          // Insert pipeline messages between them if this is the URL/research trigger
+          const msgText = messages[i].parts
+            ?.filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+            .map(p => p.text).join('') || ''
+          if (msgText.match(/https?:\/\//) || msgText.toLowerCase().includes('start research') || msgText.toLowerCase().includes('research for')) {
+            result.push(...pipelineMessages)
+            pipelineInserted = true
+          }
+        }
+      }
+
+      // If not inserted yet (e.g., no messages), append at end
+      if (!pipelineInserted) {
+        result.push(...pipelineMessages)
+      }
+
+      return result
+    },
     [messages, pipelineMessages],
   )
 

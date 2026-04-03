@@ -206,6 +206,7 @@ export async function POST(req: Request) {
             campaignId,
             region: intent.region,
             eventType: (intent as { region: string; eventType: string }).eventType,
+            courseDate: (intent as { eventDate?: string }).eventDate || undefined,
             onDimensionComplete: (result) => {
               // Stream each dimension as it resolves
               const event = JSON.stringify({
