@@ -377,10 +377,21 @@ export function usePipelineChat({
         expandedChannels.push(ch.toLowerCase())
       }
     }
+    const pw = pipeline.parsedWorkshop
     sendPipelineMessage('Generate copy', 'copy_generate', {
       channels: expandedChannels,
+      workshopDetails: pw ? {
+        contactName: pw.contactName,
+        contactEmail: pw.contactEmail,
+        contactPhone: pw.contactPhone,
+        teacher: pw.teacher,
+        price: pw.price,
+        timing: pw.timing,
+        centerName: pw.centerName,
+        registrationUrl: pw.source,
+      } : undefined,
     })
-  }, [sendPipelineMessage, pipeline.selectedChannels, pipeline.channelQuantities])
+  }, [sendPipelineMessage, pipeline.selectedChannels, pipeline.channelQuantities, pipeline.parsedWorkshop])
 
   const triggerCompetitorScan = useCallback(() => {
     sendPipelineMessage('Scan competitor content for inspiration', 'competitor_scan')

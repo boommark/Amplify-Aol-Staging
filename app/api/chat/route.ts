@@ -357,7 +357,7 @@ export async function POST(req: Request) {
       channels,
       region: campaign.region || '',
       eventType: campaign.event_type || '',
-      // No language parameter — translation support deferred (CONT-08)
+      workshopDetails: pipelineData?.workshopDetails,
     })
 
     return NextResponse.json({

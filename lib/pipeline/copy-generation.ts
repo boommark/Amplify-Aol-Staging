@@ -57,6 +57,17 @@ export interface GeneratedCopy {
  * Generate copy for a single channel using the channel-specific prompt and model.
  * English only — translation support deferred per user decision.
  */
+export interface WorkshopDetails {
+  contactName?: string
+  contactEmail?: string
+  contactPhone?: string
+  teacher?: string
+  price?: string
+  timing?: string
+  centerName?: string
+  registrationUrl?: string
+}
+
 export async function generateChannelCopy(params: {
   campaignId: string
   channel: string
@@ -65,8 +76,9 @@ export async function generateChannelCopy(params: {
   region: string
   eventType: string
   eventDate?: string
+  workshopDetails?: WorkshopDetails
 }): Promise<GeneratedCopy> {
-  const { campaignId, channel, researchContext, wisdomContext, region, eventType, eventDate } = params
+  const { campaignId, channel, researchContext, wisdomContext, region, eventType, eventDate, workshopDetails } = params
 
   const isStandardChannel = channel in CHANNEL_TASK_MAP
   const taskKey = isStandardChannel
@@ -95,6 +107,24 @@ export async function generateChannelCopy(params: {
   if (eventDate) {
     userPrompt += ` Event date: ${eventDate}.`
   }
+
+  // Inject workshop details (contact info, pricing, venue, registration link)
+  if (workshopDetails) {
+    const details: string[] = []
+    if (workshopDetails.teacher) details.push(`Teacher: ${workshopDetails.teacher}`)
+    if (workshopDetails.price) details.push(`Price: ${workshopDetails.price}`)
+    if (workshopDetails.timing) details.push(`Timing: ${workshopDetails.timing}`)
+    if (workshopDetails.centerName) details.push(`Venue: ${workshopDetails.centerName}`)
+    if (workshopDetails.registrationUrl) details.push(`Registration URL: ${workshopDetails.registrationUrl}`)
+    if (workshopDetails.contactName) details.push(`Contact: ${workshopDetails.contactName}`)
+    if (workshopDetails.contactEmail) details.push(`Contact Email: ${workshopDetails.contactEmail}`)
+    if (workshopDetails.contactPhone) details.push(`Contact Phone: ${workshopDetails.contactPhone}`)
+    if (details.length > 0) {
+      userPrompt += `\n\nWorkshop Details:\n${details.join('\n')}`
+      userPrompt += `\n\nIMPORTANT: Include contact details in flyer copy, email, and WhatsApp. On social posts (Instagram, Facebook), use the registration URL as the CTA link instead of contact details.`
+    }
+  }
+
   userPrompt += `\n\nResearch Context:\n${researchContext}\n\nWisdom & Quotes:\n${wisdomContext}`
 
   // For custom channels, add channel-specific best practices
@@ -136,9 +166,10 @@ export async function generateAllChannels(params: {
   eventType: string
   eventDate?: string
   wisdomContext?: string
+  workshopDetails?: WorkshopDetails
   onChannelComplete?: (copy: GeneratedCopy) => void
 }): Promise<GeneratedCopy[]> {
-  const { campaignId, channels, region, eventType, eventDate, wisdomContext, onChannelComplete } = params
+  const { campaignId, channels, region, eventType, eventDate, wisdomContext, workshopDetails, onChannelComplete } = params
 
   // Package research context once for all channels
   const researchContext = await packageResearchContext(campaignId)
@@ -160,6 +191,7 @@ export async function generateAllChannels(params: {
         region,
         eventType,
         eventDate,
+        workshopDetails,
       })
       results.push(copy)
       onChannelComplete?.(copy)
@@ -179,6 +211,7 @@ export async function generateAllChannels(params: {
         region,
         eventType,
         eventDate,
+        workshopDetails,
       })
       onChannelComplete?.(copy)
       return copy
