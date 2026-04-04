@@ -98,7 +98,7 @@ async function generateWisdomQuestions(researchContext: string): Promise<string[
     system: systemPrompt,
     prompt: `Based on this research context, generate 5 questions to ask a spiritual teacher about topics that would resonate with this audience. Questions should be about life topics (stress, relationships, purpose, sleep, happiness) not about the teacher directly.\n\nResearch:\n${researchContext}`,
     schema: z.object({
-      questions: z.array(z.string()).length(5),
+      questions: z.array(z.string()).describe('Generate exactly 5 questions about life topics'),
     }),
   })
 

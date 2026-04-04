@@ -445,7 +445,7 @@ export function usePipelineChat({
     {
       id: 'wisdom' as const,
       label: 'Wisdom',
-      state: (pipeline.hasWisdom
+      state: (pipeline.hasWisdom || pipeline.stage === 'copy' || pipeline.hasCopy
         ? 'completed'
         : pipeline.stage === 'wisdom'
           ? 'active'
@@ -456,7 +456,7 @@ export function usePipelineChat({
       label: 'Copy',
       state: (pipeline.hasCopy
         ? 'completed'
-        : pipeline.stage === 'copy'
+        : pipeline.stage === 'copy' || pipeline.showChannelSelector
           ? 'active'
           : 'pending') as 'pending' | 'active' | 'completed',
     },
