@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import type { UIMessage } from 'ai'
 import { ChatLayout } from '@/components/chat/ChatLayout'
 import { MessageList } from '@/components/chat/MessageList'
@@ -51,6 +51,14 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
   // Ref to avoid stale closure in handleChipSelect
   const parsedWorkshopRef = useRef(pipeline.parsedWorkshop)
   parsedWorkshopRef.current = pipeline.parsedWorkshop
+
+  // Auto-scroll to channel selector when it appears
+  const channelSelectorRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (pipeline.showChannelSelector && !pipeline.hasCopy) {
+      channelSelectorRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [pipeline.showChannelSelector, pipeline.hasCopy])
 
   const handleSend = useCallback(
     (text: string) => {
@@ -361,19 +369,6 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
               </div>
             )}
 
-            {/* Channel selector — appears after "Continue to copy" chip */}
-            {pipeline.showChannelSelector && !pipeline.hasCopy && (
-              <div className="px-4 pt-2">
-                <ChannelSelector
-                  selectedChannels={pipeline.selectedChannels}
-                  onToggle={toggleChannel}
-                  onAddCustom={addCustomChannel}
-                  onGenerate={triggerCopyGeneration}
-                  isGenerating={pipeline.isGenerating}
-                />
-              </div>
-            )}
-
             <MessageList
               messages={allMessages}
               isStreaming={isStreaming}
@@ -384,6 +379,19 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
               onRetry={regenerate}
               onChipSelect={handleChipSelect}
             />
+
+            {/* Channel selector — appears after "Continue to copy" chip, at the bottom of the conversation */}
+            {pipeline.showChannelSelector && !pipeline.hasCopy && (
+              <div ref={channelSelectorRef} className="px-4 pb-4">
+                <ChannelSelector
+                  selectedChannels={pipeline.selectedChannels}
+                  onToggle={toggleChannel}
+                  onAddCustom={addCustomChannel}
+                  onGenerate={triggerCopyGeneration}
+                  isGenerating={pipeline.isGenerating}
+                />
+              </div>
+            )}
           </div>
         }
         inputBar={
