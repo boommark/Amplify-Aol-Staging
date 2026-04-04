@@ -155,10 +155,12 @@ export async function POST(req: Request) {
           const parsed = await parseWorkshopUrl(urlIntent.url)
           emitStatus(controller, encoder, 'url_parse', `Found: ${parsed.title || 'workshop'} in ${parsed.region || 'your area'}`)
 
-          // Update campaign with extracted data
+          // Update campaign with extracted data — always prefer parsed URL data
+          // over initial campaign type (user may have clicked "Introductory Workshop"
+          // but pasted a Sri Sri Yoga URL)
           const updates: Record<string, string> = {}
-          if (parsed.region && !campaign.region) updates.region = parsed.region
-          if (parsed.eventType && !campaign.event_type) updates.event_type = parsed.eventType
+          if (parsed.region) updates.region = parsed.region
+          if (parsed.eventType) updates.event_type = parsed.eventType
           if (parsed.title) updates.title = parsed.title
           if (Object.keys(updates).length > 0) {
             await supabase.from('campaigns').update(updates).eq('id', campaignId)
