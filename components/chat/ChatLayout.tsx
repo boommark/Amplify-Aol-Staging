@@ -9,7 +9,7 @@ export function ChatLayout({ messageArea, inputBar }: ChatLayoutProps) {
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Scrollable message area */}
-      <div className="flex-1 overflow-y-auto scroll-smooth px-4 md:px-8">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 md:px-8">
         {messageArea}
       </div>
       {/* Sticky input bar */}

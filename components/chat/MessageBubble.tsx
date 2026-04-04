@@ -141,8 +141,8 @@ export function MessageBubble({
       <div className="flex flex-col items-end">
         <div className="flex justify-end">
           <div
-            className="relative bg-[#3D8BE8] text-white rounded-[12px_12px_4px_12px] px-4 py-3 max-w-[75%] text-[15px] shadow-sm"
-            style={{ fontFamily: 'Work Sans, sans-serif', lineHeight: '1.5' }}
+            className="relative bg-[#3D8BE8] text-white rounded-[12px_12px_4px_12px] px-4 py-3 max-w-[75%] text-[15px] shadow-sm break-words"
+            style={{ fontFamily: 'Work Sans, sans-serif', lineHeight: '1.5', overflowWrap: 'anywhere' }}
           >
             {/* Edit button — only on last user message */}
             {isLastUserMessage && onEdit && (
@@ -176,8 +176,8 @@ export function MessageBubble({
   return (
     <div className="flex flex-col items-start">
       <div
-        className="bg-[#F9FAFB] text-slate-900 rounded-[16px_16px_16px_4px] px-5 py-4 max-w-[85%] lg:max-w-[75%] text-[15px] space-y-3 border border-slate-100"
-        style={{ fontFamily: 'Work Sans, sans-serif', lineHeight: '1.6' }}
+        className="bg-[#F9FAFB] text-slate-900 rounded-[16px_16px_16px_4px] px-5 py-4 max-w-[85%] lg:max-w-[75%] text-[15px] space-y-3 border border-slate-100 break-words min-w-0"
+        style={{ fontFamily: 'Work Sans, sans-serif', lineHeight: '1.6', overflowWrap: 'anywhere' }}
       >
         {hasParts ? (
           message.parts.map((part, index) =>

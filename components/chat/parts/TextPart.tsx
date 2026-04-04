@@ -10,7 +10,7 @@ interface TextPartProps {
 export function TextPart({ text }: TextPartProps) {
   return (
     <div
-      className="prose prose-slate max-w-none
+      className="prose prose-slate max-w-none break-words
         prose-p:my-2 prose-p:leading-relaxed
         prose-headings:font-semibold prose-headings:text-slate-900 prose-headings:mt-4 prose-headings:mb-2
         prose-h1:text-lg prose-h2:text-base prose-h3:text-[15px]
@@ -21,7 +21,7 @@ export function TextPart({ text }: TextPartProps) {
         prose-code:bg-slate-200 prose-code:text-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[13px] prose-code:before:content-none prose-code:after:content-none
         prose-pre:bg-slate-800 prose-pre:text-slate-100 prose-pre:rounded-lg prose-pre:my-3
         prose-hr:my-4 prose-hr:border-slate-200"
-      style={{ fontFamily: 'Work Sans, sans-serif', fontSize: '15px', lineHeight: '1.6' }}
+      style={{ fontFamily: 'Work Sans, sans-serif', fontSize: '15px', lineHeight: '1.6', overflowWrap: 'anywhere' }}
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}

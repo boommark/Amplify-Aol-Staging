@@ -116,7 +116,7 @@ export default async function AppLayout({
   )
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-100 fixed inset-y-0 left-0 z-50">
         {sidebarContent}
@@ -153,7 +153,7 @@ export default async function AppLayout({
       </div>
 
       {/* Main content */}
-      <main className="flex-1 md:ml-64 pt-16 md:pt-0 min-h-screen">
+      <main className="flex-1 md:ml-64 pt-16 md:pt-0 min-w-0 overflow-x-hidden h-[calc(100dvh-4rem)] md:h-dvh">
         {children}
       </main>
     </div>
