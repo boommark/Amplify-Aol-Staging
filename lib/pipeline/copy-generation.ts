@@ -37,6 +37,19 @@ NEVER: Lead with the organization. Diagnose the reader. Dump research statistics
 OUTPUT: Return ONLY the copy. No meta-commentary, no "here is your copy," no explanations.
 `.trim()
 
+// Workshop descriptions keyed by eventType — ensures copy references the correct program
+// Full reference: docs/WORKSHOP-DESCRIPTIONS.md
+const WORKSHOP_CONTEXT: Record<string, string> = {
+  'Happiness Program (Art of Living Part 1)': `This is the Happiness Program (Art of Living Part 1). Core technique: Sudarshan Kriya (SKY), a rhythmic breathing technique. 3 days, 2.5 hrs/day. 100+ independent studies. Yale study: outperformed MBSR. 67-73% depression relief. Active breathwork that engages the nervous system directly. Daily practice after: 20 minutes. The flagship entry point to Art of Living.`,
+  'Sahaj Samadhi Meditation': `This is Sahaj Samadhi Meditation. Core technique: effortless mantra-based meditation with a personalized mantra. 3 days, 2 hrs/day. No concentration or visualization required. RCT: 40% depression remission vs 16.3% control. Fully independent after learning — no apps needed. Complements SKY (mantra-based vs breathwork). The meditation for people who've struggled with other forms.`,
+  'Sri Sri Yoga': `This is the Sri Sri Yoga Foundation Program. Holistic yoga integrating traditional asanas, pranayama, meditation, and yogic wisdom. 4-6 days, 2 hrs/day. NOT the same as a gym yoga class. Goes beyond physical postures to include breath, mind, and spirit. Does NOT teach SKY or Sahaj Samadhi — those are separate programs. Accessible, non-judgmental, meets you where you are.`,
+  'Art of Living Premium': `This is the Art of Living Premium Course. Bundles both Sudarshan Kriya (SKY) and Sahaj Samadhi Meditation in a single course. 3 days, 3.5 hrs/day. Best value — walk away with both an active breathwork practice AND a passive meditation practice. Compounding effect of the two techniques together.`,
+  'Sleep and Anxiety Protocol': `This is the Sleep and Anxiety Protocol. Core technique: breathwork + NSDR/Yoga Nidra + sleep hygiene protocols. 3 days, 2.5 hrs/day (online only). Targets root causes of insomnia and anxiety (nervous system dysregulation), not symptoms. Lightest daily commitment: 15 minutes. Newest AOL course. Does NOT teach SKY or Sahaj Samadhi.`,
+  'Advanced Meditation (Art of Living Part 2)': `This is Art of Living Part 2 (Advanced Meditation / Art of Silence). Silent retreat (4-10 days) with "Hollow and Empty" guided meditations by Gurudev. Requires Part 1. Profoundly deeper rest than daily practice.`,
+  'Art Excel (Youth)': `This is Art Excel, Art of Living's youth program for ages 8-17. Teaches breathing, meditation, and life skills in an engaging, age-appropriate format.`,
+  'YES!+': `This is YES!+ (Youth Empowerment & Skills), Art of Living's program for young adults 18-30. Combines SKY breathing with leadership, social skills, and service.`,
+}
+
 type StandardChannel = 'email' | 'whatsapp' | 'instagram' | 'facebook' | 'flyer'
 
 const CHANNEL_TASK_MAP: Record<StandardChannel, TaskKey> = {
@@ -106,6 +119,15 @@ export async function generateChannelCopy(params: {
   let userPrompt = `Generate ${channel} marketing copy for an Art of Living ${eventType} event in ${region}.`
   if (eventDate) {
     userPrompt += ` Event date: ${eventDate}.`
+  }
+
+  // Inject workshop-specific context so the AI knows what this program IS
+  const workshopContext = WORKSHOP_CONTEXT[eventType]
+  if (workshopContext) {
+    userPrompt += `\n\nAbout This Program:\n${workshopContext}`
+  } else {
+    // Fallback for unknown event types — include the eventType name at minimum
+    userPrompt += `\n\nThis is a "${eventType}" program offered by Art of Living. Write copy that accurately represents this specific program.`
   }
 
   // Inject workshop details (contact info, pricing, venue, registration link)
