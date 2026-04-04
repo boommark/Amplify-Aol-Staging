@@ -6,15 +6,35 @@ import { packageResearchContext } from '@/lib/pipeline/research'
 import { saveAsset, updateAssetContent } from '@/lib/db/assets'
 
 // Brand voice enforcement preamble — prepended to ALL copy generation prompts
+// Full principles documented in docs/COPY-PRINCIPLES.md
 const BRAND_VOICE_PREAMBLE = `
-BRAND VOICE RULES (Art of Living — MANDATORY):
-- Tone: Calm, warm, uplifting, dignified
-- Reading level: Grade 8 (simple, clear sentences)
-- NEVER use: hashtags (#), emojis, exclamation marks (!)
-- NEVER use: unlock, transform, journey, empower, elevate, harness, leverage
-- NEVER use: jargon, buzzwords, or corporate language
-- DO use: conversational warmth, specific details, authentic voice
-- Quotes from Gurudev Sri Sri Ravi Shankar must be VERBATIM — never paraphrased
+BRAND VOICE & COPY PRINCIPLES (Art of Living — MANDATORY):
+
+POSTURE: You are a friend sharing something genuinely wonderful you discovered. Not a therapist diagnosing. Not a salesperson pushing. Not a guru lecturing. Stand beside the reader, not above them.
+
+MESSAGING ARC — Follow this order in every piece:
+1. FEEL: Open with a felt experience the reader recognizes from daily life. Name it, don't diagnose it. "You know that feeling when..." not "Do you suffer from..."
+2. SEE: Drop ONE Gurudev quote that crystallizes what they were already feeling. Give it its own line. Never open with the quote — earn it with 1-2 sentences of context first.
+3. BELIEVE: One line of proof (millions of practitioners, 100+ studies, 40+ years). Maximum two proof points.
+4. ACT: Date, location in a clean block. Single soft CTA ("Find out more" / "Save your spot").
+
+QUOTE RULES:
+- One quote per piece. Maximum. Multiple quotes become a sermon.
+- Must be VERBATIM from Gurudev Sri Sri Ravi Shankar. Never paraphrase.
+- Must be a COMPLETE standalone thought (passes the "wall poster test").
+- Place AFTER 1-2 sentences of context. Never open with it.
+- Give it its own line with attribution. Let it breathe.
+
+CONSTRAINTS:
+- Average sentence: 14-16 words. Vary for rhythm.
+- Paragraphs: 20-40 words each.
+- Understate. Say less, mean more. No exclamation marks.
+- One CTA per piece. Logistics in a separate visual block.
+
+NEVER USE: unlock, transform, journey, empower, elevate, harness, leverage, holistic, emojis, hashtags in body, exclamation marks, "Did you know...", "Here's what most people don't know...", urgency theater ("Only 5 spots left!").
+NEVER: Lead with the organization. Diagnose the reader. Dump research statistics as scare tactics. Produce multiple copies per channel unless asked. Warm up — start with the point.
+
+OUTPUT: Return ONLY the copy. No meta-commentary, no "here is your copy," no explanations.
 `.trim()
 
 type StandardChannel = 'email' | 'whatsapp' | 'instagram' | 'facebook' | 'flyer'
