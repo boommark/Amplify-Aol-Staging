@@ -38,6 +38,7 @@ interface PipelineState {
   wisdomQuotes: Array<AmplifyDataParts['quote-card']>
   copyResults: Array<{ channel: string; content: string; assetId: string }>
   selectedChannels: string[]
+  channelQuantities: Record<string, number>
   isGenerating: boolean
   reusableResearch: { campaignId: string; campaignTitle: string } | null
   showChannelSelector: boolean
@@ -65,6 +66,7 @@ export function usePipelineChat({
     wisdomQuotes: [],
     copyResults: [],
     selectedChannels: ['Email', 'WhatsApp', 'Instagram', 'Facebook', 'Flyer'],
+    channelQuantities: { Email: 1, WhatsApp: 1, Instagram: 1, Facebook: 1, Flyer: 1 },
     isGenerating: false,
     reusableResearch: null,
     showChannelSelector: false,
@@ -367,10 +369,18 @@ export function usePipelineChat({
   }, [sendPipelineMessage])
 
   const triggerCopyGeneration = useCallback(() => {
+    // Expand channels by quantity: { Email: 2, WhatsApp: 1 } → ['email', 'email', 'whatsapp']
+    const expandedChannels: string[] = []
+    for (const ch of pipeline.selectedChannels) {
+      const qty = pipeline.channelQuantities[ch] ?? 1
+      for (let i = 0; i < qty; i++) {
+        expandedChannels.push(ch.toLowerCase())
+      }
+    }
     sendPipelineMessage('Generate copy', 'copy_generate', {
-      channels: pipeline.selectedChannels.map((c) => c.toLowerCase()),
+      channels: expandedChannels,
     })
-  }, [sendPipelineMessage, pipeline.selectedChannels])
+  }, [sendPipelineMessage, pipeline.selectedChannels, pipeline.channelQuantities])
 
   const triggerCompetitorScan = useCallback(() => {
     sendPipelineMessage('Scan competitor content for inspiration', 'competitor_scan')
@@ -421,6 +431,14 @@ export function usePipelineChat({
     setPipeline((prev) => ({
       ...prev,
       selectedChannels: [...prev.selectedChannels, name],
+      channelQuantities: { ...prev.channelQuantities, [name]: 1 },
+    }))
+  }, [])
+
+  const setChannelQuantity = useCallback((channel: string, quantity: number) => {
+    setPipeline((prev) => ({
+      ...prev,
+      channelQuantities: { ...prev.channelQuantities, [channel]: quantity },
     }))
   }, [])
 
@@ -476,6 +494,7 @@ export function usePipelineChat({
     showChannelSelectorPanel,
     toggleChannel,
     addCustomChannel,
+    setChannelQuantity,
     refineCopy,
   }
 }

@@ -37,6 +37,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     showChannelSelectorPanel,
     toggleChannel,
     addCustomChannel,
+    setChannelQuantity,
   } = usePipelineChat({
     campaignId,
     initialMessages,
@@ -385,7 +386,9 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
               <div ref={channelSelectorRef} className="px-4 pb-4">
                 <ChannelSelector
                   selectedChannels={pipeline.selectedChannels}
+                  channelQuantities={pipeline.channelQuantities}
                   onToggle={toggleChannel}
+                  onQuantityChange={setChannelQuantity}
                   onAddCustom={addCustomChannel}
                   onGenerate={triggerCopyGeneration}
                   isGenerating={pipeline.isGenerating}
