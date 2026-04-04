@@ -139,18 +139,18 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       const pw = pipeline.parsedWorkshop
       const details = [
         pw.title && `**${pw.title}**`,
-        pw.eventType && `Type: ${pw.eventType}`,
-        pw.teacher && `Teacher: ${pw.teacher}`,
-        pw.date && `Date: ${pw.date}`,
-        pw.timing && `Timing: ${pw.timing}`,
-        pw.location && `Location: ${pw.location}`,
-        pw.isOnline && `Mode: Online`,
-        pw.region && `Region: ${pw.region}`,
-        pw.centerName && `Center: ${pw.centerName}`,
-        pw.price && `Price: ${pw.price}`,
-        pw.contactName && `Contact: ${pw.contactName}${pw.contactEmail ? ` (${pw.contactEmail})` : ''}`,
+        pw.eventType && `**Type:** ${pw.eventType}`,
+        pw.teacher && `**Teacher:** ${pw.teacher}`,
+        pw.date && `**Date:** ${pw.date}`,
+        pw.timing && `**Timing:** ${pw.timing}`,
+        pw.location && `**Location:** ${pw.location}`,
+        pw.isOnline && `**Mode:** Online`,
+        pw.region && `**Region:** ${pw.region}`,
+        pw.centerName && `**Center:** ${pw.centerName}`,
+        pw.price && `**Price:** ${pw.price}`,
+        pw.contactName && `**Contact:** ${pw.contactName}${pw.contactEmail ? ` (${pw.contactEmail})` : ''}`,
         pw.description && `\n${pw.description}`,
-      ].filter(Boolean).join('\n')
+      ].filter(Boolean).join('  \n')
 
       const text = `Here are the workshop details:\n\n${details}`
 
@@ -278,7 +278,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     }
 
     return msgs
-  }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.wisdomQuotes, pipeline.copyResults])
+  }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.isGenerating, pipeline.reusableResearch, pipeline.hasWisdom, pipeline.wisdomQuotes, pipeline.copyResults, pipeline.showChannelSelector])
 
   // Insert pipeline messages in correct conversational order.
   // Pipeline messages have stable IDs: 'pipeline-url-parsed', 'pipeline-research', etc.
