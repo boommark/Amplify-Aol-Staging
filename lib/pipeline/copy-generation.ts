@@ -167,9 +167,10 @@ export async function generateAllChannels(params: {
   eventDate?: string
   wisdomContext?: string
   workshopDetails?: WorkshopDetails
+  onStatus?: (text: string) => void
   onChannelComplete?: (copy: GeneratedCopy) => void
 }): Promise<GeneratedCopy[]> {
-  const { campaignId, channels, region, eventType, eventDate, wisdomContext, workshopDetails, onChannelComplete } = params
+  const { campaignId, channels, region, eventType, eventDate, wisdomContext, workshopDetails, onStatus, onChannelComplete } = params
 
   // Package research context once for all channels
   const researchContext = await packageResearchContext(campaignId)
@@ -182,6 +183,7 @@ export async function generateAllChannels(params: {
 
   // Generate email first if selected
   for (const channel of emailChannels) {
+    onStatus?.('Writing email copy...')
     try {
       const copy = await generateChannelCopy({
         campaignId,
@@ -201,6 +203,9 @@ export async function generateAllChannels(params: {
   }
 
   // Generate remaining channels in parallel
+  if (otherChannels.length > 0) {
+    onStatus?.(`Writing ${otherChannels.join(', ')} copy...`)
+  }
   const parallelResults = await Promise.allSettled(
     otherChannels.map(async (channel) => {
       const copy = await generateChannelCopy({

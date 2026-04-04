@@ -56,15 +56,17 @@ export async function runResearchPipeline(params: {
   region: string
   eventType: string
   courseDate?: string
+  onDimensionStart?: (dimension: ResearchDimension) => void
   onDimensionComplete?: (result: DimensionResult) => void
 }): Promise<DimensionResult[]> {
-  const { campaignId, region, eventType, courseDate, onDimensionComplete } = params
+  const { campaignId, region, eventType, courseDate, onDimensionStart, onDimensionComplete } = params
 
   const dimensions = Object.keys(DIMENSION_QUERIES) as ResearchDimension[]
 
   // Fire all 7 queries in parallel
   const results = await Promise.allSettled(
     dimensions.map(async (dimension) => {
+      onDimensionStart?.(dimension)
       const query = DIMENSION_QUERIES[dimension](region, eventType, courseDate)
 
       const { text } = await generateText({

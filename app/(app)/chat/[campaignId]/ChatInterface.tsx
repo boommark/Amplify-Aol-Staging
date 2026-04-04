@@ -199,10 +199,13 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
 
       // Add action chips when all research has completed
       if (pipeline.hasResearch && !pipeline.hasWisdom) {
-        // Add a contextual assistant text before the chips
+        const researchSummary = pipeline.phaseSummaries.find(s => s.phase === 'research')
+        const summaryText = researchSummary
+          ? `**Step ${researchSummary.stepNumber} of ${researchSummary.totalSteps} complete.** ${researchSummary.summaryText}\n\nYou can review findings, add local notes, or continue.\n\n**Next:** ${researchSummary.nextPhaseDescription}`
+          : 'Research complete. You can add any local context I should know, or continue to the next step.'
         parts.push({
           type: 'text' as const,
-          text: 'Research complete. You can add any local context I should know, or continue to the next step.',
+          text: summaryText,
         })
         parts.push({
           type: 'data-action-chips' as const,
@@ -287,7 +290,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     }
 
     return msgs
-  }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.isGenerating, pipeline.reusableResearch, pipeline.hasWisdom, pipeline.wisdomQuotes, pipeline.copyResults, pipeline.showChannelSelector])
+  }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.isGenerating, pipeline.reusableResearch, pipeline.hasWisdom, pipeline.wisdomQuotes, pipeline.copyResults, pipeline.showChannelSelector, pipeline.phaseSummaries])
 
   // Insert pipeline messages in correct conversational order.
   // Pipeline messages have stable IDs: 'pipeline-url-parsed', 'pipeline-research', etc.
@@ -352,7 +355,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       {/* Stage progress bar — visible once pipeline is active */}
       {showProgressBar && (
         <div className="px-4 pt-2 pb-0 border-b border-slate-100 bg-white">
-          <StageProgressBar stages={stages} />
+          <StageProgressBar stages={stages} statusText={pipeline.statusText} />
         </div>
       )}
 

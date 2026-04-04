@@ -10,9 +10,10 @@ interface Stage {
 
 interface StageProgressBarProps {
   stages: Stage[]
+  statusText?: string | null
 }
 
-export function StageProgressBar({ stages }: StageProgressBarProps) {
+export function StageProgressBar({ stages, statusText }: StageProgressBarProps) {
   return (
     <div className="pt-6 px-2">
       <ol role="list" className="flex items-center w-full">
@@ -25,7 +26,7 @@ export function StageProgressBar({ stages }: StageProgressBarProps) {
               )}
               {stage.state === 'active' && (
                 <div
-                  className="w-5 h-5 rounded-full bg-[#3D8BE8]"
+                  className="w-5 h-5 rounded-full bg-[#3D8BE8] animate-pulse"
                   aria-current="step"
                   aria-hidden="true"
                 />
@@ -71,6 +72,19 @@ export function StageProgressBar({ stages }: StageProgressBarProps) {
           </li>
         ))}
       </ol>
+
+      {/* Live status text */}
+      {statusText && (
+        <div className="flex items-center gap-2 mt-2 px-1">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#3D8BE8] animate-pulse flex-shrink-0" />
+          <span
+            className="text-xs text-slate-500 truncate"
+            style={{ fontFamily: 'Work Sans, sans-serif' }}
+          >
+            {statusText}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

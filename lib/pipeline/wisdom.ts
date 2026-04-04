@@ -139,23 +139,27 @@ async function curateQuoteFormats(fullContent: string): Promise<{
 export async function runWisdomPipeline(params: {
   campaignId: string
   onQuoteReady?: (quote: WisdomQuote) => void
+  onStatus?: (text: string) => void
 }): Promise<{
   quotes: WisdomQuote[]
   crisisFlag: boolean
   timedOut: boolean
 }> {
-  const { campaignId, onQuoteReady } = params
+  const { campaignId, onQuoteReady, onStatus } = params
 
   // 1. Package research context
+  onStatus?.('Packaging research context...')
   const researchContext = await packageResearchContext(campaignId)
   if (!researchContext) {
     return { quotes: [], crisisFlag: false, timedOut: false }
   }
 
   // 2. Generate 5 contextual questions
+  onStatus?.('Generating questions for Gurudev...')
   const questions = await generateWisdomQuestions(researchContext)
 
   // 3. Query Ask Gurudev for each question (parallel)
+  onStatus?.(`Searching Gurudev's wisdom across ${questions.length} topics...`)
   const apiResults = await Promise.allSettled(
     questions.map((q) => queryAskGurudev(q))
   )
@@ -201,6 +205,7 @@ export async function runWisdomPipeline(params: {
   const topQuotes = sorted.slice(0, 5)
 
   // 6. Curate each into short/medium/long (parallel)
+  onStatus?.(`Curating ${topQuotes.length} quotes into short, medium, and long formats...`)
   const curatedResults = await Promise.allSettled(
     topQuotes.map(async (match, i) => {
       const formats = await curateQuoteFormats(match.content)

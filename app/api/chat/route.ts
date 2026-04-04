@@ -12,6 +12,45 @@ import { parseWorkshopUrl } from '@/lib/pipeline/url-parser'
 
 export const maxDuration = 300
 
+const SSE_HEADERS = {
+  'Content-Type': 'text/event-stream',
+  'Cache-Control': 'no-cache',
+  'Connection': 'keep-alive',
+} as const
+
+function emitSSE(
+  controller: ReadableStreamDefaultController,
+  encoder: TextEncoder,
+  action: string,
+  data: Record<string, unknown>
+) {
+  const event = JSON.stringify({ pipelineResponse: true, action, data })
+  controller.enqueue(encoder.encode(`data: ${event}\n\n`))
+}
+
+function emitStatus(
+  controller: ReadableStreamDefaultController,
+  encoder: TextEncoder,
+  phase: string,
+  text: string
+) {
+  emitSSE(controller, encoder, 'pipeline_status', { phase, text })
+}
+
+function emitPhaseSummary(
+  controller: ReadableStreamDefaultController,
+  encoder: TextEncoder,
+  summary: {
+    phase: string
+    stepNumber: number
+    totalSteps: number
+    summaryText: string
+    nextPhaseDescription: string | null
+  }
+) {
+  emitSSE(controller, encoder, 'phase_summary', summary)
+}
+
 export async function POST(req: Request) {
   // AUTH FIRST — before any AI SDK usage
   const supabase = await createClient()
@@ -109,15 +148,12 @@ export async function POST(req: Request) {
       async start(controller) {
         try {
           // Emit parsing-started event so UI can show progress
-          const parsingEvent = JSON.stringify({
-            pipelineResponse: true,
-            action: 'url_parsing',
-            data: { url: urlIntent.url },
-          })
-          controller.enqueue(encoder.encode(`data: ${parsingEvent}\n\n`))
+          emitSSE(controller, encoder, 'url_parsing', { url: urlIntent.url })
+          emitStatus(controller, encoder, 'url_parse', 'Extracting workshop details...')
 
           // Parse the URL
           const parsed = await parseWorkshopUrl(urlIntent.url)
+          emitStatus(controller, encoder, 'url_parse', `Found: ${parsed.title || 'workshop'} in ${parsed.region || 'your area'}`)
 
           // Update campaign with extracted data
           const updates: Record<string, string> = {}
@@ -136,14 +172,15 @@ export async function POST(req: Request) {
           })
           controller.enqueue(encoder.encode(`data: ${parsedEvent}\n\n`))
 
-          // Emit completion and close — do NOT auto-trigger research.
-          // Let the user review parsed details and decide when to start research.
-          const doneEvent = JSON.stringify({
-            pipelineResponse: true,
-            action: 'url_parse_complete',
-            data: { parsed },
+          // Emit completion and phase summary
+          emitSSE(controller, encoder, 'url_parse_complete', { parsed })
+          emitPhaseSummary(controller, encoder, {
+            phase: 'url_parse',
+            stepNumber: 1,
+            totalSteps: 4,
+            summaryText: `Extracted details for **${parsed.title || 'workshop'}** in **${parsed.region || 'your area'}**${parsed.date ? ' on ' + parsed.date : ''}.${parsed.teacher ? ' Teacher: ' + parsed.teacher + '.' : ''}`,
+            nextPhaseDescription: 'Research will analyze your local market across 6 dimensions: mental health trends, spiritual interests, cultural context, seasonal events, relationships, and wellness patterns.',
           })
-          controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`))
           controller.close()
         } catch (error) {
           console.error('URL parse + research error:', error)
@@ -204,33 +241,44 @@ export async function POST(req: Request) {
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          await runResearchPipeline({
+          const dimensionLabels: Record<string, string> = {
+            mental_health: 'mental health trends',
+            spirituality: 'spiritual interests',
+            cultural_sensitivities: 'cultural context',
+            seasonal: 'seasonal events',
+            relationships: 'relationship dynamics',
+            sleep_health: 'sleep and wellness',
+          }
+
+          emitStatus(controller, encoder, 'research', `Starting research for ${intent.region}...`)
+
+          const results = await runResearchPipeline({
             campaignId,
             region: intent.region,
             eventType: (intent as { region: string; eventType: string }).eventType,
             courseDate: (intent as { eventDate?: string }).eventDate || undefined,
+            onDimensionStart: (dimension) => {
+              emitStatus(controller, encoder, 'research', `Researching ${dimensionLabels[dimension] || dimension} in ${intent.region}...`)
+            },
             onDimensionComplete: (result) => {
-              // Stream each dimension as it resolves
-              const event = JSON.stringify({
-                pipelineResponse: true,
-                action: 'research_dimension',
-                data: {
-                  dimension: result.dimension,
-                  findings: result.findings,
-                  sources: result.sources,
-                },
+              emitSSE(controller, encoder, 'research_dimension', {
+                dimension: result.dimension,
+                findings: result.findings,
+                sources: result.sources,
               })
-              controller.enqueue(encoder.encode(`data: ${event}\n\n`))
+              emitStatus(controller, encoder, 'research', `Found insights on ${dimensionLabels[result.dimension] || result.dimension}`)
             },
           })
 
-          // Send completion event after all dimensions resolve
-          const doneEvent = JSON.stringify({
-            pipelineResponse: true,
-            action: 'research_complete',
-            data: { dimensionCount: 6 },
+          // Send completion event with phase summary
+          emitSSE(controller, encoder, 'research_complete', { dimensionCount: results.length })
+          emitPhaseSummary(controller, encoder, {
+            phase: 'research',
+            stepNumber: 2,
+            totalSteps: 4,
+            summaryText: `Completed research across ${results.length} dimensions for ${intent.region}. Key insights are ready for review.`,
+            nextPhaseDescription: `Wisdom will find relevant Gurudev quotes that resonate with your audience's needs.`,
           })
-          controller.enqueue(encoder.encode(`data: ${doneEvent}\n\n`))
           controller.close()
         } catch (error) {
           console.error('Research pipeline error:', error)
@@ -284,64 +332,74 @@ export async function POST(req: Request) {
     }
   }
 
-  // --- WISDOM: Await quote images and merge URLs into response ---
-  // generateQuoteImages is AWAITED (not fire-and-forget) so imageUrls are
-  // included in the response and QuoteCard can render images on first paint.
+  // --- WISDOM: Stream status updates, then emit quotes with images ---
   if (intent.type === 'wisdom' || intent.type === 'different_topic') {
-    try {
-    const result = await runWisdomPipeline({ campaignId })
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          emitStatus(controller, encoder, 'wisdom', 'Starting wisdom pipeline...')
 
-    if (result.crisisFlag) {
-      return NextResponse.json({
-        pipelineResponse: true,
-        action: 'crisis_flag',
-        data: {
-          message: 'I noticed this topic may touch on emotional crisis. Here are some support resources:',
-          helplines: [
-            { name: 'iCall', number: '9152987821', country: 'India' },
-            { name: 'National Suicide Prevention Lifeline', number: '988', country: 'US' },
-            { name: 'Crisis Text Line', text: 'HOME to 741741', country: 'US' },
-          ],
-        },
-      })
-    }
+          const result = await runWisdomPipeline({
+            campaignId,
+            onStatus: (text) => emitStatus(controller, encoder, 'wisdom', text),
+          })
 
-    if (result.timedOut) {
-      return NextResponse.json({
-        pipelineResponse: true,
-        action: 'wisdom_timeout',
-        data: { message: 'Wisdom unavailable — continuing with your research context.' },
-      })
-    }
+          if (result.crisisFlag) {
+            emitSSE(controller, encoder, 'crisis_flag', {
+              message: 'I noticed this topic may touch on emotional crisis. Here are some support resources:',
+              helplines: [
+                { name: 'iCall', number: '9152987821', country: 'India' },
+                { name: 'National Suicide Prevention Lifeline', number: '988', country: 'US' },
+                { name: 'Crisis Text Line', text: 'HOME to 741741', country: 'US' },
+              ],
+            })
+            controller.close()
+            return
+          }
 
-    // Generate quote images and AWAIT them so URLs can be included in the response.
-    // If image generation fails for any quote, that quote renders without an image (imageUrl remains undefined).
-    const quoteTexts = result.quotes.map((q, i) => ({ quoteText: q.medium, quoteIndex: i }))
-    const imageUrls = await generateQuoteImages({
-      quotes: quoteTexts,
-      userId: user.id,
-      campaignId,
+          if (result.timedOut) {
+            emitSSE(controller, encoder, 'wisdom_timeout', {
+              message: 'Wisdom unavailable. You can continue to copy generation with just the research context.',
+            })
+            controller.close()
+            return
+          }
+
+          // Generate quote images
+          emitStatus(controller, encoder, 'wisdom', 'Creating quote images...')
+          const quoteTexts = result.quotes.map((q, i) => ({ quoteText: q.medium, quoteIndex: i }))
+          const imageUrls = await generateQuoteImages({
+            quotes: quoteTexts,
+            userId: user.id,
+            campaignId,
+          })
+
+          const quotesWithImages = result.quotes.map((quote, i) => ({
+            ...quote,
+            imageUrl: imageUrls[i] || undefined,
+          }))
+
+          emitSSE(controller, encoder, 'wisdom_complete', { quotes: quotesWithImages })
+          emitPhaseSummary(controller, encoder, {
+            phase: 'wisdom',
+            stepNumber: 3,
+            totalSteps: 4,
+            summaryText: `Found ${quotesWithImages.length} relevant Gurudev quotes with images.`,
+            nextPhaseDescription: 'Copy generation will create channel-specific marketing content using your research insights and wisdom quotes.',
+          })
+          controller.close()
+        } catch (error) {
+          console.error('Wisdom pipeline error:', error)
+          emitSSE(controller, encoder, 'wisdom_timeout', {
+            message: 'Wisdom unavailable right now. You can continue to copy generation with just the research context.',
+          })
+          controller.close()
+        }
+      },
     })
 
-    // Merge imageUrls into quotes
-    const quotesWithImages = result.quotes.map((quote, i) => ({
-      ...quote,
-      imageUrl: imageUrls[i] || undefined,
-    }))
-
-    return NextResponse.json({
-      pipelineResponse: true,
-      action: 'wisdom_complete',
-      data: { quotes: quotesWithImages },
-    })
-    } catch (error) {
-      console.error('Wisdom pipeline error:', error)
-      return NextResponse.json({
-        pipelineResponse: true,
-        action: 'wisdom_timeout',
-        data: { message: 'Wisdom unavailable right now. You can continue to copy generation with just the research context.' },
-      })
-    }
+    return new Response(stream, { headers: SSE_HEADERS })
   }
 
   if (intent.type === 'copy_generate') {
@@ -349,22 +407,42 @@ export async function POST(req: Request) {
       ? pipelineData.channels
       : ['email', 'whatsapp', 'instagram', 'facebook', 'flyer']
 
-    // Package research context for copy generation (unused var suppressed — passed to generateAllChannels)
-    await packageResearchContext(campaignId)
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          emitStatus(controller, encoder, 'copy', 'Packaging research and wisdom context...')
 
-    const results = await generateAllChannels({
-      campaignId,
-      channels,
-      region: campaign.region || '',
-      eventType: campaign.event_type || '',
-      workshopDetails: pipelineData?.workshopDetails,
+          const results = await generateAllChannels({
+            campaignId,
+            channels,
+            region: campaign.region || '',
+            eventType: campaign.event_type || '',
+            workshopDetails: pipelineData?.workshopDetails,
+            onStatus: (text) => emitStatus(controller, encoder, 'copy', text),
+            onChannelComplete: (copy) => {
+              emitStatus(controller, encoder, 'copy', `${copy.channel} copy ready`)
+            },
+          })
+
+          emitSSE(controller, encoder, 'copy_complete', { copies: results })
+          emitPhaseSummary(controller, encoder, {
+            phase: 'copy',
+            stepNumber: 4,
+            totalSteps: 4,
+            summaryText: `Generated copy for ${results.length} channel${results.length !== 1 ? 's' : ''}: ${[...new Set(results.map(r => r.channel))].join(', ')}.`,
+            nextPhaseDescription: null,
+          })
+          controller.close()
+        } catch (error) {
+          console.error('Copy generation error:', error)
+          emitSSE(controller, encoder, 'error', { message: 'Copy generation failed. Please try again.' })
+          controller.close()
+        }
+      },
     })
 
-    return NextResponse.json({
-      pipelineResponse: true,
-      action: 'copy_complete',
-      data: { copies: results },
-    })
+    return new Response(stream, { headers: SSE_HEADERS })
   }
 
   if (intent.type === 'copy_refine' && 'channel' in intent && 'instruction' in intent) {

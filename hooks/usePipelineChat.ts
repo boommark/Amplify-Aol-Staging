@@ -44,6 +44,14 @@ interface PipelineState {
   showChannelSelector: boolean
   parsedWorkshop: ParsedWorkshop | null
   parsingUrl: string | null
+  statusText: string | null
+  phaseSummaries: Array<{
+    phase: string
+    stepNumber: number
+    totalSteps: number
+    summaryText: string
+    nextPhaseDescription: string | null
+  }>
 }
 
 export function usePipelineChat({
@@ -72,6 +80,8 @@ export function usePipelineChat({
     showChannelSelector: false,
     parsedWorkshop: null,
     parsingUrl: null,
+    statusText: null,
+    phaseSummaries: [],
   })
 
   // Keep a stable ref to avoid stale closures in sendPipelineMessage
@@ -153,11 +163,11 @@ export function usePipelineChat({
         }
 
         case 'research_complete':
-          // All dimensions have arrived; mark research as complete
           setPipeline((prev) => ({
             ...prev,
             stage: 'research',
             hasResearch: true,
+            statusText: null,
           }))
           break
 
@@ -188,6 +198,7 @@ export function usePipelineChat({
             ...prev,
             stage: 'wisdom',
             hasWisdom: true,
+            statusText: null,
             wisdomQuotes: (
               (data.data as { quotes: Array<Record<string, unknown>> }).quotes || []
             ).map((q, i) => ({
@@ -226,6 +237,7 @@ export function usePipelineChat({
             stage: 'copy',
             hasCopy: true,
             showChannelSelector: false,
+            statusText: null,
             copyResults: (data.data as { copies: PipelineState['copyResults'] }).copies,
           }))
           break
@@ -243,9 +255,25 @@ export function usePipelineChat({
           break
         }
 
+        case 'pipeline_status':
+          setPipeline((prev) => ({
+            ...prev,
+            statusText: (data.data as { text: string }).text,
+          }))
+          break
+
+        case 'phase_summary': {
+          const summary = data.data as PipelineState['phaseSummaries'][0]
+          setPipeline((prev) => ({
+            ...prev,
+            phaseSummaries: [...prev.phaseSummaries.filter(s => s.phase !== summary.phase), summary],
+          }))
+          break
+        }
+
         case 'error':
           console.error('Pipeline error:', (data.data as { message: string }).message)
-          setPipeline((prev) => ({ ...prev, isGenerating: false }))
+          setPipeline((prev) => ({ ...prev, isGenerating: false, statusText: null }))
           break
 
         default:
@@ -349,7 +377,7 @@ export function usePipelineChat({
       } catch (error) {
         console.error('Pipeline message error:', error)
       } finally {
-        setPipeline((prev) => ({ ...prev, isGenerating: false }))
+        setPipeline((prev) => ({ ...prev, isGenerating: false, statusText: null }))
       }
     },
     [chat.messages, chat.setMessages, campaignId, handlePipelineResponse]
