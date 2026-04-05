@@ -26,3 +26,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.tssupabase/.temp/
+.gstack/
+
+# Generated sample creatives (regenerate with scripts)
+sample-creatives/*.png
+sample-creatives/*.jpg
