@@ -294,7 +294,7 @@ export async function refineChannelCopy(params: {
   })
 
   // Update the asset in place via DB utility
-  await updateAssetContent(assetId, text)
+  await updateAssetContent(assetId, { content: text })
 
   // Suppress unused variable warning — campaignId kept for signature completeness
   void campaignId

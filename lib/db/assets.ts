@@ -73,17 +73,27 @@ export async function getAssetsForCampaign(
 }
 
 /**
- * Update the content of an existing asset by ID.
+ * Update fields of an existing asset by ID.
+ * Accepts a partial update object — supports updating content, s3_url, and metadata.
  */
 export async function updateAssetContent(
   assetId: string,
-  content: string
+  updates: {
+    content?: string
+    s3Url?: string
+    metadata?: Record<string, unknown>
+  }
 ): Promise<void> {
   const supabase = await createClient()
 
+  const patch: Record<string, unknown> = {}
+  if (updates.content !== undefined) patch.content = updates.content
+  if (updates.s3Url !== undefined) patch.s3_url = updates.s3Url
+  if (updates.metadata !== undefined) patch.metadata = updates.metadata
+
   const { error } = await supabase
     .from('campaign_assets')
-    .update({ content })
+    .update(patch)
     .eq('id', assetId)
 
   if (error) throw new Error(`updateAssetContent failed: ${error.message}`)
