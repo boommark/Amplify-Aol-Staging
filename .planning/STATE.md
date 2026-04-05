@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 4 planned — 5 plans in 3 waves
-last_updated: "2026-04-05T06:16:49.632Z"
+stopped_at: Completed 04-00-PLAN.md (Wave 0 test stubs)
+last_updated: "2026-04-05T18:31:20.542Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 23
-  completed_plans: 18
+  completed_plans: 19
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** A teacher with zero marketing experience can describe their workshop and receive a complete marketing kit through a simple conversation.
-**Current focus:** Phase 03 — content-pipeline
+**Current focus:** Phase 04 — creative-studio-and-campaign
 
 ## Current Position
 
-Phase: 03 (content-pipeline) — EXECUTING
-Plan: 2 of 5
+Phase: 04 (creative-studio-and-campaign) — EXECUTING
+Plan: 1 of 5
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Plan: 2 of 5
 | Phase 03-content-pipeline P03 | 4 | 2 tasks | 3 files |
 | Phase 03-content-pipeline P05 | 25 | 2 tasks | 5 files |
 | Phase 03-content-pipeline P06 | 5 | 2 tasks | 5 files |
+| Phase 04-creative-studio-and-campaign P00 | 3 | 1 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -116,6 +117,7 @@ Recent decisions affecting current work:
 - [Phase 03-content-pipeline]: URL regex detection placed FIRST in detectPipelineIntent — before action chip matching and AI classification
 - [Phase 03-content-pipeline]: Art of Living domain gets dedicated parser; generic URLs fall back to Claude Haiku generateObject with 4000-char page text
 - [Phase 03-content-pipeline]: url_parse SSE handler chains parse + research in single stream so user sees parsing to research_dimension events with no reload
+- [Phase 04-creative-studio-and-campaign]: Renamed copy-block-image.test.tsx to .test.ts — vitest 4.x parses @vitest-environment from comment text even in plain // comments, causing happy-dom worker failure; DOM env deferred to Wave 1
 
 ### Pending Todos
 
@@ -129,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-05T06:16:49.623Z
-Stopped at: Phase 4 planned — 5 plans in 3 waves
-Resume file: .planning/phases/04-creative-studio-and-campaign/04-01-PLAN.md
+Last session: 2026-04-05T18:31:20.539Z
+Stopped at: Completed 04-00-PLAN.md (Wave 0 test stubs)
+Resume file: None

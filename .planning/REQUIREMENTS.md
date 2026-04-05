@@ -56,21 +56,21 @@
 
 ### Ad Creative Studio (ADS)
 
-- [ ] **ADS-01**: AI generates channel-specific ad images (Instagram 1:1, Facebook 16:9, WhatsApp 1:1, Flyer 2:3) using Nano Banana 2 via Gemini API
-- [ ] **ADS-02**: Two creative flavors available: "Warm Realism" (cinematic lifestyle photography) and "Playful Concept" (gentle surrealism with visual metaphors)
-- [ ] **ADS-03**: Image prompts are channel-aware — each prompt incorporates copy content, workshop theme, regional context, and brand color palette
-- [ ] **ADS-04**: Generated images render inside channel frames (replacing placeholder boxes in Instagram, Facebook, WhatsApp, Flyer views)
-- [ ] **ADS-05**: User can refine images via chat ("make it warmer", "try a group scene", "different angle") — image regenerates without affecting copy
+- [x] **ADS-01**: AI generates channel-specific ad images (Instagram 1:1, Facebook 16:9, WhatsApp 1:1, Flyer 2:3) using Nano Banana 2 via Gemini API
+- [x] **ADS-02**: Two creative flavors available: "Warm Realism" (cinematic lifestyle photography) and "Playful Concept" (gentle surrealism with visual metaphors)
+- [x] **ADS-03**: Image prompts are channel-aware — each prompt incorporates copy content, workshop theme, regional context, and brand color palette
+- [x] **ADS-04**: Generated images render inside channel frames (replacing placeholder boxes in Instagram, Facebook, WhatsApp, Flyer views)
+- [x] **ADS-05**: User can refine images via chat ("make it warmer", "try a group scene", "different angle") — image regenerates without affecting copy
 - [ ] **ADS-06**: Generated images uploaded to S3 and stored in campaign_assets with asset_type 'ad_creative'
 - [ ] **ADS-07**: User can preview, download, and iterate on complete creatives (copy + image) via chat
 
 ### Campaign Management (CAMP)
 
 - [ ] **CAMP-01**: Each conversation thread maps to a campaign (already built in Phase 2)
-- [ ] **CAMP-02**: User can browse past campaigns with search and filter
-- [ ] **CAMP-03**: Assets can be downloaded individually (copy-to-clipboard, image download)
-- [ ] **CAMP-04**: Assets can be downloaded as a campaign package (ZIP)
-- [ ] **CAMP-05**: Campaigns are shareable via link (role-permissioned, read-only)
+- [x] **CAMP-02**: User can browse past campaigns with search and filter
+- [x] **CAMP-03**: Assets can be downloaded individually (copy-to-clipboard, image download)
+- [x] **CAMP-04**: Assets can be downloaded as a campaign package (ZIP)
+- [x] **CAMP-05**: Campaigns are shareable via link (role-permissioned, read-only)
 
 ### Prompt Testing & Admin (ADMIN)
 
@@ -178,18 +178,18 @@
 | CONT-06 | Phase 3 | Complete |
 | CONT-07 | Phase 3 | Complete |
 | CONT-08 | Phase 3 | Pending |
-| ADS-01 | Phase 4 | Pending |
-| ADS-02 | Phase 4 | Pending |
-| ADS-03 | Phase 4 | Pending |
-| ADS-04 | Phase 4 | Pending |
-| ADS-05 | Phase 4 | Pending |
+| ADS-01 | Phase 4 | Complete |
+| ADS-02 | Phase 4 | Complete |
+| ADS-03 | Phase 4 | Complete |
+| ADS-04 | Phase 4 | Complete |
+| ADS-05 | Phase 4 | Complete |
 | ADS-06 | Phase 4 | Pending |
 | ADS-07 | Phase 4 | Pending |
 | CAMP-01 | Phase 4 | Pending |
-| CAMP-02 | Phase 4 | Pending |
-| CAMP-03 | Phase 4 | Pending |
-| CAMP-04 | Phase 4 | Pending |
-| CAMP-05 | Phase 4 | Pending |
+| CAMP-02 | Phase 4 | Complete |
+| CAMP-03 | Phase 4 | Complete |
+| CAMP-04 | Phase 4 | Complete |
+| CAMP-05 | Phase 4 | Complete |
 | ADMIN-01 | Phase 5 | Pending |
 | ADMIN-02 | Phase 5 | Pending |
 | ADMIN-03 | Phase 5 | Pending |
