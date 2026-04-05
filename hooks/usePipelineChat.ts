@@ -4,7 +4,7 @@ import { useAmplifyChat } from '@/hooks/useAmplifyChat'
 import type { UIMessage } from 'ai'
 import type { AmplifyDataParts } from '@/types/message'
 
-export type PipelineStage = 'idle' | 'url_parsing' | 'research' | 'wisdom' | 'copy'
+export type PipelineStage = 'idle' | 'url_parsing' | 'research' | 'wisdom' | 'copy' | 'ad_creative'
 
 interface ParsedWorkshop {
   title?: string
@@ -31,6 +31,9 @@ interface PipelineState {
   hasResearch: boolean
   hasWisdom: boolean
   hasCopy: boolean
+  hasCreatives: boolean
+  selectedFlavor: 'warm' | 'playful'
+  adCreativeResults: Record<string, { imageUrl: string | null; assetId: string | null }>
   researchResults: Array<{
     dimension: string
     findings: Array<{ label: string; value: string; source?: string }>
@@ -70,6 +73,9 @@ export function usePipelineChat({
     hasResearch: false,
     hasWisdom: false,
     hasCopy: false,
+    hasCreatives: false,
+    selectedFlavor: 'warm',
+    adCreativeResults: {},
     researchResults: [],
     wisdomQuotes: [],
     copyResults: [],
@@ -267,6 +273,53 @@ export function usePipelineChat({
           setPipeline((prev) => ({
             ...prev,
             phaseSummaries: [...prev.phaseSummaries.filter(s => s.phase !== summary.phase), summary],
+          }))
+          break
+        }
+
+        case 'ad_creative_channel_done': {
+          const channelDone = data.data as {
+            channel: string
+            imageUrl: string | null
+            assetId: string | null
+          }
+          setPipeline((prev) => ({
+            ...prev,
+            adCreativeResults: {
+              ...prev.adCreativeResults,
+              [channelDone.channel]: {
+                imageUrl: channelDone.imageUrl,
+                assetId: channelDone.assetId,
+              },
+            },
+          }))
+          break
+        }
+
+        case 'ad_creative_complete':
+          setPipeline((prev) => ({
+            ...prev,
+            stage: 'idle',
+            hasCreatives: true,
+            statusText: null,
+          }))
+          break
+
+        case 'ad_creative_refined': {
+          const refined = data.data as {
+            channel: string
+            imageUrl: string | null
+            assetId: string | null
+          }
+          setPipeline((prev) => ({
+            ...prev,
+            adCreativeResults: {
+              ...prev.adCreativeResults,
+              [refined.channel]: {
+                imageUrl: refined.imageUrl,
+                assetId: refined.assetId,
+              },
+            },
           }))
           break
         }
@@ -488,6 +541,45 @@ export function usePipelineChat({
     [sendPipelineMessage]
   )
 
+  const setSelectedFlavor = useCallback((flavor: 'warm' | 'playful') => {
+    setPipeline((prev) => ({ ...prev, selectedFlavor: flavor }))
+  }, [])
+
+  const triggerAdCreativeGeneration = useCallback(
+    (flavor: 'warm' | 'playful') => {
+      setPipeline((prev) => ({ ...prev, selectedFlavor: flavor, stage: 'ad_creative' }))
+      // Set all visual channels to imageStatus: generating in adCreativeResults optimistically
+      const visualChannels = ['instagram', 'facebook', 'whatsapp', 'flyer']
+      setPipeline((prev) => ({
+        ...prev,
+        adCreativeResults: visualChannels.reduce(
+          (acc, ch) => ({ ...acc, [ch]: { imageUrl: null, assetId: null } }),
+          {} as Record<string, { imageUrl: string | null; assetId: string | null }>
+        ),
+      }))
+      sendPipelineMessage('Generate ad creatives', 'ad_creative_generate', {
+        flavor,
+        copyResults: pipeline.copyResults
+          .filter((c) => visualChannels.includes(c.channel))
+          .map((c) => ({ channel: c.channel, content: c.content })),
+      })
+    },
+    [pipeline.copyResults, sendPipelineMessage]
+  )
+
+  const triggerImageRefine = useCallback(
+    (channel: string, instruction: string) => {
+      const asset = pipeline.adCreativeResults[channel]
+      if (!asset?.assetId) return
+      sendPipelineMessage(`Refine ${channel} image: ${instruction}`, 'ad_creative_refine', {
+        channel,
+        instruction,
+        assetId: asset.assetId,
+      })
+    },
+    [pipeline.adCreativeResults, sendPipelineMessage]
+  )
+
   // Computed stages array for StageProgressBar
   const stages = [
     {
@@ -535,5 +627,11 @@ export function usePipelineChat({
     addCustomChannel,
     setChannelQuantity,
     refineCopy,
+    setSelectedFlavor,
+    triggerAdCreativeGeneration,
+    triggerImageRefine,
+    hasCreatives: pipeline.hasCreatives,
+    selectedFlavor: pipeline.selectedFlavor,
+    adCreativeResults: pipeline.adCreativeResults,
   }
 }

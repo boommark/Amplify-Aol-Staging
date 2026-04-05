@@ -9,6 +9,7 @@ import { generateAllChannels, refineChannelCopy } from '@/lib/pipeline/copy-gene
 import { generateQuoteImages } from '@/lib/pipeline/quote-image'
 import { findReusableResearch, getResearchForCampaign } from '@/lib/db/research'
 import { parseWorkshopUrl } from '@/lib/pipeline/url-parser'
+import { generateAllAdCreatives, refineChannelImage } from '@/lib/pipeline/ad-creative-image'
 
 export const maxDuration = 300
 
@@ -473,6 +474,66 @@ export async function POST(req: Request) {
         data: { copy: result },
       })
     }
+  }
+
+  // --- AD CREATIVE GENERATE: Stream progressive per-channel image results ---
+  if (intent.type === 'ad_creative_generate') {
+    const { flavor, copyResults } = pipelineData as {
+      flavor: 'warm' | 'playful'
+      copyResults: Array<{ channel: string; content: string }>
+    }
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          emitStatus(controller, encoder, 'ad_creative', 'Generating ad creatives...')
+          await generateAllAdCreatives({
+            campaignId,
+            userId: user.id,
+            flavor,
+            copyResults,
+            workshopTheme: campaign?.event_type || '',
+            region: campaign?.region || '',
+            onChannelComplete: (channel, result) => {
+              emitSSE(controller, encoder, 'ad_creative_channel_done', {
+                channel,
+                imageUrl: result.imageUrl,
+                assetId: result.assetId,
+              })
+            },
+          })
+          emitSSE(controller, encoder, 'ad_creative_complete', { flavor })
+          controller.close()
+        } catch (error) {
+          console.error('Ad creative generation error:', error)
+          emitSSE(controller, encoder, 'error', { message: 'Ad creative generation failed. Please try again.' })
+          controller.close()
+        }
+      },
+    })
+    return new Response(stream, { headers: SSE_HEADERS })
+  }
+
+  // --- AD CREATIVE REFINE: Update a single channel image via instruction ---
+  if (intent.type === 'ad_creative_refine' && 'channel' in intent && 'instruction' in intent) {
+    const refineIntent = intent as {
+      type: 'ad_creative_refine'
+      channel: string
+      instruction: string
+      assetId: string
+    }
+    const result = await refineChannelImage({
+      assetId: refineIntent.assetId,
+      campaignId,
+      channel: refineIntent.channel,
+      instruction: refineIntent.instruction,
+      userId: user.id,
+    })
+    return NextResponse.json({
+      pipelineResponse: true,
+      action: 'ad_creative_refined',
+      data: { channel: result.channel, imageUrl: result.imageUrl, assetId: result.assetId },
+    })
   }
 
   // --- STANDARD CHAT (fallback) ---
