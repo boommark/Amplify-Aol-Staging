@@ -56,17 +56,17 @@
 
 ### Ad Creative Studio (ADS)
 
-- [ ] **ADS-01**: AI generates ad copy (headline, subheadline, body, CTA) in brand voice
-- [ ] **ADS-02**: AI generates ad images using configurable models (Nano Banana 2, GPT Image 1.5, Flux)
-- [ ] **ADS-03**: Multiple orientations supported: square (1080x1080), vertical (1080x1920), horizontal (1920x1080)
-- [ ] **ADS-04**: Ad types supported: Product Benefit, Testimonial, Wisdom Quote, Problem-Solution, Seasonal
-- [ ] **ADS-05**: Canva templates populated programmatically with generated copy + images
-- [ ] **ADS-06**: Final creatives exported from Canva and stored in AWS S3
-- [ ] **ADS-07**: User can preview, download, and iterate on ad creatives via chat
+- [ ] **ADS-01**: AI generates channel-specific ad images (Instagram 1:1, Facebook 16:9, WhatsApp 1:1, Flyer 2:3) using Nano Banana 2 via Gemini API
+- [ ] **ADS-02**: Two creative flavors available: "Warm Realism" (cinematic lifestyle photography) and "Playful Concept" (gentle surrealism with visual metaphors)
+- [ ] **ADS-03**: Image prompts are channel-aware — each prompt incorporates copy content, workshop theme, regional context, and brand color palette
+- [ ] **ADS-04**: Generated images render inside channel frames (replacing placeholder boxes in Instagram, Facebook, WhatsApp, Flyer views)
+- [ ] **ADS-05**: User can refine images via chat ("make it warmer", "try a group scene", "different angle") — image regenerates without affecting copy
+- [ ] **ADS-06**: Generated images uploaded to S3 and stored in campaign_assets with asset_type 'ad_creative'
+- [ ] **ADS-07**: User can preview, download, and iterate on complete creatives (copy + image) via chat
 
 ### Campaign Management (CAMP)
 
-- [ ] **CAMP-01**: Each conversation thread maps to a campaign
+- [ ] **CAMP-01**: Each conversation thread maps to a campaign (already built in Phase 2)
 - [ ] **CAMP-02**: User can browse past campaigns with search and filter
 - [ ] **CAMP-03**: Assets can be downloaded individually (copy-to-clipboard, image download)
 - [ ] **CAMP-04**: Assets can be downloaded as a campaign package (ZIP)

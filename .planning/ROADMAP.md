@@ -80,15 +80,15 @@ Plans:
 - [ ] 03-05-PLAN.md — Pipeline orchestration: chat route integration, stage transitions, client hook, human verification
 
 ### Phase 4: Creative Studio and Campaign
-**Goal**: Teachers leave with print-ready ad creatives in hand and can find, download, and share any past campaign
+**Goal**: Teachers leave with thumb-stopping ad creatives (copy + AI-generated images) for every channel and can browse, download, and share past campaigns
 **Depends on**: Phase 3
 **Requirements**: ADS-01, ADS-02, ADS-03, ADS-04, ADS-05, ADS-06, ADS-07, CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05
 **Success Criteria** (what must be TRUE):
-  1. Ad creatives are generated with AI copy and AI images, exported from Canva templates, and stored in S3 — in square, vertical, and horizontal orientations
-  2. User can preview any generated creative in chat, download it individually, or request a revision via a follow-up message
-  3. User can browse their full campaign history, search past campaigns, and open any campaign to see all its generated assets
-  4. All assets for a campaign can be downloaded as a single ZIP file
-  5. A campaign can be shared via a read-only link that respects role permissions — a recipient without the correct role cannot access it
+  1. After copy generates, channel-specific images are generated via Nano Banana 2 and rendered inside the Instagram, Facebook, WhatsApp, and Flyer channel frames — no more grey placeholder boxes
+  2. User can choose between two creative flavors (Warm Realism or Playful Concept) before image generation
+  3. User can refine any image via chat ("make it warmer", "try a different scene") and only that image regenerates — copy stays intact
+  4. User can browse past campaigns, search by region/event, and see all generated assets
+  5. Assets downloadable individually or as ZIP; campaigns shareable via role-permissioned read-only link
 **Plans**: TBD
 
 ### Phase 5: Admin Prompt Lab
