@@ -14,6 +14,11 @@ interface MessageListProps {
   onRegenerate: () => void
   onRetry?: () => void
   onChipSelect?: (prompt: string) => void
+  // Creative studio props for ActionChips flavor-switch
+  hasCreatives?: boolean
+  selectedFlavor?: 'warm' | 'playful'
+  pipelineStage?: string
+  onTriggerAdCreativeGeneration?: (flavor: 'warm' | 'playful') => void
 }
 
 export function MessageList({
@@ -25,6 +30,10 @@ export function MessageList({
   onRegenerate,
   onRetry,
   onChipSelect,
+  hasCreatives,
+  selectedFlavor,
+  pipelineStage,
+  onTriggerAdCreativeGeneration,
 }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -92,6 +101,10 @@ export function MessageList({
           onRegenerate={onRegenerate}
           onChipSelect={onChipSelect}
           messageIndex={index}
+          hasCreatives={hasCreatives}
+          selectedFlavor={selectedFlavor}
+          pipelineStage={pipelineStage}
+          onTriggerAdCreativeGeneration={onTriggerAdCreativeGeneration}
         />
       ))}
 

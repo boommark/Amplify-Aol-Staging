@@ -8,6 +8,7 @@ import { ChatInput } from '@/components/chat/ChatInput'
 import { StageProgressBar } from '@/components/chat/StageProgressBar'
 import { ChannelSelector } from '@/components/chat/ChannelSelector'
 import { ResearchReusePrompt } from '@/components/chat/ResearchReusePrompt'
+import { FlavorPicker } from '@/components/chat/parts/FlavorPicker'
 import { usePipelineChat } from '@/hooks/usePipelineChat'
 
 interface ChatInterfaceProps {
@@ -38,6 +39,12 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     toggleChannel,
     addCustomChannel,
     setChannelQuantity,
+    setSelectedFlavor: _setSelectedFlavor,
+    triggerAdCreativeGeneration,
+    triggerImageRefine,
+    hasCreatives,
+    selectedFlavor,
+    adCreativeResults,
   } = usePipelineChat({
     campaignId,
     initialMessages,
@@ -63,9 +70,21 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
 
   const handleSend = useCallback(
     (text: string) => {
+      // Route image refinement instructions when creatives exist
+      if (hasCreatives) {
+        const lower = text.toLowerCase()
+        const imageKeywords = ['make it', 'try a', 'different scene', 'different angle', 'warmer', 'cooler', 'brighter', 'darker', 'more people', 'fewer people', 'change the image', 'new image', 'regenerate image']
+        const isImageRefine = imageKeywords.some(kw => lower.includes(kw))
+        if (isImageRefine) {
+          const channels = Object.keys(adCreativeResults)
+          const targetChannel = channels.find(ch => lower.includes(ch)) || channels[0] || 'instagram'
+          triggerImageRefine(targetChannel, text)
+          return
+        }
+      }
       sendPipelineMessage(text)
     },
-    [sendPipelineMessage],
+    [sendPipelineMessage, hasCreatives, adCreativeResults, triggerImageRefine],
   )
 
   const handleEdit = useCallback(
@@ -123,10 +142,16 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
         return
       }
 
+      // --- Post-copy stage: ad creative generation ---
+      if (normalized === 'generate ad creatives') {
+        triggerAdCreativeGeneration(selectedFlavor)
+        return
+      }
+
       // Generic: send as pipeline message with AI classification
       sendPipelineMessage(prompt)
     },
-    [showChannelSelectorPanel, sendPipelineMessage, setEditingContent],
+    [showChannelSelectorPanel, sendPipelineMessage, setEditingContent, triggerAdCreativeGeneration, selectedFlavor],
   )
 
   /**
@@ -270,17 +295,46 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       })
     }
 
-    // Copy results — one copy-block per channel
+    // Copy results — one copy-block per channel, with image data from ad creatives
     if (pipeline.copyResults.length > 0) {
-      const parts: UIMessage['parts'] = pipeline.copyResults.map((copy) => ({
-        type: 'data-copy-block' as const,
-        data: {
-          channel: copy.channel,
-          content: copy.content,
-          editableId: copy.assetId,
-          status: 'ready' as const,
-        },
-      }))
+      const parts: UIMessage['parts'] = pipeline.copyResults.map((copy) => {
+        const creative = adCreativeResults[copy.channel]
+        const imageStatus: 'generating' | 'ready' | 'failed' | undefined =
+          creative
+            ? creative.imageUrl
+              ? 'ready'
+              : pipeline.stage === 'ad_creative'
+                ? 'generating'
+                : undefined
+            : pipeline.stage === 'ad_creative'
+              ? 'generating'
+              : undefined
+
+        return {
+          type: 'data-copy-block' as const,
+          data: {
+            channel: copy.channel,
+            content: copy.content,
+            editableId: copy.assetId,
+            status: 'ready' as const,
+            ...(imageStatus && { imageStatus }),
+            ...(creative?.imageUrl && { imageUrl: creative.imageUrl }),
+            ...(creative?.assetId && { imageAssetId: creative.assetId }),
+          },
+        }
+      })
+
+      // Add "Generate Ad Creatives" action chip after copy if no creatives yet
+      if (pipeline.hasCopy && !hasCreatives && !pipeline.isGenerating && pipeline.stage !== 'ad_creative') {
+        parts.push({
+          type: 'data-action-chips' as const,
+          data: {
+            chips: [
+              { label: 'Generate Ad Creatives', prompt: 'Generate Ad Creatives' },
+            ],
+          },
+        })
+      }
 
       msgs.push({
         id: 'pipeline-copy',
@@ -290,7 +344,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     }
 
     return msgs
-  }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.isGenerating, pipeline.reusableResearch, pipeline.hasWisdom, pipeline.wisdomQuotes, pipeline.copyResults, pipeline.showChannelSelector, pipeline.phaseSummaries])
+  }, [pipeline.parsingUrl, pipeline.parsedWorkshop, pipeline.stage, pipeline.researchResults, pipeline.hasResearch, pipeline.isGenerating, pipeline.reusableResearch, pipeline.hasWisdom, pipeline.wisdomQuotes, pipeline.copyResults, pipeline.showChannelSelector, pipeline.phaseSummaries, adCreativeResults, hasCreatives, selectedFlavor])
 
   // Insert pipeline messages in correct conversational order.
   // Pipeline messages have stable IDs: 'pipeline-url-parsed', 'pipeline-research', etc.
@@ -382,6 +436,10 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
               onRegenerate={regenerate}
               onRetry={regenerate}
               onChipSelect={handleChipSelect}
+              hasCreatives={hasCreatives}
+              selectedFlavor={selectedFlavor}
+              pipelineStage={pipeline.stage}
+              onTriggerAdCreativeGeneration={triggerAdCreativeGeneration}
             />
 
             {/* Channel selector — appears after "Continue to copy" chip, at the bottom of the conversation */}
@@ -395,6 +453,17 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
                   onAddCustom={addCustomChannel}
                   onGenerate={triggerCopyGeneration}
                   isGenerating={pipeline.isGenerating}
+                />
+              </div>
+            )}
+
+            {/* Flavor picker — appears after copy generates, before/during image generation */}
+            {pipeline.hasCopy && !pipeline.hasCreatives && (
+              <div className="px-4 pb-4">
+                <FlavorPicker
+                  selected={selectedFlavor}
+                  onChange={(flavor) => triggerAdCreativeGeneration(flavor)}
+                  disabled={pipeline.isGenerating}
                 />
               </div>
             )}

@@ -25,12 +25,24 @@ interface MessageBubbleProps {
   onChipSelect?: (prompt: string) => void
   onRegenerate?: () => void
   onEdit?: (content: string) => void
+  hasCreatives?: boolean
+  selectedFlavor?: 'warm' | 'playful'
+  pipelineStage?: string
+  onTriggerAdCreativeGeneration?: (flavor: 'warm' | 'playful') => void
+}
+
+interface CreativeProps {
+  hasCreatives?: boolean
+  selectedFlavor?: 'warm' | 'playful'
+  pipelineStage?: string
+  onTriggerAdCreativeGeneration?: (flavor: 'warm' | 'playful') => void
 }
 
 function renderDataPart(
   part: { type: string; data: unknown },
   index: number,
-  onChipSelect?: (prompt: string) => void
+  onChipSelect?: (prompt: string) => void,
+  creativeProps?: CreativeProps
 ) {
   switch (part.type) {
     case 'data-research-card':
@@ -68,6 +80,10 @@ function renderDataPart(
           key={index}
           chips={chips}
           onSelect={onChipSelect ?? (() => {})}
+          hasCreatives={creativeProps?.hasCreatives}
+          selectedFlavor={creativeProps?.selectedFlavor}
+          pipelineStage={creativeProps?.pipelineStage}
+          onTriggerAdCreativeGeneration={creativeProps?.onTriggerAdCreativeGeneration}
         />
       )
     }
@@ -93,7 +109,8 @@ function renderDataPart(
 function renderPart(
   part: UIMessage['parts'][number],
   index: number,
-  onChipSelect?: (prompt: string) => void
+  onChipSelect?: (prompt: string) => void,
+  creativeProps?: CreativeProps
 ) {
   if (part.type === 'text') {
     return <TextPart key={index} text={part.text} />
@@ -104,7 +121,8 @@ function renderPart(
     return renderDataPart(
       part as { type: string; data: unknown },
       index,
-      onChipSelect
+      onChipSelect,
+      creativeProps
     )
   }
 
@@ -125,6 +143,10 @@ export function MessageBubble({
   onChipSelect,
   onRegenerate,
   onEdit,
+  hasCreatives,
+  selectedFlavor,
+  pipelineStage,
+  onTriggerAdCreativeGeneration,
 }: MessageBubbleProps) {
   const isUser = message.role === 'user'
 
@@ -181,7 +203,7 @@ export function MessageBubble({
       >
         {hasParts ? (
           message.parts.map((part, index) =>
-            renderPart(part, index, onChipSelect)
+            renderPart(part, index, onChipSelect, { hasCreatives, selectedFlavor, pipelineStage, onTriggerAdCreativeGeneration })
           )
         ) : isStreaming ? (
           // Typing indicator during streaming
