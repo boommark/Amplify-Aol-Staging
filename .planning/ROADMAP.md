@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Foundation** - Google auth, four-role RLS, full database schema, prompt registry, and infra configuration
 - [ ] **Phase 2: Chat Core** - Full conversational chat UI with streaming, rich inline rendering, thread persistence, and AI provider wiring
 - [x] **Phase 3: Content Pipeline** - Regional research, Gurudev wisdom curation, and multi-channel marketing copy generation (completed 2026-04-01)
-- [ ] **Phase 4: Creative Studio and Campaign** - AI ad image generation, Canva template export, campaign browser, and asset download
+- [x] **Phase 4: Creative Studio and Campaign** - AI ad image generation, Canva template export, campaign browser, and asset download (completed 2026-04-05)
 - [ ] **Phase 5: Admin Prompt Lab** - Prompt editor, version history, test runner, execution log, and model selector
 
 ## Phase Details
@@ -89,7 +89,7 @@ Plans:
   3. User can refine any image via chat ("make it warmer", "try a different scene") and only that image regenerates -- copy stays intact
   4. User can browse past campaigns, search by region/event, and see all generated assets
   5. Assets downloadable individually or as ZIP; campaigns shareable via role-permissioned read-only link
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [ ] 04-00-PLAN.md -- Wave 0: test stubs for all requirements (Nyquist baseline)
@@ -120,5 +120,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundation | 5/6 | In Progress|  |
 | 2. Chat Core | 5/6 | In Progress|  |
 | 3. Content Pipeline | 6/6 | Complete   | 2026-04-01 |
-| 4. Creative Studio and Campaign | 4/5 | In Progress|  |
+| 4. Creative Studio and Campaign | 5/5 | Complete   | 2026-04-05 |
 | 5. Admin Prompt Lab | 0/TBD | Not started | - |

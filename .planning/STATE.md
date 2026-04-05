@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-04-PLAN.md — campaign ZIP export and shareable links
-last_updated: "2026-04-05T18:45:57.242Z"
+stopped_at: Completed 04-02-PLAN.md — creative studio UI wiring
+last_updated: "2026-04-05T18:47:14.323Z"
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 23
-  completed_plans: 22
+  completed_plans: 23
 ---
 
 # Project State
@@ -66,6 +66,7 @@ Plan: 1 of 5
 | Phase 04-creative-studio-and-campaign P03 | 6 | 1 tasks | 7 files |
 | Phase 04-creative-studio-and-campaign P01 | 25 | 2 tasks | 7 files |
 | Phase 04-creative-studio-and-campaign P04 | 15 | 2 tasks | 7 files |
+| Phase 04-creative-studio-and-campaign P02 | 6 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,8 @@ Recent decisions affecting current work:
 - [Phase 04-creative-studio-and-campaign]: archiver npm package used for ZIP streaming — PassThrough stream piped to Web ReadableStream for Next.js Response compatibility
 - [Phase 04-creative-studio-and-campaign]: Share page placed outside (app) group at app/share/[token]/page.tsx — no auth middleware, public access by design
 - [Phase 04-creative-studio-and-campaign]: adminClient from lib/supabase/admin.ts used in share page to bypass RLS — share_token UUID is the access control mechanism
+- [Phase 04-creative-studio-and-campaign]: ChannelImageArea extracted as shared component — DRY across Instagram/Facebook/WhatsApp/Flyer frames
+- [Phase 04-creative-studio-and-campaign]: onTriggerAdCreativeGeneration prop pattern in ActionChips — keeps chip logic in hook, avoids global state coupling
 
 ### Pending Todos
 
@@ -142,6 +145,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-05T18:45:57.239Z
-Stopped at: Completed 04-04-PLAN.md — campaign ZIP export and shareable links
+Last session: 2026-04-05T18:47:14.320Z
+Stopped at: Completed 04-02-PLAN.md — creative studio UI wiring
 Resume file: None
