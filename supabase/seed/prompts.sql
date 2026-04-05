@@ -1409,6 +1409,196 @@ Color Palette (hex):
 )
 ON CONFLICT (key) WHERE is_active = true DO NOTHING;
 
+-- Phase 4: Nano Banana 2 ad creative prompt templates (8 channel x flavor combinations)
+-- Variables: {{workshopTheme}}, {{region}}, {{channelCopy}}, {{brandPalette}}, {{aspectRatio}}
+
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'image.ad-creative.instagram.warm',
+  1,
+  'Generate a {{aspectRatio}} square lifestyle photograph. Warm Realism flavor: film stock aesthetics, natural light, candid human moments.
+
+Workshop: {{workshopTheme}} in {{region}}.
+Channel copy context: {{channelCopy}}
+
+Scene direction: A candid lifestyle photograph of a diverse person in their late 20s or early 30s in a moment of quiet stillness — eyes gently closed, slight smile, completely at ease. Setting reflects {{region}}: local architecture, landscape, or cultural markers visible through a window or in the background. Subject close-up, emotional beat drawn from the copy above. Morning or late afternoon golden light streams naturally. Shot on Fujifilm X-T5, 56mm f/1.2 lens, shallow depth of field with soft bokeh behind the subject. Warm amber and sage color palette. Authentic Kodak Portra 400 film grain. Mood: genuine relief, a moment of stillness carved out of a full life.
+
+Brand constraints:
+- Color palette: {{brandPalette}} — these tones should appear as subtle accents (clothing, objects, environment), not dominant fills
+- Photography-style only (not illustration, painting, or 3D render)
+- Diverse and inclusive subjects — no spiritual clichés (no lotus flowers, no crossed-legs-on-mountaintop)
+- Family-friendly, no text overlay on the image
+- Aspect ratio: {{aspectRatio}}',
+  null,
+  'Phase 4: Instagram 1:1 Warm Realism ad creative prompt for Nano Banana 2',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'image.ad-creative.instagram.playful',
+  1,
+  'Generate a {{aspectRatio}} square photograph. Playful Concept flavor: gentle surrealism, visual metaphors, clean bright photography with one unexpected element.
+
+Workshop: {{workshopTheme}} in {{region}}.
+Channel copy context: {{channelCopy}}
+
+Scene direction: A bright, high-production photograph of a person in a {{region}}-appropriate setting — office, park, or home. One surreal element that embodies the emotional benefit of {{workshopTheme}}: something calm or joyful growing, floating, or appearing where stress typically lives (e.g., plants growing from a laptop, a tiny zen garden inside a phone screen, paper lanterns rising from a coffee mug). The person is at ease, completely unbothered. Subject close-up in the frame, emotional beat matching the copy above. Clean warm lighting from large windows, sharp focus on subject and surreal element. Shot on Canon R5, 50mm f/2.0. Photorealistic — feels imaginative and gently clever, not bizarre.
+
+Brand constraints:
+- Color palette: {{brandPalette}} — these tones should appear as subtle accents in clothing, objects, or environment
+- Photography-style only (not illustration or 3D)
+- Diverse and inclusive subjects — no spiritual clichés (no lotus, no crossed-legs-on-mountaintop)
+- Family-friendly, no text overlay on the image
+- Aspect ratio: {{aspectRatio}}',
+  null,
+  'Phase 4: Instagram 1:1 Playful Concept ad creative prompt for Nano Banana 2',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'image.ad-creative.facebook.warm',
+  1,
+  'Generate a {{aspectRatio}} widescreen landscape photograph. Warm Realism flavor: documentary lifestyle photography, golden hour, authentic group moments.
+
+Workshop: {{workshopTheme}} in {{region}}.
+Channel copy context: {{channelCopy}}
+
+Scene direction: A wide lifestyle photograph of a diverse group of 3-4 adults — different ethnicities, ages 25-45, casual professional clothing — walking, talking, or sitting together in a recognizable {{region}} outdoor setting (lakeside trail, park, neighborhood street). They are laughing naturally, mid-conversation, phones nowhere in sight. The environment tells the story: Pacific Northwest evergreens, Southwest desert light, Midwest farmland horizon, or the specific regional landscape of {{region}}. Shot from eye level on Sony A7IV, 35mm f/2.8, deep depth of field capturing both the group and the landscape. Color grading: warm golden tones on skin, cooler tones in the environment. Mood: genuine connection, the feeling of finally exhaling after a long week. The copy above informs the emotional register of the scene.
+
+Brand constraints:
+- Color palette: {{brandPalette}} — appear as accents in clothing, bags, water bottles, or environment details
+- Photography-style only, diverse and inclusive subjects
+- No spiritual clichés (no lotus, no crossed-legs-on-mountaintop), family-friendly
+- No text overlay on the image
+- Aspect ratio: {{aspectRatio}}',
+  null,
+  'Phase 4: Facebook 16:9 Warm Realism ad creative prompt for Nano Banana 2',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'image.ad-creative.facebook.playful',
+  1,
+  'Generate a {{aspectRatio}} widescreen photograph. Playful Concept flavor: gentle surrealism in a social group setting, witty and warm, one unexpected element.
+
+Workshop: {{workshopTheme}} in {{region}}.
+Channel copy context: {{channelCopy}}
+
+Scene direction: A bright photograph of a diverse group of 3-4 people (different ethnicities, ages 25-45) gathered around a table, in a park, or in an office with floor-to-ceiling windows in {{region}}. One surreal element that embodies the benefit of {{workshopTheme}}: the shared surface (table, ground, or desk) transformed into something calm and natural (a still reflecting pool with lily pads, a bed of soft moss, a field of wildflowers) while the people interact with it as if perfectly normal. The group is at ease, curious, quietly delighted. Afternoon light through large windows or dappled outdoor light. Sharp photography, warm tones. Shot on Sony A7IV, 35mm f/4. The copy above informs the emotional register.
+
+Brand constraints:
+- Color palette: {{brandPalette}} — as accents in clothing, scarves, accessories, or objects
+- Photography-style, diverse and inclusive, no spiritual clichés, family-friendly
+- No text overlay on the image
+- Aspect ratio: {{aspectRatio}}',
+  null,
+  'Phase 4: Facebook 16:9 Playful Concept ad creative prompt for Nano Banana 2',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'image.ad-creative.whatsapp.warm',
+  1,
+  'Generate a {{aspectRatio}} square photograph. Warm Realism flavor: intimate close-up, clean minimal composition, feels personally shareable.
+
+Workshop: {{workshopTheme}} in {{region}}.
+Channel copy context: {{channelCopy}}
+
+Scene direction: A bright, airy close-up photograph of a person''s hands or partial figure (no full face required) in a moment of quiet ease — hands resting palms-up, holding a ceramic mug, or lightly touching a book. Setting: a minimal apartment or home in {{region}}, soft natural window light, clean warm surroundings (white walls, natural wood). One or two small detail objects in soft background bokeh: a succulent plant, a candle, a closed laptop. Shot on iPhone 16 Pro in portrait mode. Color palette: warm whites, natural wood tones, with one small accent in the brand palette. Mood: approachable calm, effortless simplicity — like a photo someone would forward to a close friend. The copy above informs the emotional register of the scene.
+
+Brand constraints:
+- Color palette: {{brandPalette}} — as a single accent in mug, plant, or textile
+- Photography-style, diverse and inclusive (hands and setting only), no spiritual clichés
+- Family-friendly, no text overlay on the image
+- Aspect ratio: {{aspectRatio}}',
+  null,
+  'Phase 4: WhatsApp 1:1 Warm Realism ad creative prompt for Nano Banana 2',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'image.ad-creative.whatsapp.playful',
+  1,
+  'Generate a {{aspectRatio}} square photograph. Playful Concept flavor: clever visual metaphor in a small, personal frame, feels clever and shareable.
+
+Workshop: {{workshopTheme}} in {{region}}.
+Channel copy context: {{channelCopy}}
+
+Scene direction: A clean, bright close-up photograph of a person''s hands holding or interacting with an everyday object. One surreal element that embodies the benefit of {{workshopTheme}}: the object contains or reveals something unexpectedly calm or natural inside it (e.g., a smartphone screen showing a tiny zen garden, a coffee mug with a miniature peaceful lake inside, a closed laptop with small wildflowers growing from the keyboard). The hands are relaxed and curious. Background: a warm minimal apartment setting with natural window light, slightly out of focus. Color palette: warm whites, natural wood, with brand accent tones in the surreal element. Shot on iPhone 16 Pro. Feels clever and shareable — the kind of image someone would forward to a friend. The copy above informs the emotional register.
+
+Brand constraints:
+- Color palette: {{brandPalette}} — as accents in the surreal element or surrounding objects
+- Photography-style (photorealistic surreal element, not cartoon), diverse and inclusive
+- No spiritual clichés, family-friendly, no text overlay on the image
+- Aspect ratio: {{aspectRatio}}',
+  null,
+  'Phase 4: WhatsApp 1:1 Playful Concept ad creative prompt for Nano Banana 2',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'image.ad-creative.flyer.warm',
+  1,
+  'Generate a {{aspectRatio}} vertical portrait photograph with generous negative space in the upper half for text overlay. Warm Realism flavor: expansive landscape, warm light, single figure in lower third.
+
+Workshop: {{workshopTheme}} in {{region}}.
+Channel copy context: {{channelCopy}}
+
+Scene direction: A lone figure sits or stands peacefully in an outdoor setting in {{region}} — a waterfront park, a hillside, a lakeside bench, or a quiet urban plaza. The figure is in the lower third of the frame, seen from behind or at a distance, wearing casual clothing. Late afternoon golden light. The upper two-thirds of the image is a gradient sky or open landscape: deep blue-grey clouds at the very top transitioning to warm peach and amber near the horizon — this gradient provides natural negative space for white text overlay. Regional landmark or landscape elements visible in the background (mountains, evergreens, skyline, water). Shot on Sony A7IV, 24mm wide-angle, f/8 for deep focus throughout. Color palette: deep navy sky, warm peach horizon, regional natural colors, golden light on subject. Mood: expansive possibility, quiet after putting down the weight of work. The copy above informs the emotional register.
+
+Brand constraints:
+- Color palette: {{brandPalette}} — as subtle accent in subject clothing or environmental tones; sky gradient aligns with brand peach/blue
+- Photography-style, diverse and inclusive subject, no spiritual clichés
+- Family-friendly, NO text overlay on the image (negative space is reserved for external text)
+- Aspect ratio: {{aspectRatio}}',
+  null,
+  'Phase 4: Flyer 2:3 Warm Realism ad creative prompt for Nano Banana 2',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
+INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
+VALUES (
+  'image.ad-creative.flyer.playful',
+  1,
+  'Generate a {{aspectRatio}} vertical portrait photograph with generous negative space in the upper half for text overlay. Playful Concept flavor: magical realism, one surreal element rising upward, sky provides space for text.
+
+Workshop: {{workshopTheme}} in {{region}}.
+Channel copy context: {{channelCopy}}
+
+Scene direction: A young professional sits or stands peacefully in a {{region}} outdoor setting — lakeside, park, or urban plaza. One surreal element rises gently upward from the subject or their immediate surroundings into the sky, embodying the benefit of {{workshopTheme}}: glowing paper lanterns floating upward, colorful butterflies rising, luminous bubbles ascending, or small flowers blooming in a trail toward the sky. The surreal element creates a beautiful visual trail from the lower third into the upper sky area — providing visual interest while leaving the upper sky area clear for text overlay. The person watches with quiet wonder. Golden hour or blue hour lighting. The upper half of the image remains open sky with the surreal elements providing movement and color without crowding the space. Shot on Sony A7IV, 24mm wide-angle, f/5.6. Warm lighting on subject, cool sky above.
+
+Brand constraints:
+- Color palette: {{brandPalette}} — the rising elements (lanterns, flowers, bubbles) should feature brand colors prominently
+- Photography-style with photorealistic magical element (not cartoon), diverse and inclusive subject
+- No spiritual clichés (no lotus, no crossed-legs), family-friendly, NO text overlay on the image
+- Aspect ratio: {{aspectRatio}}',
+  null,
+  'Phase 4: Flyer 2:3 Playful Concept ad creative prompt for Nano Banana 2',
+  true,
+  now()
+)
+ON CONFLICT (key) WHERE is_active = true DO NOTHING;
+
 -- Source: Amplify Quote n8n Workflow.json | Node: Generate Image Prompt
 INSERT INTO prompts (key, version, template, model_override, description, is_active, created_at)
 VALUES (

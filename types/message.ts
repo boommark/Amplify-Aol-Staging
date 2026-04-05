@@ -12,6 +12,14 @@ export type AmplifyDataParts = {
     content: string
     editableId: string
     status: 'loading' | 'ready'
+    imageUrl?: string
+    imageAssetId?: string
+    imageStatus?: 'generating' | 'ready' | 'failed'
+    imageMeta?: {
+      flavor: 'warm' | 'playful'
+      channel: string
+      promptUsed?: string
+    }
   }
   'image-carousel': {
     images: Array<{ url: string; aspectRatio: '1:1' | '9:16' | '16:9'; prompt?: string }>
