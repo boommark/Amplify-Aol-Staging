@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-00-PLAN.md (Wave 0 test stubs)
-last_updated: "2026-04-05T18:31:20.542Z"
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-04-05T18:34:42.523Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 23
-  completed_plans: 19
+  completed_plans: 20
 ---
 
 # Project State
@@ -63,6 +63,7 @@ Plan: 1 of 5
 | Phase 03-content-pipeline P05 | 25 | 2 tasks | 5 files |
 | Phase 03-content-pipeline P06 | 5 | 2 tasks | 5 files |
 | Phase 04-creative-studio-and-campaign P00 | 3 | 1 tasks | 7 files |
+| Phase 04-creative-studio-and-campaign P03 | 6 | 1 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,8 @@ Recent decisions affecting current work:
 - [Phase 03-content-pipeline]: Art of Living domain gets dedicated parser; generic URLs fall back to Claude Haiku generateObject with 4000-char page text
 - [Phase 03-content-pipeline]: url_parse SSE handler chains parse + research in single stream so user sees parsing to research_dimension events with no reload
 - [Phase 04-creative-studio-and-campaign]: Renamed copy-block-image.test.tsx to .test.ts — vitest 4.x parses @vitest-environment from comment text even in plain // comments, causing happy-dom worker failure; DOM env deferred to Wave 1
+- [Phase 04-creative-studio-and-campaign]: filterCampaigns exported as pure function to enable direct unit testing without React render overhead
+- [Phase 04-creative-studio-and-campaign]: happy-dom chosen as vitest environment; @vitejs/plugin-react added to vitest config for JSX support in browser tests
 
 ### Pending Todos
 
@@ -131,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-05T18:31:20.539Z
-Stopped at: Completed 04-00-PLAN.md (Wave 0 test stubs)
+Last session: 2026-04-05T18:34:42.520Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
