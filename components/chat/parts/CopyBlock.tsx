@@ -1,15 +1,62 @@
 'use client'
 
-import { Heart, MessageCircle, Send, ThumbsUp } from 'lucide-react'
+import { Download, Heart, MessageCircle, Send, ThumbsUp } from 'lucide-react'
 import type { AmplifyDataParts } from '@/types/message'
 import { SkeletonPart } from './SkeletonPart'
 import { FlyerFrame } from './FlyerFrame'
 
-interface CopyBlockProps {
-  data: AmplifyDataParts['copy-block']
+interface ChannelImageProps {
+  imageUrl?: string
+  imageStatus?: 'generating' | 'ready' | 'failed'
+  aspectClass: string
+  onRetry?: () => void
 }
 
-function WhatsAppFrame({ content }: { content: string }) {
+function ChannelImageArea({ imageUrl, imageStatus, aspectClass, onRetry }: ChannelImageProps) {
+  if (imageStatus === 'generating') {
+    return <div className={`bg-slate-100 ${aspectClass} animate-pulse rounded`} />
+  }
+  if (imageUrl && imageStatus === 'ready') {
+    return <img src={imageUrl} alt="Ad creative" className={`w-full ${aspectClass} object-cover rounded`} />
+  }
+  if (imageStatus === 'failed') {
+    return (
+      <div className={`bg-slate-100 ${aspectClass} flex flex-col items-center justify-center gap-2 rounded`}>
+        <p className="text-xs text-slate-500">Image generation failed</p>
+        <button onClick={onRetry} className="text-sm text-[#3D8BE8] underline cursor-pointer">
+          Retry
+        </button>
+      </div>
+    )
+  }
+  return null
+}
+
+interface CopyBlockProps {
+  data: AmplifyDataParts['copy-block']
+  onRetry?: (channel: string) => void
+}
+
+function handleDownload(url: string, filename: string) {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+}
+
+function WhatsAppFrame({
+  content,
+  imageUrl,
+  imageStatus,
+  onRetry,
+}: {
+  content: string
+  imageUrl?: string
+  imageStatus?: 'generating' | 'ready' | 'failed'
+  imageAssetId?: string
+  onRetry?: () => void
+  onDownload?: (url: string, filename: string) => void
+}) {
   const now = new Date()
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
@@ -22,6 +69,27 @@ function WhatsAppFrame({ content }: { content: string }) {
         </div>
         WhatsApp
       </div>
+      {/* Image area (above message bubble) */}
+      {(imageStatus || imageUrl) && (
+        <div className="px-3 pt-3">
+          <ChannelImageArea
+            imageUrl={imageUrl}
+            imageStatus={imageStatus}
+            aspectClass="aspect-square"
+            onRetry={onRetry}
+          />
+          {imageUrl && imageStatus === 'ready' && (
+            <div className="mt-1">
+              <button
+                onClick={() => handleDownload(imageUrl, 'whatsapp-ad.png')}
+                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 cursor-pointer"
+              >
+                <Download className="w-3 h-3" /> Download
+              </button>
+            </div>
+          )}
+        </div>
+      )}
       {/* Chat background */}
       <div className="bg-[#E5DDD5] p-3 min-h-[80px]">
         {/* Sent message bubble */}
@@ -34,7 +102,19 @@ function WhatsAppFrame({ content }: { content: string }) {
   )
 }
 
-function InstagramFrame({ content }: { content: string }) {
+function InstagramFrame({
+  content,
+  imageUrl,
+  imageStatus,
+  onRetry,
+}: {
+  content: string
+  imageUrl?: string
+  imageStatus?: 'generating' | 'ready' | 'failed'
+  imageAssetId?: string
+  onRetry?: () => void
+  onDownload?: (url: string, filename: string) => void
+}) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white max-w-[350px] shadow-sm">
       {/* Header row */}
@@ -44,9 +124,31 @@ function InstagramFrame({ content }: { content: string }) {
         <span className="ml-auto text-xs text-slate-400">Sponsored</span>
       </div>
       {/* Image area */}
-      <div className="bg-slate-100 aspect-square flex items-center justify-center text-slate-400 text-xs">
-        Image Preview
-      </div>
+      {imageStatus || imageUrl ? (
+        <div>
+          <ChannelImageArea
+            imageUrl={imageUrl}
+            imageStatus={imageStatus}
+            aspectClass="aspect-square"
+            onRetry={onRetry}
+          />
+          {imageUrl && imageStatus === 'ready' && (
+            <div className="px-3 mt-1">
+              <button
+                onClick={() => handleDownload(imageUrl, 'instagram-ad.png')}
+                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 cursor-pointer"
+                data-download="instagram-ad.png"
+              >
+                <Download className="w-3 h-3" /> Download
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="bg-slate-100 aspect-square flex items-center justify-center text-slate-400 text-xs">
+          Image Preview
+        </div>
+      )}
       {/* Action bar */}
       <div className="flex items-center gap-4 px-3 py-2">
         <Heart className="w-5 h-5 text-slate-700 cursor-pointer hover:text-red-500 transition-colors" />
@@ -98,7 +200,19 @@ function EmailFrame({ content }: { content: string }) {
   )
 }
 
-function FacebookFrame({ content }: { content: string }) {
+function FacebookFrame({
+  content,
+  imageUrl,
+  imageStatus,
+  onRetry,
+}: {
+  content: string
+  imageUrl?: string
+  imageStatus?: 'generating' | 'ready' | 'failed'
+  imageAssetId?: string
+  onRetry?: () => void
+  onDownload?: (url: string, filename: string) => void
+}) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white max-w-[350px] shadow-sm">
       {/* Header row */}
@@ -116,9 +230,31 @@ function FacebookFrame({ content }: { content: string }) {
         <p className="text-sm text-slate-900 whitespace-pre-wrap break-words">{content}</p>
       </div>
       {/* Image area */}
-      <div className="bg-slate-100 aspect-video flex items-center justify-center text-slate-400 text-xs">
-        Ad Image
-      </div>
+      {imageStatus || imageUrl ? (
+        <div>
+          <ChannelImageArea
+            imageUrl={imageUrl}
+            imageStatus={imageStatus}
+            aspectClass="aspect-video"
+            onRetry={onRetry}
+          />
+          {imageUrl && imageStatus === 'ready' && (
+            <div className="px-3 mt-1">
+              <button
+                onClick={() => handleDownload(imageUrl, 'facebook-ad.png')}
+                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 cursor-pointer"
+                data-download="facebook-ad.png"
+              >
+                <Download className="w-3 h-3" /> Download
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="bg-slate-100 aspect-video flex items-center justify-center text-slate-400 text-xs">
+          Ad Image
+        </div>
+      )}
       {/* Engagement bar */}
       <div className="flex items-center gap-1 px-3 py-2 border-t border-slate-100">
         <button className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-[#1877F2] cursor-pointer transition-colors px-3 py-1.5 rounded hover:bg-slate-50 flex-1 justify-center">
@@ -138,22 +274,56 @@ function FacebookFrame({ content }: { content: string }) {
   )
 }
 
-export function CopyBlock({ data }: CopyBlockProps) {
+export function CopyBlock({ data, onRetry }: CopyBlockProps) {
   if (data.status === 'loading') {
     return <SkeletonPart type="card" />
   }
 
+  const handleRetry = onRetry ? () => onRetry(data.channel) : undefined
+
   switch (data.channel) {
     case 'whatsapp':
-      return <WhatsAppFrame content={data.content} />
+      return (
+        <WhatsAppFrame
+          content={data.content}
+          imageUrl={data.imageUrl}
+          imageStatus={data.imageStatus}
+          imageAssetId={data.imageAssetId}
+          onRetry={handleRetry}
+        />
+      )
     case 'instagram':
-      return <InstagramFrame content={data.content} />
+      return (
+        <InstagramFrame
+          content={data.content}
+          imageUrl={data.imageUrl}
+          imageStatus={data.imageStatus}
+          imageAssetId={data.imageAssetId}
+          onRetry={handleRetry}
+        />
+      )
     case 'email':
       return <EmailFrame content={data.content} />
     case 'facebook':
-      return <FacebookFrame content={data.content} />
+      return (
+        <FacebookFrame
+          content={data.content}
+          imageUrl={data.imageUrl}
+          imageStatus={data.imageStatus}
+          imageAssetId={data.imageAssetId}
+          onRetry={handleRetry}
+        />
+      )
     case 'flyer':
-      return <FlyerFrame content={data.content} />
+      return (
+        <FlyerFrame
+          content={data.content}
+          imageUrl={data.imageUrl}
+          imageStatus={data.imageStatus}
+          imageAssetId={data.imageAssetId}
+          onRetry={handleRetry}
+        />
+      )
     default:
       return (
         <div className="rounded-xl border border-slate-200 bg-white max-w-[350px] shadow-sm overflow-hidden">
