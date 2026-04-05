@@ -89,7 +89,7 @@ Plans:
   3. User can refine any image via chat ("make it warmer", "try a different scene") and only that image regenerates -- copy stays intact
   4. User can browse past campaigns, search by region/event, and see all generated assets
   5. Assets downloadable individually or as ZIP; campaigns shareable via role-permissioned read-only link
-**Plans:** 5/5 plans complete
+**Plans:** 6 plans (5 complete + 1 gap closure)
 
 Plans:
 - [ ] 04-00-PLAN.md -- Wave 0: test stubs for all requirements (Nyquist baseline)
@@ -97,6 +97,7 @@ Plans:
 - [ ] 04-02-PLAN.md -- Channel frame UI update, flavor picker, chat route integration, client state machine, flavor-switch action chips
 - [ ] 04-03-PLAN.md -- Campaign browser page with card grid, search, filter, individual asset download, and behavioral tests
 - [ ] 04-04-PLAN.md -- ZIP export, shareable campaign links, and public share page with admin client
+- [ ] 04-05-PLAN.md -- Gap closure: wire FlavorPicker, ad creative generation, image props, and refinement into ChatInterface.tsx
 
 ### Phase 5: Admin Prompt Lab
 **Goal**: Abhishek can inspect, iterate, and improve every AI prompt in the system without touching code or doing a deploy
@@ -120,5 +121,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundation | 5/6 | In Progress|  |
 | 2. Chat Core | 5/6 | In Progress|  |
 | 3. Content Pipeline | 6/6 | Complete   | 2026-04-01 |
-| 4. Creative Studio and Campaign | 5/5 | Complete   | 2026-04-05 |
+| 4. Creative Studio and Campaign | 5/6 | Gap Closure | 2026-04-05 |
 | 5. Admin Prompt Lab | 0/TBD | Not started | - |
