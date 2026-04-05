@@ -88,6 +88,9 @@ export function CampaignBrowser() {
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null)
   const [campaignAssets, setCampaignAssets] = useState<CampaignAsset[]>([])
   const [assetsLoading, setAssetsLoading] = useState(false)
+  const [shareUrl, setShareUrl] = useState<string | null>(null)
+  const [shareLoading, setShareLoading] = useState(false)
+  const [shareCopied, setShareCopied] = useState(false)
 
   // Load campaigns on mount
   useEffect(() => {
@@ -107,16 +110,25 @@ export function CampaignBrowser() {
     fetchCampaigns()
   }, [])
 
-  // Load assets when a campaign is selected
+  // Load assets and share token when a campaign is selected
   const handleSelectCampaign = useCallback(async (campaignId: string) => {
     setSelectedCampaignId(campaignId)
     setAssetsLoading(true)
     setCampaignAssets([])
+    setShareUrl(null)
+    setShareCopied(false)
     try {
-      const res = await fetch(`/api/campaigns/${campaignId}/assets`)
-      if (res.ok) {
-        const assets: CampaignAsset[] = await res.json()
+      const [assetsRes, shareRes] = await Promise.all([
+        fetch(`/api/campaigns/${campaignId}/assets`),
+        fetch(`/api/campaigns/${campaignId}/share`),
+      ])
+      if (assetsRes.ok) {
+        const assets: CampaignAsset[] = await assetsRes.json()
         setCampaignAssets(assets)
+      }
+      if (shareRes.ok) {
+        const shareData: { shareUrl: string | null } = await shareRes.json()
+        setShareUrl(shareData.shareUrl)
       }
     } catch {
       // Silent
@@ -124,6 +136,29 @@ export function CampaignBrowser() {
       setAssetsLoading(false)
     }
   }, [])
+
+  const handleGenerateShareLink = async () => {
+    if (!selectedCampaignId) return
+    setShareLoading(true)
+    try {
+      const res = await fetch(`/api/campaigns/${selectedCampaignId}/share`, { method: 'POST' })
+      if (res.ok) {
+        const data: { shareUrl: string } = await res.json()
+        setShareUrl(data.shareUrl)
+      }
+    } catch {
+      // Silent
+    } finally {
+      setShareLoading(false)
+    }
+  }
+
+  const handleCopyShareLink = async () => {
+    if (!shareUrl) return
+    await navigator.clipboard.writeText(shareUrl)
+    setShareCopied(true)
+    setTimeout(() => setShareCopied(false), 2000)
+  }
 
   const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId)
   const filtered = filterCampaigns(campaigns, searchQuery, eventTypeFilter)
@@ -162,6 +197,54 @@ export function CampaignBrowser() {
             {selectedCampaign.region && <span>{selectedCampaign.region}</span>}
             {selectedCampaign.event_type && <span>· {selectedCampaign.event_type}</span>}
             <span>· {format(new Date(selectedCampaign.created_at), 'MMM d, yyyy')}</span>
+          </div>
+
+          {/* Export and Share actions */}
+          <div className="flex flex-wrap gap-3 mt-4">
+            {/* Download All (ZIP) */}
+            <a
+              href={`/api/campaigns/${selectedCampaignId}/export`}
+              download
+              className="inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium"
+              style={{ fontFamily: 'Work Sans, sans-serif' }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download All (ZIP)
+            </a>
+
+            {/* Share button */}
+            {shareUrl ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={shareUrl}
+                  className="text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 w-64 focus:outline-none"
+                  style={{ fontFamily: 'Work Sans, sans-serif' }}
+                />
+                <button
+                  onClick={handleCopyShareLink}
+                  className="text-sm px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium"
+                  style={{ fontFamily: 'Work Sans, sans-serif' }}
+                >
+                  {shareCopied ? 'Copied!' : 'Copy Link'}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleGenerateShareLink}
+                disabled={shareLoading}
+                className="inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium disabled:opacity-50"
+                style={{ fontFamily: 'Work Sans, sans-serif' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                {shareLoading ? 'Generating...' : 'Share'}
+              </button>
+            )}
           </div>
         </div>
 
