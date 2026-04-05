@@ -38,17 +38,14 @@ created: 2026-04-04
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 04-01-01 | 01 | 1 | ADS-01 | unit | `npm run test -- ad-creative` | ❌ W0 | ⬜ pending |
-| 04-01-02 | 01 | 1 | ADS-02 | unit | `npm run test -- ad-creative` | ❌ W0 | ⬜ pending |
-| 04-01-03 | 01 | 1 | ADS-03 | unit | `npm run test -- ad-creative` | ❌ W0 | ⬜ pending |
-| 04-02-01 | 02 | 1 | ADS-04 | integration | `npm run test -- copy-block` | ❌ W0 | ⬜ pending |
-| 04-02-02 | 02 | 1 | ADS-05 | integration | `npm run test -- refinement` | ❌ W0 | ⬜ pending |
-| 04-03-01 | 03 | 2 | ADS-06 | unit | `npm run test -- assets` | ❌ W0 | ⬜ pending |
-| 04-03-02 | 03 | 2 | ADS-07 | manual | N/A | N/A | ⬜ pending |
-| 04-04-01 | 04 | 2 | CAMP-02 | integration | `npm run test -- campaign-browser` | ❌ W0 | ⬜ pending |
-| 04-04-02 | 04 | 2 | CAMP-03 | unit | `npm run test -- download` | ❌ W0 | ⬜ pending |
-| 04-04-03 | 04 | 2 | CAMP-04 | unit | `npm run test -- zip` | ❌ W0 | ⬜ pending |
-| 04-04-04 | 04 | 2 | CAMP-05 | integration | `npm run test -- share` | ❌ W0 | ⬜ pending |
+| 04-00-01 | 00 | 0 | ADS-01..05, CAMP-02..05 | setup | `npm run test` | N/A | ⬜ pending |
+| 04-01-01 | 01 | 1 | ADS-01, ADS-02, ADS-03 | unit | `npm run test -- tests/pipeline/ad-creative` | ❌ W0 | ⬜ pending |
+| 04-01-02 | 01 | 1 | ADS-01, ADS-06 | unit | `npm run test -- tests/pipeline/ad-creative` | ❌ W0 | ⬜ pending |
+| 04-02-01 | 02 | 2 | ADS-04, ADS-07 | integration | `npm run test -- tests/components/copy-block` | ❌ W0 | ⬜ pending |
+| 04-02-02 | 02 | 2 | ADS-04, ADS-05 | integration | `npm run test -- tests/pipeline/image-refinement` | ❌ W0 | ⬜ pending |
+| 04-03-01 | 03 | 1 | CAMP-01, CAMP-02, CAMP-03 | unit | `npm run test -- tests/campaigns/browser` | ❌ W0 | ⬜ pending |
+| 04-04-01 | 04 | 2 | CAMP-04 | unit | `npm run test -- tests/api/export` | ❌ W0 | ⬜ pending |
+| 04-04-02 | 04 | 2 | CAMP-05 | integration | `npm run test -- tests/api/share` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -69,7 +66,7 @@ created: 2026-04-04
 
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
-| Image quality/relevance | ADS-07 | Subjective visual quality | Generate images for each workshop type × flavor, visually confirm relevance and brand alignment |
+| Image quality/relevance | ADS-07 | Subjective visual quality | Generate images for each workshop type x flavor, visually confirm relevance and brand alignment |
 | Channel frame rendering | ADS-04 | Visual layout verification | Open chat, generate creatives, confirm images render correctly in each channel frame |
 | Flavor toggle UX | ADS-02 | Interaction verification | Switch between Warm Realism and Playful Concept, confirm images regenerate |
 
