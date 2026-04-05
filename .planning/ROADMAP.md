@@ -89,7 +89,7 @@ Plans:
   3. User can refine any image via chat ("make it warmer", "try a different scene") and only that image regenerates -- copy stays intact
   4. User can browse past campaigns, search by region/event, and see all generated assets
   5. Assets downloadable individually or as ZIP; campaigns shareable via role-permissioned read-only link
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 - [ ] 04-00-PLAN.md -- Wave 0: test stubs for all requirements (Nyquist baseline)
@@ -120,5 +120,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundation | 5/6 | In Progress|  |
 | 2. Chat Core | 5/6 | In Progress|  |
 | 3. Content Pipeline | 6/6 | Complete   | 2026-04-01 |
-| 4. Creative Studio and Campaign | 2/5 | In Progress|  |
+| 4. Creative Studio and Campaign | 3/5 | In Progress|  |
 | 5. Admin Prompt Lab | 0/TBD | Not started | - |

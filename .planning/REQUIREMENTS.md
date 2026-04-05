@@ -61,7 +61,7 @@
 - [x] **ADS-03**: Image prompts are channel-aware — each prompt incorporates copy content, workshop theme, regional context, and brand color palette
 - [x] **ADS-04**: Generated images render inside channel frames (replacing placeholder boxes in Instagram, Facebook, WhatsApp, Flyer views)
 - [x] **ADS-05**: User can refine images via chat ("make it warmer", "try a group scene", "different angle") — image regenerates without affecting copy
-- [ ] **ADS-06**: Generated images uploaded to S3 and stored in campaign_assets with asset_type 'ad_creative'
+- [x] **ADS-06**: Generated images uploaded to S3 and stored in campaign_assets with asset_type 'ad_creative'
 - [ ] **ADS-07**: User can preview, download, and iterate on complete creatives (copy + image) via chat
 
 ### Campaign Management (CAMP)
@@ -183,7 +183,7 @@
 | ADS-03 | Phase 4 | Complete |
 | ADS-04 | Phase 4 | Complete |
 | ADS-05 | Phase 4 | Complete |
-| ADS-06 | Phase 4 | Pending |
+| ADS-06 | Phase 4 | Complete |
 | ADS-07 | Phase 4 | Pending |
 | CAMP-01 | Phase 4 | Pending |
 | CAMP-02 | Phase 4 | Complete |
