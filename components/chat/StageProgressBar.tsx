@@ -5,7 +5,7 @@ import { CheckCircle2 } from 'lucide-react'
 interface Stage {
   id: string
   label: string
-  state: 'pending' | 'active' | 'completed'
+  state: 'pending' | 'active' | 'completed' | 'hidden'
 }
 
 interface StageProgressBarProps {
@@ -14,10 +14,12 @@ interface StageProgressBarProps {
 }
 
 export function StageProgressBar({ stages, statusText }: StageProgressBarProps) {
+  const visibleStages = stages.filter((s) => s.state !== 'hidden')
+
   return (
     <div className="pt-6 px-2">
       <ol role="list" className="flex items-center w-full">
-        {stages.map((stage, index) => (
+        {visibleStages.map((stage, index) => (
           <li key={stage.id} className="flex items-center flex-1 last:flex-none">
             {/* Step indicator */}
             <div className="flex flex-col items-center gap-1">
@@ -60,7 +62,7 @@ export function StageProgressBar({ stages, statusText }: StageProgressBarProps) 
             </div>
 
             {/* Connecting line between steps */}
-            {index < stages.length - 1 && (
+            {index < visibleStages.length - 1 && (
               <div
                 className={[
                   'flex-1 h-0.5 mx-2',

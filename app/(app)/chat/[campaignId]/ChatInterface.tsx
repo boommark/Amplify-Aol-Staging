@@ -402,7 +402,7 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
     [messages, pipelineMessages],
   )
 
-  const showProgressBar = pipeline.stage !== 'idle' || pipeline.parsingUrl !== null
+  const showProgressBar = pipeline.stage !== 'idle' || pipeline.parsingUrl !== null || pipeline.hasCreatives
 
   return (
     <div className="flex flex-col h-full">
@@ -410,6 +410,28 @@ export function ChatInterface({ campaignId, initialMessages, campaignTitle: _ini
       {showProgressBar && (
         <div className="px-4 pt-2 pb-0 border-b border-slate-100 bg-white">
           <StageProgressBar stages={stages} statusText={pipeline.statusText} />
+          {/* Per-channel creative generation tracker — sticky during ad_creative stage */}
+          {pipeline.stage === 'ad_creative' && (
+            <div className="flex items-center gap-3 py-2 mt-1">
+              <span className="text-xs font-medium text-slate-500">Generating:</span>
+              {['instagram', 'facebook', 'whatsapp', 'flyer'].map((ch) => {
+                const result = adCreativeResults[ch]
+                const done = result?.imageUrl != null
+                return (
+                  <div key={ch} className="flex items-center gap-1.5">
+                    {done ? (
+                      <div className="w-2 h-2 rounded-full bg-[#22C55E]" />
+                    ) : (
+                      <div className="w-2 h-2 rounded-full bg-[#3D8BE8] animate-pulse" />
+                    )}
+                    <span className={`text-xs capitalize ${done ? 'text-slate-700' : 'text-slate-400'}`}>
+                      {ch}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
 

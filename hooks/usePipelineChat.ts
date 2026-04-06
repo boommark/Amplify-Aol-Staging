@@ -609,6 +609,17 @@ export function usePipelineChat({
           ? 'active'
           : 'pending') as 'pending' | 'active' | 'completed',
     },
+    {
+      id: 'creatives' as const,
+      label: 'Creatives',
+      state: (pipeline.hasCreatives
+        ? 'completed'
+        : pipeline.stage === 'ad_creative'
+          ? 'active'
+          : pipeline.hasCopy
+            ? 'pending'
+            : 'hidden') as 'pending' | 'active' | 'completed' | 'hidden',
+    },
   ]
 
   return {
