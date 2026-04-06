@@ -7,7 +7,7 @@ import { runCompetitorScan } from '@/lib/pipeline/competitor'
 import { runWisdomPipeline } from '@/lib/pipeline/wisdom'
 import { generateAllChannels, refineChannelCopy } from '@/lib/pipeline/copy-generation'
 import { generateQuoteImages } from '@/lib/pipeline/quote-image'
-import { findReusableResearch, getResearchForCampaign } from '@/lib/db/research'
+import { copyResearchToCampaign, findReusableResearch, getResearchForCampaign } from '@/lib/db/research'
 import { parseWorkshopUrl } from '@/lib/pipeline/url-parser'
 import { generateAllAdCreatives, refineChannelImage } from '@/lib/pipeline/ad-creative-image'
 
@@ -205,6 +205,43 @@ export async function POST(req: Request) {
         'Connection': 'keep-alive',
       },
     })
+  }
+
+  // --- RESEARCH REUSE: Copy research from a previous campaign ---
+  if (intent.type === 'research' && 'reuseFromCampaignId' in intent) {
+    const sourceId = (intent as { reuseFromCampaignId: string }).reuseFromCampaignId
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          emitStatus(controller, encoder, 'research', 'Copying research from previous campaign...')
+          const copied = await copyResearchToCampaign(sourceId, campaignId)
+
+          for (const result of copied) {
+            emitSSE(controller, encoder, 'research_dimension', {
+              dimension: result.dimension,
+              findings: result.findings,
+              sources: result.sources,
+            })
+          }
+
+          emitSSE(controller, encoder, 'research_complete', { dimensionCount: copied.length })
+          emitPhaseSummary(controller, encoder, {
+            phase: 'research',
+            stepNumber: 1,
+            totalSteps: 4,
+            summaryText: `Reused ${copied.length} research dimensions from previous campaign`,
+            nextPhaseDescription: 'Wisdom — curate quotes for your campaign',
+          })
+          controller.close()
+        } catch (error) {
+          console.error('Research reuse error:', error)
+          emitSSE(controller, encoder, 'error', { message: 'Failed to reuse research. Please try running fresh.' })
+          controller.close()
+        }
+      },
+    })
+    return new Response(stream, { headers: SSE_HEADERS })
   }
 
   // --- RESEARCH: Progressive streaming via ReadableStream ---

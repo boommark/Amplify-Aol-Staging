@@ -61,6 +61,34 @@ export async function getResearchForCampaign(
 }
 
 /**
+ * Copy all research dimensions from a source campaign to a target campaign.
+ * Inserts new rows (does not move originals). Returns the copied results.
+ */
+export async function copyResearchToCampaign(
+  sourceCampaignId: string,
+  targetCampaignId: string
+): Promise<ResearchResult[]> {
+  const sourceResearch = await getResearchForCampaign(sourceCampaignId)
+  if (sourceResearch.length === 0) return []
+
+  const supabase = await createClient()
+  const rows = sourceResearch.map((r) => ({
+    campaign_id: targetCampaignId,
+    dimension: r.dimension,
+    findings: r.findings,
+    sources: r.sources,
+  }))
+
+  const { data, error } = await supabase
+    .from('campaign_research')
+    .insert(rows)
+    .select()
+
+  if (error) throw new Error(`copyResearchToCampaign failed: ${error.message}`)
+  return (data ?? []) as ResearchResult[]
+}
+
+/**
  * Find reusable research from a previous campaign in the same region.
  * Returns the most recent matching campaign's research, or null if none found.
  * Excludes the current campaign (excludeCampaignId).
