@@ -30,18 +30,89 @@ export async function buildAdCreativePrompt(params: {
   channelCopy: string
 }): Promise<string> {
   const { channel, flavor, workshopTheme, region, channelCopy } = params
-  const promptKey = `image.ad-creative.${channel}.${flavor}`
-
-  const promptData = await loadPrompt(promptKey)
   const aspectRatio = CHANNEL_ASPECT_RATIO[channel] ?? '1:1'
+
+  // Try channel+flavor specific prompt first, then channel-only, then base key
+  const keysToTry = [
+    `image.ad-creative.${channel}.${flavor}`,
+    `image.ad-creative.${channel}`,
+    'image.ad-creative',
+  ]
+
+  let promptData = await loadPrompt(keysToTry[0])
+  // loadPrompt returns a generic fallback when the key doesn't exist in DB.
+  // Detect that fallback (starts with "You are Amplify") and try next key.
+  for (let i = 1; i < keysToTry.length; i++) {
+    if (promptData.template.startsWith('You are Amplify')) {
+      promptData = await loadPrompt(keysToTry[i])
+    } else {
+      break
+    }
+  }
+
+  // The Supabase prompt may be a meta-prompt (designed for n8n with $json variables).
+  // If it contains n8n-style variables, build a direct image prompt instead.
+  const isN8nTemplate = promptData.template.includes('$json') || promptData.template.includes('$node')
+  if (isN8nTemplate || promptData.template.startsWith('You are Amplify')) {
+    return buildDirectImagePrompt({ channel, flavor, workshopTheme, region, channelCopy, aspectRatio })
+  }
 
   return renderPrompt(promptData.template, {
     workshopTheme,
     region,
     channelCopy,
+    channelName: channel,
+    flavor,
     brandPalette: BRAND_PALETTE,
     aspectRatio,
   })
+}
+
+/**
+ * Build a direct image generation prompt for Nano Banana when no app-compatible
+ * Supabase template exists. Follows IMAGE-PROMPTING.md best practices.
+ */
+function buildDirectImagePrompt(params: {
+  channel: string
+  flavor: 'warm' | 'playful'
+  workshopTheme: string
+  region: string
+  channelCopy: string
+  aspectRatio: string
+}): string {
+  const { channel, flavor, workshopTheme, region, channelCopy, aspectRatio } = params
+
+  const flavorStyle = flavor === 'warm'
+    ? 'Warm golden-hour lighting, soft focus, earthy natural tones with brand blue (#3D8BE8) accents. Serene, uplifting, aspirational mood.'
+    : 'Bright playful lighting, vibrant energy, dynamic composition with brand palette (#3D8BE8 Blue, #E47D6C Peach, #ED994E Orange, #F7C250 Yellow). Joyful, inviting, community-oriented mood.'
+
+  const channelComposition: Record<string, string> = {
+    instagram: 'Square 1:1 composition. Bold, eye-catching, scroll-stopping. Clean with negative space for text overlay.',
+    facebook: 'Landscape 16:9 composition. Editorial feel, wider scene, professional quality.',
+    whatsapp: 'Square 1:1 composition. Intimate, personal, conversational feel. Clear focal point.',
+    flyer: 'Portrait 2:3 composition. Print-ready, structured layout space, high contrast for readability.',
+  }
+
+  // Extract a brief description from the copy for context
+  const copySnippet = channelCopy.slice(0, 200).replace(/\n/g, ' ')
+
+  return [
+    `Create a photography-style advertising image for a ${workshopTheme || 'wellness'} workshop${region ? ` in ${region}` : ''}.`,
+    ``,
+    `Ad copy context: "${copySnippet}"`,
+    ``,
+    `Style: ${flavorStyle}`,
+    `${channelComposition[channel] || `Aspect ratio ${aspectRatio}.`}`,
+    ``,
+    `Requirements:`,
+    `- Photography style (not illustration or 3D render)`,
+    `- Diverse, inclusive subjects — front-facing, natural expressions`,
+    `- Connected to themes of meditation, breathwork, inner peace, and community`,
+    `- Family-friendly, positive, aspirational yet achievable`,
+    `- No text overlays, no watermarks`,
+    `- Shot with 85mm lens, f/2.8 aperture, natural lighting`,
+    `- 4K resolution, highly detailed, crisp focus`,
+  ].join('\n')
 }
 
 /**
