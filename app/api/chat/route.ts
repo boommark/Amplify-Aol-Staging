@@ -218,10 +218,16 @@ export async function POST(req: Request) {
           const copied = await copyResearchToCampaign(sourceId, campaignId)
 
           for (const result of copied) {
+            // DB stores findings as { items: [...], raw: "..." } but frontend expects the array directly
+            const dbFindings = result.findings as { items?: Array<{ label: string; value: string; source?: string }>; raw?: string }
+            const findingsArray = dbFindings.items ?? []
+            const dbSources = result.sources as { urls?: string[] } | null
+            const sourcesArray = dbSources?.urls ?? []
+
             emitSSE(controller, encoder, 'research_dimension', {
               dimension: result.dimension,
-              findings: result.findings,
-              sources: result.sources,
+              findings: findingsArray,
+              sources: sourcesArray,
             })
           }
 
